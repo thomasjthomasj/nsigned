@@ -4,13 +4,14 @@ from users.models import User
 class ArticleManager(models.Manager):
   @transaction.atomic
   def create(self, **kwargs):
-    article = Article.objects.create(
-      title=kwargs.title,
-      slug=kwargs.slug,
-      author=kwargs.author,
+    print(kwargs)
+    article = super().create(
+      title=kwargs["title"],
+      slug=kwargs["slug"],
+      author=kwargs["author"],
     )
     ArticleContent.objects.create(
-      content=kwargs.content,
+      content=kwargs["content"],
       article=article,
       active=True,
     )
@@ -18,7 +19,7 @@ class ArticleManager(models.Manager):
     return Article.objects \
       .prefetch_related("articlecontent_set") \
       .select_related("author") \
-      .get(pk=article)
+      .get(pk=article.id)
 
 class Article(models.Model):
   author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
