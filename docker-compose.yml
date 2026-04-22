@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  cms:
+    build:
+      context: ./apps/cms
+    container_name: cms
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/cms:/app
+    env_file:
+      - .env
+      - apps/cms/.env
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+volumes:
+  postgres_data:
