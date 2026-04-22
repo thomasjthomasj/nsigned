@@ -1,10 +1,10 @@
 from django.db import models, transaction
+from django.core.exceptions import NotFound
 from users.models import User
 
 class ArticleManager(models.Manager):
   @transaction.atomic
   def create(self, **kwargs):
-    print(kwargs)
     article = super().create(
       title=kwargs["title"],
       slug=kwargs["slug"],
@@ -32,7 +32,24 @@ class Article(models.Model):
   def __str__(self):
     return self.title
 
-  objects = ArticleManager()
+  cms = ArticleManager()
+
+  @transaction.atomic
+  def update(self, **kwargs):
+    if kwargs["title"]:
+      self.title = kwargs["title"]
+    if kwargs["slug"]:
+      self.slug = kwargs["slug"]
+    if kwargs["author"]:
+      self.author = kwargs.author
+    self.save()
+    if kwargs["content"]:
+      self.articlecontent_set.update(active=False)
+      Article.objects.create(
+        content=kwargs["content"],
+        article=self,
+        active=True
+      )
 
 class ArticleContent(models.Model):
   article = models.ForeignKey(Article, on_delete=models.CASCADE)
