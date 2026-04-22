@@ -23,5 +23,17 @@ services:
       - .env
       - apps/cms/.env
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+  frontend:
+    build:
+      context: ./apps/frontend
+    container_name: frontend
+    ports:
+      - "9000:3000"
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+    command: pnpm dev
+    depends_on:
+      - cms
 volumes:
   postgres_data:
