@@ -1,6 +1,7 @@
 from django.db import models, transaction
-from django.core.exceptions import NotFound
-from users.models import User
+from app.models import Creatable
+from music.models import Release
+from links.models import Link
 
 class ArticleManager(models.Manager):
   @transaction.atomic
@@ -17,17 +18,21 @@ class ArticleManager(models.Manager):
     )
 
     return Article.objects \
-      .prefetch_related("articlecontent_set") \
+      .prefetch_related("contents") \
       .select_related("author") \
       .get(pk=article.id)
 
-class Article(models.Model):
-  author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+class Article(Creatable):
   title = models.CharField(max_length=255)
   slug = models.CharField(max_length=255)
-  external_link = models.CharField(max_length=1000)
-  created_at = models.DateTimeField(auto_now_add=True)
+  release = models.ForeignKey(
+    Release,
+    null=True,
+    on_delete=models.SET_NULL,
+    related_name="articles",
+  )
   published_at = models.DateTimeField(null=True)
+  release = models.ForeignKey
 
   def __str__(self):
     return self.title
@@ -51,8 +56,11 @@ class Article(models.Model):
         active=True
       )
 
-class ArticleContent(models.Model):
-  article = models.ForeignKey(Article, on_delete=models.CASCADE)
+class ArticleContent(Creatable):
+  article = models.ForeignKey(
+    Article,
+    on_delete=models.CASCADE,
+    related_name="contents",
+  )
   content = models.TextField()
   active = models.BooleanField(default=True)
-  created_at = models.DateTimeField(auto_now_add=True)
