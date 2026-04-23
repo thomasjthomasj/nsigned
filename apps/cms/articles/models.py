@@ -14,7 +14,7 @@ class ArticleManager(models.Manager):
     }
     if kwargs["external_link"]:
       url = kwargs["external_link"]
-      link, = Link.objects.get_or_create(url=url)
+      link, link_created = Link.objects.get_or_create(url=url)
       release = Release.objects.filter(links=link).first()
       data["external_link"] = link
       if release:
@@ -42,16 +42,19 @@ class Article(Creatable):
     on_delete=models.SET_NULL,
     related_name="articles",
   )
+  external_link = models.ForeignKey(Link, null=True, on_delete=models.SET_NULL)
   published_at = models.DateTimeField(null=True)
-  release = models.ForeignKey
+  release = models.ForeignKey(Release, null=True, on_delete=models.SET_NULL)
 
   def __str__(self):
     return self.title
 
+  objects = models.Manager()
   cms = ArticleManager()
 
   @transaction.atomic
   def update(self, **kwargs):
+    raise Exception("Not ready")
     for key in ("title", "slug", "created_by"):
       if kwargs[key]:
         setattr(self, key, kwargs[key])
@@ -60,7 +63,7 @@ class Article(Creatable):
       self.link = link
     self.save()
     if kwargs["content"]:
-      self.articlecontent_set.update(active=False)
+      self.contents.update(active=False)
       Article.objects.create(
         content=kwargs["content"],
         article=self,

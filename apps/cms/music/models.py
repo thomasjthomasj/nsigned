@@ -24,32 +24,33 @@ class ReleaseBandcampManager(models.Manager):
   def get_from_url(self, url):
     url = strip_url_query(url)
     pattern = r"^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/"
+    print(url)
     match = re.match(pattern, url)
     if not match:
       raise ValueError("Not a valid Bandcamp release URL")
 
-    existing = self().objects.filter(links=url).first()
+    existing = super().filter(links__url=url).first()
     if existing:
       return existing
 
     release_type = match.group(1)
-    link, = Link.objects.get_or_create(url=url)
+    link, link_created = Link.objects.get_or_create(url=url)
     artist = None
     label = None
     image_url = None
 
-    bc_release = bandcamp.get_album(url) if release_type == "album" \
-      else bandcamp.get_track(url)
+    bc_release = bandcamp.get_album(album_url=url) if release_type == "album" \
+      else bandcamp.get_track(track_url=url)
 
     if not bc_release:
       raise ValueError("Could not load Bandcamp release data from URL")
 
     if bc_release.art_url:
-      image_url, = Link.objects.get_or_create(url=bc_release.art_url)
+      image_url, img_created = Link.objects.get_or_create(url=bc_release.art_url)
 
     bc_artist_id = bc_release.artist_id
     if bc_artist_id and bc_release.artist_title:
-      artist, = Artist.objects.get_or_create(
+      artist, artist_created = Artist.objects.get_or_create(
         bandcamp_id=bc_artist_id,
         defaults={
           "name": bc_release.artist_title,
@@ -59,7 +60,7 @@ class ReleaseBandcampManager(models.Manager):
 
     bc_label_id = bc_release.record_label_id
     if bc_label_id and bc_release.record_label_title:
-      label, = Label.objects.get_or_create(
+      label, label_created = Label.objects.get_or_create(
         bandcamp_id=bc_label_id,
         defaults={
           "name": bc_release.record_label_title,
@@ -104,6 +105,7 @@ class Release(Creatable):
     )
   )
 
+  objects = models.Manager()
   bandcamp = ReleaseBandcampManager()
 
 class ReleaseLink(models.Model):

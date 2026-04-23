@@ -1,6 +1,6 @@
 def article_json(article):
   content = next(
-    content for content in article.articlecontent_set.all() \
+    content for content in article.contents.all() \
       if content.active
   )
 
@@ -9,12 +9,12 @@ def article_json(article):
       "id": article.id,
       "title": article.title,
       "slug": article.slug,
-      "external_link": article.external_link,
-      "author": {
-        "id": article.author.id,
-        "username": article.author.username,
-        "display_name": article.author.display_name,
-      } if article.author else None,
+      "external_link": article.external_link.url,
+      "created_by": {
+        "id": article.created_by.id,
+        "username": article.created_by.username,
+        "display_name": article.created_by.display_name,
+      } if article.created_by else None,
       "content": {
         "id": content.id,
         "content": content.content

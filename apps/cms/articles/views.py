@@ -1,5 +1,5 @@
+import json
 from slugify import slugify
-from django.db import transaction
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, Http404
 from django.core.exceptions import BadRequest, PermissionDenied
 from music.models import Release
@@ -15,7 +15,6 @@ def article(request, article_id):
     .prefetch_related("contents") \
     .select_related("created_by") \
     .select_related("external_link") \
-    .select_related("release") \
     .get(pk=article.id)
   if not article:
     return Http404("Not found")
@@ -23,19 +22,22 @@ def article(request, article_id):
   return JsonResponse(article_json(article))
 
 def create(request):
-  if request.method == "GET":
-    return HttpResponseNotAllowed()
+  if request.method != "POST":
+    return HttpResponseNotAllowed(["POST"])
+
+  data = json.loads(request.body)
 
   # TODO proper user system
-  author_id = request.POST.get("author_id")
+  created_by_id = data.get("author_id")
+
   try:
-    created_by = User.objects.get(pk=author_id)
+    created_by = User.objects.get(pk=created_by_id)
   except User.DoesNotExist:
     raise PermissionDenied
 
-  content = request.POST.get("content")
-  title = request.POST.get("title")
-  external_link = request.POST.get("external_link")
+  content = data.get("content")
+  title = data.get("title")
+  external_link = data.get("external_link")
   release = None
   if not content or not title:
     raise BadRequest
@@ -43,8 +45,9 @@ def create(request):
   if external_link:
     try:
       release = Release.bandcamp.get_from_url(external_link)
-    except ValueError:
+    except ValueError as e:
       pass
+      raise e
 
   slug = slugify(title)
   article = Article.cms.create(
@@ -69,20 +72,20 @@ def update(request, article_id):
     for key in ("title", "slug", "content")
     if request.POST.get(key)
   }
-  author_id = request.POST.get("author_id")
-  if author_id:
+  created_by_id = request.POST.get("created_by_id")
+  if created_by_id:
     try:
-      author = User.objects.get(pk=author_id)
+      created_by = User.objects.get(pk=created_by_id)
     except User.DoesNotExist:
       raise PermissionDenied
-    data["author"] = author
+    data["created_by"] = created_by
 
   if not data.len() == 0:
     article.update(**data)
 
   reloaded = Article.objects \
-    .prefetch_related("articlecontent_set") \
-    .select_related("author") \
+    .prefetch_related("contents") \
+    .select_related("created_by") \
     .get(pk=article.id)
 
   return JsonResponse(article_json(reloaded))
