@@ -6,11 +6,14 @@ from links.models import Link
 class ArticleManager(models.Manager):
   @transaction.atomic
   def create(self, **kwargs):
-    article = super().create(
-      title=kwargs["title"],
-      slug=kwargs["slug"],
-      author=kwargs["author"],
-    )
+    data = {
+      k: kwargs[k]
+      for k in ("title", "slug", "created_by")
+      if kwargs[k]
+    }
+    if kwargs["external_link"]:
+      data["external_link"] = Link.objects.get_or_create(url=kwargs["external_link"])
+    article = super().create(**data)
     ArticleContent.objects.create(
       content=kwargs["content"],
       article=article,
@@ -19,7 +22,8 @@ class ArticleManager(models.Manager):
 
     return Article.objects \
       .prefetch_related("contents") \
-      .select_related("author") \
+      .select_related("created_by") \
+      .select_related("external_link") \
       .get(pk=article.id)
 
 class Article(Creatable):
