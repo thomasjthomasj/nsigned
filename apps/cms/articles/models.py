@@ -45,12 +45,11 @@ class Article(Creatable):
 
   @transaction.atomic
   def update(self, **kwargs):
-    if kwargs["title"]:
-      self.title = kwargs["title"]
-    if kwargs["slug"]:
-      self.slug = kwargs["slug"]
-    if kwargs["author"]:
-      self.author = kwargs.author
+    for key in ("title", "slug", "created_by"):
+      if kwargs[key]:
+        setattr(self, key, kwargs[key])
+    if kwargs["external_link"]:
+      self.link = Link.objects.get_or_create(url=kwargs["external_link"])
     self.save()
     if kwargs["content"]:
       self.articlecontent_set.update(active=False)
