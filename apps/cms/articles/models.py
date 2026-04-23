@@ -29,6 +29,7 @@ class ArticleManager(models.Manager):
       .prefetch_related("contents") \
       .select_related("created_by") \
       .select_related("external_link") \
+      .select_related("release") \
       .get(pk=article.id)
 
 class Article(Creatable):

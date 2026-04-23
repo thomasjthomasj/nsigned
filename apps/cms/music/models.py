@@ -3,6 +3,7 @@ from django.db import models, transaction
 from datetime import datetime
 from slugify import slugify
 from app.models import Creatable
+from app.utils import strip_url_query
 from links.models import Link
 from music.bandcamp import bandcamp
 
@@ -20,11 +21,16 @@ class Label(Creatable):
 
 class ReleaseBandcampManager(models.Manager):
   @transaction.atomic
-  def create_from_url(self, url):
+  def get_from_url(self, url):
+    url = strip_url_query(url)
     pattern = r"^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/"
     match = re.match(pattern, url)
     if not match:
       raise ValueError("Not a valid Bandcamp release URL")
+
+    existing = self().objects.filter(links=url).first()
+    if existing:
+      return existing
 
     release_type = match.group(1)
     link, = Link.objects.get_or_create(url=url)
@@ -32,8 +38,7 @@ class ReleaseBandcampManager(models.Manager):
     label = None
     image_url = None
 
-    bc_release = bandcamp.get_album(url) \
-      if release_type == "album" \
+    bc_release = bandcamp.get_album(url) if release_type == "album" \
       else bandcamp.get_track(url)
 
     if not bc_release:
