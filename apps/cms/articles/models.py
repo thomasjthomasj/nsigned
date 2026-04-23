@@ -12,7 +12,12 @@ class ArticleManager(models.Manager):
       if kwargs[k]
     }
     if kwargs["external_link"]:
-      data["external_link"] = Link.objects.get_or_create(url=kwargs["external_link"])
+      url = kwargs["external_link"]
+      link, = Link.objects.get_or_create(url=url)
+      release = Release.objects.filter(links=link).first()
+      data["external_link"] = link
+      if release:
+        data["release"] = release
     article = super().create(**data)
     ArticleContent.objects.create(
       content=kwargs["content"],
@@ -49,7 +54,8 @@ class Article(Creatable):
       if kwargs[key]:
         setattr(self, key, kwargs[key])
     if kwargs["external_link"]:
-      self.link = Link.objects.get_or_create(url=kwargs["external_link"])
+      link, = Link.objects.get_or_create(url=kwargs["external_link"])
+      self.link = link
     self.save()
     if kwargs["content"]:
       self.articlecontent_set.update(active=False)

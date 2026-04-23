@@ -18,7 +18,10 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./apps/cms:/app
+      - type: bind
+        source: ./apps/cms
+        target: /app
+        consistency: delegated
     env_file:
       - .env
       - apps/cms/.env
