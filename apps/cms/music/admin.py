@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Artist, Label, Release
+
+for model in (Artist, Label, Release):
+  admin.site.register(model)

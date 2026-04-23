@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models, transaction
 from app.models import Creatable
 from music.models import Release
@@ -18,7 +19,7 @@ class ArticleManager(models.Manager):
       data["external_link"] = link
       if release:
         data["release"] = release
-    article = super().create(**data)
+    article = super().create(published_at=datetime.now(), **data)
     ArticleContent.objects.create(
       content=kwargs["content"],
       article=article,
