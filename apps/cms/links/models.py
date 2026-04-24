@@ -3,3 +3,6 @@ from app.models import Creatable
 
 class Link(Creatable):
   url = models.CharField(max_length=255, unique=True)
+
+  def __str__(self):
+    return self.url

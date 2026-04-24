@@ -6,7 +6,9 @@ from slugify import slugify
 from app.models import Creatable
 from app.utils import strip_url_query
 from links.models import Link
+from music.bandcamp import get_release_details
 from bs4 import BeautifulSoup
+
 
 class Artist(Creatable):
   name = models.CharField(max_length=255)
@@ -27,40 +29,24 @@ class Label(Creatable):
 class ReleaseBandcampManager(models.Manager):
   @transaction.atomic
   def get_from_url(self, url):
-    url = strip_url_query(url)
+    base_url = strip_url_query(url)
     pattern = r"^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/"
-
-    match = re.match(pattern, url)
+    match = re.match(pattern, base_url)
     if not match:
       raise ValueError("Not a valid Bandcamp release URL")
 
-    existing = super().filter(links__url=url).first()
+    existing = super().filter(links__url=base_url).first()
     if existing:
       return existing
 
-    release_type = match.group(1)
-    link, link_created = Link.objects.get_or_create(url=url)
+    bc_data = get_release_details(base_url)
+    artist_name = bc_data["artist_name"]
+    title = bc_data["title"]
+    label_name = bc_data["label"]
+    image_url_string = bc_data["image_url"]
+    release_type = bc_data["release_type"]
 
-    html = requests.get(url).text
-    parsed = BeautifulSoup(html, "html.parser")
-    title_meta = parsed.find("meta", property="og:title")
-    artist_meta = parsed.find("meta", property="og:site_name")
-    image_meta = parsed.find("meta", property="og:image")
-
-    if not title_meta:
-      raise ValueError("Could not read title from Bandcamp page")
-    if not artist_meta:
-      raise ValueError("Could not read artist name from Bandcamp page")
-
-    bc_title = title_meta["content"]
-    artist_name = artist_meta["content"]
-    title = bc_title.replace(f", by {artist_name}", "").strip()
-    image_url_string = image_meta["content"] if image_meta else None
-
-    if not title:
-      raise ValueError("Title is empty")
-    if not artist_name:
-      raise ValueError("Artist name is empty")
+    link, link_created = Link.objects.get_or_create(url=base_url)
 
     if image_url_string:
       image_url, img_created = Link.objects.get_or_create(url=image_url_string)
@@ -72,10 +58,21 @@ class ReleaseBandcampManager(models.Manager):
       },
     )
 
+    if label_name:
+      label, label_created = Label.objects.get_or_create(
+        slug=slugify(label_name),
+        defaults={
+          "name": label_name
+        }
+      )
+    else:
+      label = None
+
     release = super().create(
       primary_artist=artist,
       title=title,
       slug=slugify(title)[:255],
+      label=label,
       image_url=image_url,
       release_type=release_type,
     )
@@ -85,7 +82,7 @@ class ReleaseBandcampManager(models.Manager):
     return super() \
       .prefetch_related("links") \
       .select_related("primary_artist", "label", "image_url") \
-      .find(pk=release.id)
+      .get(pk=release.id)
 
 class Release(Creatable):
   primary_artist = models.ForeignKey(
