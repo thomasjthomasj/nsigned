@@ -4,3 +4,4 @@ django-cors-headers
 python-slugify
 psycopg2-binary
 beautifulsoup4
+PyJWT==2.12.*
