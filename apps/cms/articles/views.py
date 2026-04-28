@@ -2,6 +2,7 @@ import json
 from slugify import slugify
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, Http404
 from django.core.exceptions import BadRequest, PermissionDenied
+from app.decorators import logged_in, method
 from music.models import Release
 from users.models import User
 from .models import Article
@@ -21,17 +22,13 @@ def article(request, article_id):
 
   return JsonResponse(article_json(article))
 
+@method("POST")
+@logged_in(role="contributor")
 def create(request):
-  if request.method != "POST":
-    return HttpResponseNotAllowed(["POST"])
-
   data = json.loads(request.body)
 
-  # TODO proper user system
-  created_by_id = data.get("author_id")
-
   try:
-    created_by = User.objects.get(pk=created_by_id)
+    created_by = request.user
   except User.DoesNotExist:
     raise PermissionDenied
 
@@ -46,7 +43,6 @@ def create(request):
     try:
       release = Release.bandcamp.get_from_url(external_link)
     except ValueError as e:
-      pass
       raise e
 
   slug = slugify(title)
@@ -61,9 +57,9 @@ def create(request):
 
   return JsonResponse(article_json(article))
 
+@method("POST")
+@logged_in(role="editor")
 def update(request, article_id):
-  if request.method == "GET":
-    return HttpResponseNotAllowed()
   article = Article.objects.get(pk=article_id)
   if not article:
     return Http404("Not found")
