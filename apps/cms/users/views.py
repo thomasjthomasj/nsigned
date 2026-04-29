@@ -46,11 +46,13 @@ def register(request):
   if not password == password_confirm:
     return BadRequest("`password` does not match `password_confirm`")
 
-  try:
-    User.objects.get(email=email)
-    return BadRequest("User already exists")
-  except User.DoesNotExist:
-    pass
+  email_exists = User.objects.filter(email=email).exists()
+  if email_exists:
+    return BadRequest("User with this email already exists")
+
+  username_exists = User.objects.filter(username=username).exists()
+  if username_exists:
+    return BadRequest("This username is taken")
 
   with transaction.atomic():
     user = User.objects.create_user(

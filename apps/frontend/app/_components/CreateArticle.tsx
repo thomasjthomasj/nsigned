@@ -1,9 +1,11 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useState } from "react";
+import { FormField } from "@/_components/FormField";
+import { endpoint } from "@/utils/api.client";
 
 const AUTHOR_ID = 1;
-const ENDPOINT = "http://localhost:8000/articles/create";
+const ENDPOINT = endpoint("articles/create");
 
 export const CreateArticle = () => {
   const [title, setTitle] = useState<string>("")
@@ -34,18 +36,24 @@ export const CreateArticle = () => {
 
   return (
     <div className="flex flex-col gap-[10px]">
-      <div className="flex gap-[10px]">
-        <label htmlFor="title">Title</label>
-        <input name="title" id="title" value={title} onChange={(e) => setTitle(e.target.value)}/>
-      </div>
-      <div className="flex gap-[10px]">
-        <label htmlFor="externalLink">Bandcamp link</label>
-        <input name="externalLink" id="externalLink" value={externalLink} onChange={(e) => setExternalLink(e.target.value)}/>
-      </div>
-      <div className="flex gap-[10px]">
-        <label htmlFor="content">Content</label>
-        <textarea name="content" id="content" value={content} onChange={(e) => setContent(e.target.value)}/>
-      </div>
+      <FormField
+        label="Title"
+        name="title"
+        onChange={(e) => setTitle(e.target.value)}
+        value={title}
+      />
+      <FormField
+        label="Bandcamp link"
+        name="externalLink"
+        onChange={(e) => setExternalLink(e.target.value)}
+        value={externalLink}
+      />
+      <FormField
+        label="Content"
+        name="content"
+        onChange={(e) => setContent(e.target.value)}
+        value={content}
+      />
       <button
         onClick={handleSave}
       >
