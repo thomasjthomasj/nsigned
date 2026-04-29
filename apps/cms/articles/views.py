@@ -1,6 +1,6 @@
 import json
 from slugify import slugify
-from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, Http404
+from django.http import HttpResponse, JsonResponse, Http404
 from django.core.exceptions import BadRequest, PermissionDenied
 from app.decorators import logged_in, method
 from music.models import Release
@@ -26,11 +26,7 @@ def article(request, article_id):
 @logged_in(role="contributor")
 def create(request):
   data = json.loads(request.body)
-
-  try:
-    created_by = request.user
-  except User.DoesNotExist:
-    raise PermissionDenied
+  created_by = request.user
 
   content = data.get("content")
   title = data.get("title")

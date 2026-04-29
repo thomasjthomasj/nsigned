@@ -1,14 +1,11 @@
 import re
-import requests
 from django.db import models, transaction
-from datetime import datetime
 from slugify import slugify
 from app.models import Creatable
 from app.utils import strip_url_query
 from links.models import Link
+from users.models import User
 from music.bandcamp import get_release_details
-from bs4 import BeautifulSoup
-
 
 class Artist(Creatable):
   name = models.CharField(max_length=255)
@@ -46,25 +43,25 @@ class ReleaseBandcampManager(models.Manager):
     image_url_string = bc_data["image_url"]
     release_type = bc_data["release_type"]
 
-    link, link_created = Link.objects.get_or_create(url=base_url)
+    link = Link.objects.get_or_create(url=base_url)[0]
 
     if image_url_string:
-      image_url, img_created = Link.objects.get_or_create(url=image_url_string)
+      image_url = Link.objects.get_or_create(url=image_url_string)[0]
 
-    artist, artist_created = Artist.objects.get_or_create(
+    artist = Artist.objects.get_or_create(
       slug=slugify(artist_name),
       defaults={
         "name": artist_name,
       },
-    )
+    )[0]
 
     if label_name:
-      label, label_created = Label.objects.get_or_create(
+      label = Label.objects.get_or_create(
         slug=slugify(label_name),
         defaults={
           "name": label_name
         }
-      )
+      )[0]
     else:
       label = None
 
@@ -127,3 +124,12 @@ class ReleaseLink(models.Model):
         name="unique_link_per_release",
       )
     ]
+
+class ReviewRequest(Creatable):
+  release = models.OneToOneField(Release, on_delete=models.CASCADE)
+  claimed_by = models.ForeignKey(
+    User,
+    null=True,
+    on_delete=models.SET_NULL,
+    related_name="claimed_review_requests"
+  )

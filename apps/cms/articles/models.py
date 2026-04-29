@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.db import models, transaction
 from app.models import Creatable
-from music.models import Release
+from music.models import Release, ReviewRequest
 from links.models import Link
 
 class ArticleManager(models.Manager):
@@ -45,30 +45,13 @@ class Article(Creatable):
   external_link = models.ForeignKey(Link, null=True, on_delete=models.SET_NULL)
   published_at = models.DateTimeField(null=True)
   release = models.ForeignKey(Release, null=True, on_delete=models.SET_NULL)
+  review_request = models.OneToOneField(ReviewRequest, null=True, on_delete=models.SET_NULL)
 
   def __str__(self):
     return self.title
 
   objects = models.Manager()
   cms = ArticleManager()
-
-  @transaction.atomic
-  def update(self, **kwargs):
-    raise Exception("Not ready")
-    for key in ("title", "slug", "created_by"):
-      if kwargs[key]:
-        setattr(self, key, kwargs[key])
-    if kwargs["external_link"]:
-      link, = Link.objects.get_or_create(url=kwargs["external_link"])
-      self.link = link
-    self.save()
-    if kwargs["content"]:
-      self.contents.update(active=False)
-      Article.objects.create(
-        content=kwargs["content"],
-        article=self,
-        active=True
-      )
 
 class ArticleContent(Creatable):
   article = models.ForeignKey(
