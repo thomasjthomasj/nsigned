@@ -98,7 +98,7 @@ def refresh_token(request):
     return Unauthorized("Invalid token type")
 
   try:
-    user =User.objects.get(id=payload["user_id"])
+    user = User.objects.get(id=payload["user_id"])
   except User.DoesNotExist:
     return NotFound()
 
