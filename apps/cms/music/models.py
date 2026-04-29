@@ -98,7 +98,6 @@ class Release(Creatable):
   slug = models.CharField(max_length=255, unique=True)
   links = models.ManyToManyField(Link, through="ReleaseLink", related_name="release_links")
   image_url = models.ForeignKey(Link, null=True, on_delete=models.CASCADE)
-  release_date = models.DateTimeField(null=True)
   release_type = models.CharField(
     max_length=255,
     choices=(

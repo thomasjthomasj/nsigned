@@ -2,10 +2,31 @@ import jwt
 from django.db import transaction
 from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied
-from django.http import JsonResponse
-from app.decorators import method
+from app.decorators import method, logged_in
+from app.http import Ok, NotFound, BadRequest, Unauthorized
 from .auth import issue_tokens, decode
 from .models import User
+
+@logged_in()
+def get_me(request):
+  user = request.user
+  return Ok({
+    "id": user.id,
+    "username": user.username,
+    "display_name": user.display_name,
+    "email": user.email,
+  })
+
+def get_user(request, username):
+  try:
+    user = User.objects.get(username=username)
+    return Ok({
+      "id": user.id,
+      "username": user.username,
+      "display_name": user.display_name,
+    })
+  except User.DoesNotExist:
+    return NotFound()
 
 @method("POST")
 def register(request):
@@ -14,7 +35,7 @@ def register(request):
 
   for field in required:
     if not data.get(field):
-      return JsonResponse({"error": f"Missing `%s` field" % field}, status=400)
+      return BadRequest(f"Missing `%s` field" % field)
 
   email = data.get("email")
   username = data.get("username")
@@ -23,11 +44,11 @@ def register(request):
   password_confirm = data.get("password_confirm")
 
   if not password == password_confirm:
-    return JsonResponse({"error": "`password` does not match `password_confirm`"}, status=400)
+    return BadRequest("`password` does not match `password_confirm`")
 
   try:
     User.objects.get(email=email)
-    return JsonResponse({"error": "User already exists"}, status=400)
+    return BadRequest("User already exists")
   except User.DoesNotExist:
     pass
 
@@ -40,7 +61,7 @@ def register(request):
       last_login=datetime.now(timezone.utc)
     )
     tokens = issue_tokens(user)
-    return JsonResponse(tokens)
+    return Ok(tokens)
 
 @method("POST")
 def login(request):
@@ -55,33 +76,32 @@ def login(request):
     user.last_login = datetime.now(timezone.utc)
     user.save()
   except PermissionDenied:
-    return JsonResponse({"error": "invalid credentials"}, status=401)
+    return Unauthorized("Invalid credentials")
 
   tokens = issue_tokens(user)
 
-  return JsonResponse(tokens)
+  return Ok(tokens)
 
 @method("POST")
 def refresh_token(request):
   data = request.json
   refresh_token = data.get("refresh_token")
   if not refresh_token:
-    return JsonResponse({"error": "no refresh token"}, status=401)
+    return Unauthorized("No refresh token")
 
   try:
     payload = decode(refresh_token)
   except jwt.InvalidTokenError:
-    return JsonResponse({"error": "invalid refresh token"}, status=401)
+    return Unauthorized("Invalid refresh token")
 
   if payload.get("type") != "refresh":
-    return JsonResponse({"error": "invalid token type"}, status=401)
-
+    return Unauthorized("Invalid token type")
 
   try:
     user =User.objects.get(id=payload["user_id"])
   except User.DoesNotExist:
-    return JsonResponse({"error": "user not found"}, status=404)
+    return NotFound()
 
   tokens = issue_tokens(user)
 
-  return JsonResponse(tokens)
+  return Ok(tokens)
