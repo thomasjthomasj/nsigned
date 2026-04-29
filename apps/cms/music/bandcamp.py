@@ -25,7 +25,8 @@ def get_release_details(url):
     release_data = data["albumRelease"][0]
     title = release_data["name"]
     label = release_data.get("recordLabel", {}).get("name")
-    image_url = data.get("image", None)
+    image = data.get("image")
+    image_url = image[0] if isinstance(image, list) else image
   except:
     title_meta = parsed.find("meta", property="og:title")
     artist_meta = parsed.find("meta", property="og:site_name")
