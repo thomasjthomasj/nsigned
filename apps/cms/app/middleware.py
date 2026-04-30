@@ -6,6 +6,8 @@ class JsonMiddleware:
     self.get_response = get_response
 
   def __call__(self, request):
+    if request.path.startswith("/admin"):
+      return self.get_response(request)
     data = None
     if request.body:
       if request.content_type != "application/json":

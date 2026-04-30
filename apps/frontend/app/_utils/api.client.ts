@@ -1,4 +1,7 @@
-import type { Error } from "@/_types/api";
+"use client";
+
+import { COOKIE_NAMES } from "@/_utils/cookies";
+import type { Error, LoggedInUser, Tokens } from "@/_types/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -12,30 +15,75 @@ type Json =
 
 type ErrorResponse = {
   ok: false;
+  status: number;
   data: Error;
 }
 
-type SuccessResponse<TResponseJson> = {
+type SuccessResponse<TJson> = {
   ok: true;
-  data: TResponseJson;
+  status: number;
+  data: TJson;
 }
+
+type Response<TJson> = ErrorResponse | SuccessResponse<TJson>;
 
 export const getEndpoint = (endpoint: string) => `${API_URL}/${endpoint}`;
 
-export const post = async <TResponseJson>(
-  endpoint: string,
-  data: Json
-): Promise<ErrorResponse | SuccessResponse<TResponseJson>> => {
-  const result = await fetch(getEndpoint(endpoint), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  const response = await result.json();
-  return {
-    ok: result.ok,
-    data: response,
+const request = async <TJson>(
+  makeRequest: () => Promise<Response<TJson>>, withAuth: boolean
+): Promise<Response<TJson>> => {
+  const response = await makeRequest();
+  if (withAuth && response.status === 401) {
+    const tokenResponse = await fetch(getEndpoint("users/refresh"), {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (tokenResponse.ok) return makeRequest()
   }
+  return response;
+}
+
+export const getMe = async () => {
+  const makeRequest = async () => {
+    const result = await fetch(getEndpoint("users/me"), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    const response = await result.json();
+    return {
+      ok: result.ok,
+      status: result.status,
+      data: response,
+    }
+  };
+
+  return request<LoggedInUser>(makeRequest, true)
+}
+
+export const post = async <TJson>(
+  endpoint: string,
+  data: Json,
+  withAuth: boolean = true,
+): Promise<Response<TJson>> => {
+  const makeRequest = async () => {
+    const result = await fetch(getEndpoint(endpoint), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: withAuth ? "include" : "omit",
+      body: JSON.stringify(data),
+    });
+    const response = await result.json();
+    return {
+      ok: result.ok,
+      status: result.status,
+      data: response,
+    }
+  }
+
+  return request<TJson>(makeRequest, withAuth);
 }

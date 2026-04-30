@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useCookies } from "react-cookie";
 import { FormField } from "@/_components/FormField";
+import { useAuth } from "@/_hooks";
 import { post } from "@/_utils/api.client";
 import { COOKIE_NAMES } from "@/_utils/cookies";
 
@@ -26,6 +27,7 @@ export const RegistrationForm = () => {
     COOKIE_NAMES.access,
     COOKIE_NAMES.refresh,
   ]);
+  const { user } = useAuth();
 
   const [email, setEmail] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
@@ -78,13 +80,17 @@ export const RegistrationForm = () => {
         setSubmitError("There are problems with this form.")
         return;
       }
-      const { data, ok } = await post<Tokens>(ENDPOINT, {
-        email,
-        username,
-        display_name: displayName,
-        password,
-        password_confirm: confirmPassword,
-      });
+      const { data, ok } = await post<Tokens>(
+        ENDPOINT,
+        {
+          email,
+          username,
+          display_name: displayName,
+          password,
+          password_confirm: confirmPassword,
+        },
+        false
+      );
       if (!ok) {
         setSubmitError(data.error || "There was an signing up.")
         return;
@@ -97,6 +103,10 @@ export const RegistrationForm = () => {
   )
 
   const buttonDisabled = useMemo(() => !isValid || isSubmitting, [isValid, isSubmitting]);
+
+  if (user) {
+    return <p>Hello {user.display_name}</p>
+  }
 
   return (
     <div className="flex flex-col gap-[10px]">

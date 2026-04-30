@@ -7,15 +7,14 @@ class AuthMiddleware:
     self.get_response = get_response
 
   def __call__(self, request):
-    request.user = None
+    request.site_user = None
 
-    auth = request.headers.get("Authorization")
-    if auth and auth.startswith("Bearer "):
-      token = auth.split(" ")[1]
+    token = request.COOKIES.get("access-token")
 
+    if token:
       try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        request.user = User.objects.get(id=payload["user_id"])
+        request.site_user = User.objects.get(id=payload["user_id"])
       except:
         pass
 

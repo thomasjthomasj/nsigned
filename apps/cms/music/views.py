@@ -6,7 +6,7 @@ from .models import Release, ReviewRequest
 @logged_in()
 def request_review(request):
   data = request.data
-  user = request.user
+  user = request.site_user
   url = data.get("url")
   if not url:
     return BadRequest("URL is required")

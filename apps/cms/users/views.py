@@ -4,16 +4,17 @@ from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied
 from app.decorators import method, logged_in
 from app.http import Ok, NotFound, BadRequest, Unauthorized
+from app.utils import set_auth_cookie
 from .auth import issue_tokens, decode
 from .models import User
 
 @logged_in()
 def get_me(request):
-  user = request.user
+  user = request.site_user
   return Ok({
     "id": user.id,
     "username": user.username,
-    "display_name": user.display_name,
+    "display_name": user.display_name or user.username,
     "email": user.email,
     "role": user.role,
   })
@@ -24,7 +25,7 @@ def get_user(request, username):
     return Ok({
       "id": user.id,
       "username": user.username,
-      "display_name": user.display_name,
+      "display_name": user.display_name or user.username,
       "role": user.role,
     })
   except User.DoesNotExist:
@@ -88,8 +89,7 @@ def login(request):
 
 @method("POST")
 def refresh_token(request):
-  data = request.json
-  refresh_token = data.get("refresh_token")
+  refresh_token = request.COOKIES.get("refresh-token")
   if not refresh_token:
     return Unauthorized("No refresh token")
 
@@ -107,5 +107,8 @@ def refresh_token(request):
     return NotFound()
 
   tokens = issue_tokens(user)
+  response = Ok()
+  set_auth_cookie(response, "access-token", tokens["access"])
+  set_auth_cookie(response, "refresh-token", tokens["refresh"])
 
-  return Ok(tokens)
+  return response

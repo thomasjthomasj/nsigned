@@ -13,15 +13,16 @@ class Ok(BaseResponse):
   status = 200
 
 class BaseErrorResponse(BaseResponse, ABC):
-  def __init__(self, message, *args, **kwargs):
-    base_message = None
+  base_message = None
+
+  def __init__(self, message=None, *args, **kwargs):
     if self.status is None:
       raise NotImplementedError("Base message should not be None")
     super().__init__(
       *args,
       **kwargs,
       data={
-        "error": message if message else base_message
+        "error": message if message else self.base_message
       }
     )
 

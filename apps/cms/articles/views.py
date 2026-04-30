@@ -23,7 +23,7 @@ def article(request, article_id):
 @logged_in(role="contributor")
 def create(request):
   data = request.json
-  created_by = request.user
+  created_by = request.site_user
 
   content = data.get("content")
   title = data.get("title")
