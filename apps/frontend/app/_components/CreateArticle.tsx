@@ -2,10 +2,10 @@
 
 import { useCallback, useState } from "react";
 import { FormField } from "@/_components/FormField";
-import { endpoint } from "@/utils/api.client";
+import { getEndpoint } from "@/_utils/api.client";
 
 const AUTHOR_ID = 1;
-const ENDPOINT = endpoint("articles/create");
+const ENDPOINT = getEndpoint("articles/create");
 
 export const CreateArticle = () => {
   const [title, setTitle] = useState<string>("")

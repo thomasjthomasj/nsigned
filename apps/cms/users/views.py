@@ -15,6 +15,7 @@ def get_me(request):
     "username": user.username,
     "display_name": user.display_name,
     "email": user.email,
+    "role": user.role,
   })
 
 def get_user(request, username):
@@ -24,6 +25,7 @@ def get_user(request, username):
       "id": user.id,
       "username": user.username,
       "display_name": user.display_name,
+      "role": user.role,
     })
   except User.DoesNotExist:
     return NotFound()
