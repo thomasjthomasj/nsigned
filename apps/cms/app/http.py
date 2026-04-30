@@ -4,20 +4,21 @@ from django.http import JsonResponse
 class BaseResponse(JsonResponse, ABC):
   status = None
 
-  def __init__(self, **kwargs):
-    if self.status == None:
+  def __init__(self, *args, **kwargs):
+    if self.status is None:
       raise NotImplementedError("Status should not be None")
-    super().__init__(**kwargs, status=self.status)
+    super().__init__(*args, **kwargs, status=self.status)
 
 class Ok(BaseResponse):
   status = 200
 
 class BaseErrorResponse(BaseResponse, ABC):
-  def __init__(self, message, **kwargs):
+  def __init__(self, message, *args, **kwargs):
     base_message = None
-    if self.status == None:
+    if self.status is None:
       raise NotImplementedError("Base message should not be None")
     super().__init__(
+      *args,
       **kwargs,
       data={
         "error": message if message else base_message
