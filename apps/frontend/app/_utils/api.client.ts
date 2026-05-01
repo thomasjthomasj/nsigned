@@ -82,11 +82,15 @@ export const getMe = async () => get<LoggedInUser>({
   withAuth: true,
 });
 
-export const post = async <TJson>(
+export const post = async <TJson>({
+  endpoint,
+  data,
+  withAuth = true,
+}: {
   endpoint: string,
   data: Json,
-  withAuth: boolean = true,
-): Promise<Response<TJson>> => {
+  withAuth: boolean,
+}): Promise<Response<TJson>> => {
   const makeRequest = async () => {
     const result = await fetch(getEndpoint(endpoint), {
       method: "POST",

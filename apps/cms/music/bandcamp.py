@@ -16,6 +16,7 @@ def get_release_details(url):
   release_type = match.group(1)
   html = requests.get(base_url).text
   parsed = BeautifulSoup(html, "html.parser")
+  images = None
 
   try:
     script = parsed.find("script", type="application/ld+json")
@@ -50,11 +51,31 @@ def get_release_details(url):
     if not artist_name:
       raise BandcampError("Artist name is empty")
 
+  if image_url:
+    base_image_url = image_url.split("_")[0]
+    images = {
+      "sm": {
+        "url": f"%s_8.jpg" % base_image_url,
+        "height": 124,
+        "width": 124,
+      },
+      "md": {
+        "url": f"%s_2.jpg" % base_image_url,
+        "height": 350,
+        "width": 350,
+      },
+      "lg": {
+        "url": f"%s_10.jpg" % base_image_url,
+        "height": 1200,
+        "width": 1200,
+      },
+    }
+
   return {
     "artist_name": artist_name,
     "title": title,
     "label": label,
-    "image_url": image_url,
+    "images": images,
     "release_type": release_type,
     "link": base_url,
   }

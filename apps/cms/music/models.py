@@ -5,7 +5,8 @@ from app.models import Creatable
 from app.utils import strip_url_query
 from links.models import Link
 from users.models import User
-from music.bandcamp import get_release_details
+from .bandcamp import get_release_details
+from .validators import images_validator
 
 class Artist(Creatable):
   name = models.CharField(max_length=255)
@@ -81,6 +82,7 @@ class ReleaseBandcampManager(models.Manager):
       .select_related("primary_artist", "label", "image_url") \
       .get(pk=release.id)
 
+
 class Release(Creatable):
   primary_artist = models.ForeignKey(
     Artist,
@@ -97,7 +99,7 @@ class Release(Creatable):
   title = models.CharField(max_length=1000)
   slug = models.CharField(max_length=255, unique=True)
   links = models.ManyToManyField(Link, through="ReleaseLink", related_name="release_links")
-  image_url = models.ForeignKey(Link, null=True, on_delete=models.CASCADE)
+  images = models.JSONField(validators=[images_validator])
   release_type = models.CharField(
     max_length=255,
     choices=(

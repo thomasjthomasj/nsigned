@@ -1,23 +1,25 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import classNames from "classnames";
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { FormField } from "@/_components/FormField";
 import { ReleaseOverview } from "@/_components/ReleaseOverview";
 import { useDebounce } from "@/_hooks";
-import { get } from "@/_utils/api.client";
+import { get, post } from "@/_utils/api.client";
 
-import type { ReleaseDetails } from "@/_types/api";
+import type { ReleaseDetails, ReviewRequest } from "@/_types/api";
 
 const BANDCAMP_REGEX = /^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/[a-z0-9-]+/
 
 export const RequestReviewForm = () => {
   const [url, setUrl] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [retrieving, setRetrieving] = useState<boolean>(false);
+  const [isRetrieving, setIsRetrieving] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [releaseDetails, setReleaseDetails] = useState<ReleaseDetails | null>(null);
 
   const getReleaseDetails = useCallback(async () => {
-    setRetrieving(true);
+    setIsRetrieving(true);
     const response = await get<ReleaseDetails>({
       endpoint: "music/release-details",
       withAuth: true,
@@ -28,7 +30,7 @@ export const RequestReviewForm = () => {
     } else {
       setReleaseDetails(response.data);
     }
-    setRetrieving(false)
+    setIsRetrieving(false)
   }, [url]);
 
   const debouncedReleaseDetails = useDebounce(getReleaseDetails)
@@ -39,6 +41,20 @@ export const RequestReviewForm = () => {
     }
   }, [url]);
 
+  const handleSubmit = useCallback(async () => {
+    if (!url || isRetrieving || isSubmitting) return;
+    setIsSubmitting(true);
+    const { data, ok } = await post<ReviewRequest>({
+      endpoint: "music/request-review",
+      withAuth: true,
+      data: { url },
+    })
+  }, [url, isRetrieving, isSubmitting])
+
+  const buttonDisabled = useMemo(() => {
+    return isRetrieving || isSubmitting || !releaseDetails
+  }, [isRetrieving, isSubmitting, releaseDetails]);
+
   return (
     <div className="flex flex-col gap-[10px]">
       {error && <p className="text-red">{error}</p>}
@@ -48,15 +64,28 @@ export const RequestReviewForm = () => {
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
-      {retrieving && <p>Loading...</p>}
+      {isRetrieving && <p>Loading...</p>}
       {releaseDetails && <ReleaseOverview
         artistName={releaseDetails.artist_name}
         title={releaseDetails.title}
-        label={releaseDetails.label}
-        imageURL={releaseDetails.image_url}
+        label={releaseDetails.label ?? undefined}
+        imageURL={releaseDetails.images.sm.url}
         releaseType={releaseDetails.release_type}
         link={releaseDetails.link}
       />}
+      <button
+        className={classNames(
+          "p-[5px] border border-1 border-[#eee]",
+          {
+            "cursor-pointer": !buttonDisabled,
+            "bg-[#eee] text-[#aaa] cursor-not-allowed": buttonDisabled,
+          }
+        )}
+        onClick={handleSubmit}
+        disabled={buttonDisabled}
+      >
+        Submit
+      </button>
     </div>
   )
 }

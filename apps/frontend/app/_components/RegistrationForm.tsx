@@ -81,17 +81,17 @@ export const RegistrationForm = () => {
         return;
       }
       setIsSubmitting(true);
-      const { data, ok } = await post<Tokens>(
-        ENDPOINT,
-        {
+      const { data, ok } = await post<Tokens>({
+        endpoint: ENDPOINT,
+        data: {
           email,
           username,
           display_name: displayName,
           password,
           password_confirm: confirmPassword,
         },
-        false
-      );
+        withAuth: false
+      });
       setIsSubmitting(false);
       if (!ok) {
         setSubmitError(data.error || "There was an signing up.")
