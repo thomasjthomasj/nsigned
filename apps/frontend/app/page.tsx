@@ -1,4 +1,5 @@
 import { RegistrationForm } from "@/_components/RegistrationForm"
+import { RequestReviewForm } from "@/_components/RequestReviewForm";
 import { CookiesProvider } from "@/_components/CookiesProvider"
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
           <CookiesProvider>
             <div>
               <RegistrationForm />
+              <RequestReviewForm />
             </div>
           </CookiesProvider>
         </div>

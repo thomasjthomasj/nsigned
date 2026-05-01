@@ -110,7 +110,9 @@ class Release(Creatable):
   bandcamp = ReleaseBandcampManager()
 
   def __str__(self):
-    return f"{self.primary_artist.name} - {self.title}"
+    if self.primary_artist:
+      return f"{self.primary_artist.name} - {self.title}"
+    return self.title
 
 class ReleaseLink(models.Model):
   release = models.ForeignKey(Release, on_delete=models.CASCADE)

@@ -5,6 +5,7 @@ import type { Error, LoggedInUser, Tokens } from "@/_types/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
+type QueryParams = Record<string, string | number | boolean | undefined>;
 type Json =
   | string
   | number
@@ -44,24 +45,42 @@ const request = async <TJson>(
   return response;
 }
 
-export const getMe = async () => {
+export const get = async <TJson>({ endpoint, withAuth, data }: {
+  endpoint: string;
+  withAuth?: boolean;
+  data?: QueryParams;
+}): Promise<Response<TJson>> => {
   const makeRequest = async () => {
-    const result = await fetch(getEndpoint("users/me"), {
+    const baseUrl = getEndpoint(endpoint);
+    const searchParams = new URLSearchParams();
+    for (const [k, v] of Object.entries(data ?? {})) {
+      if (v !== undefined) {
+        searchParams.append(k, String(v));
+      }
+    }
+    const queryString = searchParams.toString();
+    const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+
+    const result = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include",
-    });
-    const response = await result.json();
+      credentials: withAuth ? "include" : "omit",
+    })
     return {
       ok: result.ok,
       status: result.status,
-      data: response,
+      data: await result.json(),
     }
-  };
+  }
 
-  return request<LoggedInUser>(makeRequest, true)
+  return request<TJson>(makeRequest, !!withAuth)
 }
+
+export const getMe = async () => get<LoggedInUser>({
+  endpoint: "users/me",
+  withAuth: true,
+});
 
 export const post = async <TJson>(
   endpoint: string,

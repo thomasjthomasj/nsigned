@@ -4,14 +4,15 @@ from .bandcamp import get_release_details, BandcampError
 from .models import Release, ReviewRequest
 
 @logged_in()
-def get_release_details(request):
+def release_details(request):
   url = request.GET.get("url")
   if not url:
     return BadRequest("URL is required")
   try:
-    return Ok(get_release_details(url))
+    details = get_release_details(url)
   except BandcampError:
     return BadRequest("Could not retrieve details")
+  return Ok(details)
 
 @method("POST")
 @logged_in()

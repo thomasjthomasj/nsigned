@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "lodash": "^4.17.21",
     "next": "16.2.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/lodash": "^4.14.191",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
