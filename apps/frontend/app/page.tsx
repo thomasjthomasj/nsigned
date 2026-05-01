@@ -1,6 +1,6 @@
-import { RegistrationForm } from "@/_components/RegistrationForm"
-import { RequestReviewForm } from "@/_components/RequestReviewForm";
-import { CookiesProvider } from "@/_components/CookiesProvider"
+import { RegistrationForm } from "@/_components/forms/RegistrationForm"
+import { RequestReviewForm } from "@/_components/forms/RequestReviewForm";
+import { CookiesProvider } from "@/_components/providers/CookiesProvider"
 
 export default function Home() {
   return (
