@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import cached_property
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import check_password
@@ -53,3 +54,12 @@ class User(AbstractBaseUser):
     return self.username
 
   objects = UserManager()
+
+  @cached_property
+  def serialized(self):
+    return {
+      "id": self.id,
+      "username": self.username,
+      "display_name": self.display_name,
+      "role": self.role,
+    }

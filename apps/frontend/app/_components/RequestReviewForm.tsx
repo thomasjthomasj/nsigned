@@ -49,6 +49,10 @@ export const RequestReviewForm = () => {
       withAuth: true,
       data: { url },
     })
+    if (!ok) {
+      setError(data.error)
+    }
+    setIsSubmitting(false)
   }, [url, isRetrieving, isSubmitting])
 
   const buttonDisabled = useMemo(() => {

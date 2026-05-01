@@ -1,3 +1,4 @@
+from django.db import transaction
 from app.http import Ok, BadRequest
 from app.decorators import logged_in, method
 from .bandcamp import get_release_details, BandcampError
@@ -16,6 +17,7 @@ def release_details(request):
 
 @method("POST")
 @logged_in()
+@transaction.atomic()
 def request_review(request):
   data = request.json
   user = request.site_user
@@ -35,31 +37,4 @@ def request_review(request):
     created_by=user,
   )
 
-  return Ok({
-    "id": review_request.id,
-    "release": {
-      "id": release.id,
-      "primary_artist": {
-        "id": release.primary_artist.id,
-        "name": release.primary_artist.name,
-        "slug": release.primary_artist.slug,
-      },
-      "label": {
-        "id": release.label.id,
-        "name": release.label.name,
-        "slug": release.label.slug,
-      } if release.get("label") else None,
-      "links": [{
-        "id": l.id,
-        "url": l.url,
-      } for l in release.links],
-      "images": release.images,
-      "release_type": release.release_type,
-    },
-    "created_by": {
-      "id": user.id,
-      "username": user.username,
-      "display_name": user.display_name,
-      "role": user.role,
-    }
-  })
+  return Ok(review_request.serialized)

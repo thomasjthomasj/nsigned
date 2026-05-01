@@ -52,3 +52,7 @@ class MethodNotAllowed(BaseErrorResponse):
 class UnsupportedMediaType(BaseErrorResponse):
   base_message = "Unsupported media type"
   status = 415
+
+class InternalServerError(BaseErrorResponse):
+  base_message = "Internal server error"
+  status = 500

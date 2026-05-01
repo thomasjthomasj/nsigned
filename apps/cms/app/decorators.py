@@ -10,7 +10,6 @@ def logged_in(role="user"):
   def decorator(view):
     def wrapped(request, *args, **kwargs):
       user = getattr(request, "site_user", None)
-      print(user)
       if not user:
         return Unauthorized()
       allowed_roles = _role_map[role]

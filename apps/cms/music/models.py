@@ -1,5 +1,6 @@
 import re
 from django.db import models, transaction
+from django.utils.functional import cached_property
 from slugify import slugify
 from app.models import Creatable
 from app.utils import strip_url_query
@@ -16,6 +17,14 @@ class Artist(Creatable):
   def __str__(self):
     return self.name
 
+  @cached_property
+  def serialized(self):
+    return {
+      "id": self.id,
+      "name": self.name,
+      "slug": self.slug,
+    }
+
 class Label(Creatable):
   name = models.CharField(max_length=255)
   slug = models.CharField(max_length=255, unique=True)
@@ -23,6 +32,14 @@ class Label(Creatable):
 
   def __str__(self):
     return self.name
+
+  @cached_property
+  def serialized(self):
+    return {
+      "id": self.id,
+      "name": self.name,
+      "slug": self.slug,
+    }
 
 class ReleaseBandcampManager(models.Manager):
   @transaction.atomic
@@ -41,13 +58,9 @@ class ReleaseBandcampManager(models.Manager):
     artist_name = bc_data["artist_name"]
     title = bc_data["title"]
     label_name = bc_data["label"]
-    image_url_string = bc_data["image_url"]
     release_type = bc_data["release_type"]
 
     link = Link.objects.get_or_create(url=base_url)[0]
-
-    if image_url_string:
-      image_url = Link.objects.get_or_create(url=image_url_string)[0]
 
     artist = Artist.objects.get_or_create(
       slug=slugify(artist_name),
@@ -71,7 +84,7 @@ class ReleaseBandcampManager(models.Manager):
       title=title,
       slug=slugify(title)[:255],
       label=label,
-      image_url=image_url,
+      images=bc_data["images"],
       release_type=release_type,
     )
 
@@ -79,7 +92,7 @@ class ReleaseBandcampManager(models.Manager):
 
     return super() \
       .prefetch_related("links") \
-      .select_related("primary_artist", "label", "image_url") \
+      .select_related("primary_artist", "label") \
       .get(pk=release.id)
 
 
@@ -98,7 +111,7 @@ class Release(Creatable):
   )
   title = models.CharField(max_length=1000)
   slug = models.CharField(max_length=255, unique=True)
-  links = models.ManyToManyField(Link, through="ReleaseLink", related_name="release_links")
+  links = models.ManyToManyField(Link, through="ReleaseLink", related_name="links")
   images = models.JSONField(validators=[images_validator])
   release_type = models.CharField(
     max_length=255,
@@ -115,6 +128,17 @@ class Release(Creatable):
     if self.primary_artist:
       return f"{self.primary_artist.name} - {self.title}"
     return self.title
+
+  @cached_property
+  def serialized(self):
+    return {
+      "id": self.id,
+      "primary_artist": self.primary_artist.serialized if self.primary_artist else None,
+      "label": self.label.serialized if self.label else None,
+      "links": [l.serialized for l in self.links.all()],
+      "images": self.images,
+      "release_type": self.release_type,
+    }
 
 class ReleaseLink(models.Model):
   release = models.ForeignKey(Release, on_delete=models.CASCADE)
@@ -136,3 +160,14 @@ class ReviewRequest(Creatable):
     on_delete=models.SET_NULL,
     related_name="claimed_review_requests"
   )
+
+  def __str__(self):
+    return self.release
+
+  @cached_property
+  def serialized(self):
+    return {
+      "id": self.id,
+      "release": self.release.serialized,
+      "created_by": self.created_by.serialized
+    }
