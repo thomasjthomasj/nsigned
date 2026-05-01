@@ -95,7 +95,6 @@ class ReleaseBandcampManager(models.Manager):
       .select_related("primary_artist", "label") \
       .get(pk=release.id)
 
-
 class Release(Creatable):
   primary_artist = models.ForeignKey(
     Artist,
@@ -126,7 +125,7 @@ class Release(Creatable):
 
   def __str__(self):
     if self.primary_artist:
-      return f"{self.primary_artist.name} - {self.title}"
+      return  f"{self.primary_artist.name} - {self.title}"
     return self.title
 
   @cached_property
@@ -162,7 +161,7 @@ class ReviewRequest(Creatable):
   )
 
   def __str__(self):
-    return self.release
+    return f"{self.release}"
 
   @cached_property
   def serialized(self):

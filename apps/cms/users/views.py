@@ -84,8 +84,11 @@ def login(request):
     return Unauthorized("Invalid credentials")
 
   tokens = issue_tokens(user)
+  response = Ok()
+  set_auth_cookie(response, "access-token", tokens["access"])
+  set_auth_cookie(response, "refresh-token", tokens["refresh"])
 
-  return Ok(tokens)
+  return response
 
 @method("POST")
 def refresh_token(request):

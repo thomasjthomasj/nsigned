@@ -1,8 +1,8 @@
 "use client"
 
-import classNames from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { FormField } from "@/_components/FormField";
+import { Button } from "@/_components/Button";
 import { ReleaseOverview } from "@/_components/ReleaseOverview";
 import { useDebounce } from "@/_hooks";
 import { get, post } from "@/_utils/api.client";
@@ -77,19 +77,11 @@ export const RequestReviewForm = () => {
         releaseType={releaseDetails.release_type}
         link={releaseDetails.link}
       />}
-      <button
-        className={classNames(
-          "p-[5px] border border-1 border-[#eee]",
-          {
-            "cursor-pointer": !buttonDisabled,
-            "bg-[#eee] text-[#aaa] cursor-not-allowed": buttonDisabled,
-          }
-        )}
+      <Button
+        label="Submit"
         onClick={handleSubmit}
         disabled={buttonDisabled}
-      >
-        Submit
-      </button>
+      />
     </div>
   )
 }

@@ -1,7 +1,6 @@
 "use client";
 
-import { COOKIE_NAMES } from "@/_utils/cookies";
-import type { Error, LoggedInUser, Tokens } from "@/_types/api";
+import type { Error, LoggedInUser } from "@/_types/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -28,6 +27,14 @@ type SuccessResponse<TJson> = {
 
 type Response<TJson> = ErrorResponse | SuccessResponse<TJson>;
 
+type CookieOptions = {
+  withAuth: true;
+  withCookies?: true
+} | {
+  withAuth?: false;
+  withCookies?: boolean;
+}
+
 export const getEndpoint = (endpoint: string) => `${API_URL}/${endpoint}`;
 
 const request = async <TJson>(
@@ -45,11 +52,15 @@ const request = async <TJson>(
   return response;
 }
 
-export const get = async <TJson>({ endpoint, withAuth, data }: {
+export const get = async <TJson = {}>({
+  endpoint,
+  data,
+  withAuth = true,
+  withCookies = true,
+}: {
   endpoint: string;
-  withAuth?: boolean;
   data?: QueryParams;
-}): Promise<Response<TJson>> => {
+} & CookieOptions): Promise<Response<TJson>> => {
   const makeRequest = async () => {
     const baseUrl = getEndpoint(endpoint);
     const searchParams = new URLSearchParams();
@@ -65,7 +76,7 @@ export const get = async <TJson>({ endpoint, withAuth, data }: {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: withAuth ? "include" : "omit",
+      credentials: withCookies ? "include" : "omit",
     })
     return {
       ok: result.ok,
@@ -82,22 +93,22 @@ export const getMe = async () => get<LoggedInUser>({
   withAuth: true,
 });
 
-export const post = async <TJson>({
+export const post = async <TJson = {}>({
   endpoint,
   data,
   withAuth = true,
+  withCookies = true,
 }: {
   endpoint: string,
   data: Json,
-  withAuth: boolean,
-}): Promise<Response<TJson>> => {
+} & CookieOptions): Promise<Response<TJson>> => {
   const makeRequest = async () => {
     const result = await fetch(getEndpoint(endpoint), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: withAuth ? "include" : "omit",
+      credentials: withCookies ? "include" : "omit",
       body: JSON.stringify(data),
     });
     const response = await result.json();

@@ -1,4 +1,5 @@
 import { RegistrationForm } from "@/_components/forms/RegistrationForm"
+import { LoginForm } from "@/_components/forms/LoginForm";
 import { RequestReviewForm } from "@/_components/forms/RequestReviewForm";
 import { CookiesProvider } from "@/_components/providers/CookiesProvider"
 
@@ -10,6 +11,7 @@ export default function Home() {
           <CookiesProvider>
             <div>
               <RegistrationForm />
+              <LoginForm />
               <RequestReviewForm />
             </div>
           </CookiesProvider>

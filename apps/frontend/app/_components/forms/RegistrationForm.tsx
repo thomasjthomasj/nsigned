@@ -1,14 +1,10 @@
 "use client"
 
-import classNames from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useCookies } from "react-cookie";
+import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { useAuth } from "@/_hooks";
 import { post } from "@/_utils/api.client";
-import { COOKIE_NAMES } from "@/_utils/cookies";
-
-import type { Tokens } from "@/_types/api"
 
 const ENDPOINT = "users/register";
 
@@ -23,11 +19,7 @@ type Errors = {
 };
 
 export const RegistrationForm = () => {
-  const [, setCookie] = useCookies([
-    COOKIE_NAMES.access,
-    COOKIE_NAMES.refresh,
-  ]);
-  const { user } = useAuth();
+  const { user, getUser } = useAuth();
 
   const [email, setEmail] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
@@ -81,7 +73,7 @@ export const RegistrationForm = () => {
         return;
       }
       setIsSubmitting(true);
-      const { data, ok } = await post<Tokens>({
+      const { data, ok } = await post({
         endpoint: ENDPOINT,
         data: {
           email,
@@ -94,21 +86,17 @@ export const RegistrationForm = () => {
       });
       setIsSubmitting(false);
       if (!ok) {
-        setSubmitError(data.error || "There was an signing up.")
+        setSubmitError(data.error || "There was an issue signing up.")
         return;
       }
-      const { access, refresh } = data;
-      setCookie(COOKIE_NAMES.access, access);
-      setCookie(COOKIE_NAMES.refresh, refresh);
+      await getUser();
     },
     [errors]
   )
 
   const buttonDisabled = useMemo(() => !isValid || isSubmitting, [isValid, isSubmitting]);
 
-  if (user) {
-    return <p>Hello {user.display_name}</p>
-  }
+  if (user) return null;
 
   return (
     <div className="flex flex-col gap-[10px]">
@@ -155,19 +143,11 @@ export const RegistrationForm = () => {
         type="password"
         value={confirmPassword ?? ""}
       />
-      <button
-        className={classNames(
-          "p-[5px] border border-1 border-[#eee]",
-          {
-            "cursor-pointer": !buttonDisabled,
-            "bg-[#eee] text-[#aaa] cursor-not-allowed": buttonDisabled,
-          }
-        )}
+      <Button
+        label="Sign up"
         onClick={handleRegister}
         disabled={buttonDisabled}
-      >
-        Sign up
-      </button>
+      />
     </div>
   )
 }
