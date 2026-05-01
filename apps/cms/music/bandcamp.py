@@ -4,12 +4,15 @@ import requests
 from bs4 import BeautifulSoup
 from app.utils import strip_url_query
 
+class BandcampError(ValueError):
+  pass
+
 def get_release_details(url):
   base_url = strip_url_query(url)
   pattern = r"^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/"
   match = re.match(pattern, base_url)
   if not match:
-    raise ValueError("Not a valid Bandcamp release URL")
+    raise BandcampError("Not a valid Bandcamp release URL")
   release_type = match.group(1)
   html = requests.get(base_url).text
   parsed = BeautifulSoup(html, "html.parser")
@@ -33,9 +36,9 @@ def get_release_details(url):
     image_meta = parsed.find("meta", property="og:image")
     label = None
     if not title_meta:
-      raise ValueError("Could not read title from Bandcamp page")
+      raise BandcampError("Could not read title from Bandcamp page")
     if not artist_meta:
-      raise ValueError("Could not read artist name from Bandcamp page")
+      raise BandcampError("Could not read artist name from Bandcamp page")
 
     bc_title = title_meta["content"]
     artist_name = artist_meta["content"]
@@ -43,9 +46,9 @@ def get_release_details(url):
     image_url = image_meta["content"] if image_meta else None
 
     if not title:
-      raise ValueError("Title is empty")
+      raise BandcampError("Title is empty")
     if not artist_name:
-      raise ValueError("Artist name is empty")
+      raise BandcampError("Artist name is empty")
 
   return {
     "artist_name": artist_name,

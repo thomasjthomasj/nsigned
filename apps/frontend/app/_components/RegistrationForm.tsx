@@ -80,6 +80,7 @@ export const RegistrationForm = () => {
         setSubmitError("There are problems with this form.")
         return;
       }
+      setIsSubmitting(true);
       const { data, ok } = await post<Tokens>(
         ENDPOINT,
         {
@@ -91,6 +92,7 @@ export const RegistrationForm = () => {
         },
         false
       );
+      setIsSubmitting(false);
       if (!ok) {
         setSubmitError(data.error || "There was an signing up.")
         return;

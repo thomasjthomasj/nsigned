@@ -1,11 +1,22 @@
 from app.http import Ok, BadRequest
 from app.decorators import logged_in, method
+from .bandcamp import get_release_details, BandcampError
 from .models import Release, ReviewRequest
+
+@logged_in()
+def get_release_details(request):
+  url = request.GET.get("url")
+  if not url:
+    return BadRequest("URL is required")
+  try:
+    return Ok(get_release_details(url))
+  except BandcampError:
+    return BadRequest("Could not retrieve details")
 
 @method("POST")
 @logged_in()
 def request_review(request):
-  data = request.data
+  data = request.json
   user = request.site_user
   url = data.get("url")
   if not url:
