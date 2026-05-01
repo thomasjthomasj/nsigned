@@ -12,6 +12,9 @@ class BaseResponse(JsonResponse, ABC):
 class Ok(BaseResponse):
   status = 200
 
+  def __init__(self, data={}, *args, **kwargs):
+    super().__init__(data, *args, **kwargs);
+
 class BaseErrorResponse(BaseResponse, ABC):
   base_message = None
 

@@ -6,7 +6,7 @@ def encode(payload):
   return jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
 
 def decode(token):
-  return jwt.decode(token, settings.SECRET_KEY, algorithm="HS256")
+  return jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
 
 def issue_tokens(user):
   now = datetime.now(timezone.utc)
