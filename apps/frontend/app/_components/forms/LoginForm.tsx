@@ -21,7 +21,6 @@ export const LoginForm = () => {
     const { data, ok } = await post({
       endpoint: "users/login",
       data: { username, password },
-      withAuth: false,
     })
     if (!ok) {
       setError(data.error);

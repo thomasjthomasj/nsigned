@@ -2,7 +2,7 @@ import jwt
 from django.db import transaction
 from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied
-from app.decorators import method, logged_in
+from app.decorators import method, logged_in, logged_out
 from app.http import Ok, NotFound, BadRequest, Unauthorized
 from app.utils import set_auth_cookie
 from .auth import issue_tokens, decode
@@ -11,27 +11,17 @@ from .models import User
 @logged_in()
 def get_me(request):
   user = request.site_user
-  return Ok({
-    "id": user.id,
-    "username": user.username,
-    "display_name": user.display_name or user.username,
-    "email": user.email,
-    "role": user.role,
-  })
+  return Ok(user.serialized | { "email": user.email })
 
 def get_user(request, username):
   try:
     user = User.objects.get(username=username)
-    return Ok({
-      "id": user.id,
-      "username": user.username,
-      "display_name": user.display_name or user.username,
-      "role": user.role,
-    })
+    return Ok(user.serialized)
   except User.DoesNotExist:
     return NotFound()
 
 @method("POST")
+@logged_out()
 def register(request):
   required = ["email", "username", "password", "password_confirm"]
   data = request.json
@@ -69,6 +59,7 @@ def register(request):
     return Ok(tokens)
 
 @method("POST")
+@logged_out()
 def login(request):
   data = request.json
 

@@ -13,6 +13,12 @@ class Artist(Creatable):
   name = models.CharField(max_length=255)
   slug = models.CharField(max_length=255, unique=True)
   links = models.ManyToManyField(Link)
+  user = models.ForeignKey(
+    User,
+    related_name="artists",
+    on_delete=models.SET_NULL,
+    null=True,
+  )
 
   def __str__(self):
     return self.name
@@ -175,5 +181,7 @@ class ReviewRequest(Creatable):
     return {
       "id": self.id,
       "release": self.release.serialized,
-      "created_by": self.created_by.serialized
+      "created_by": self.created_by.serialized if self.created_by else None,
+      "rejected_by": self.rejected_by.serialized if self.rejected_by else None,
+      "article": self.article.serialized if self.article else None,
     }

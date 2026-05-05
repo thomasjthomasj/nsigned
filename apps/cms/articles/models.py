@@ -14,7 +14,7 @@ class ArticleManager(models.Manager):
     }
     if kwargs["external_link"]:
       url = kwargs["external_link"]
-      link, link_created = Link.objects.get_or_create(url=url)
+      link = Link.objects.get_or_create(url=url)[0]
       release = Release.objects.filter(links=link).first()
       data["external_link"] = link
       if release:
@@ -28,9 +28,10 @@ class ArticleManager(models.Manager):
 
     return Article.objects \
       .prefetch_related("contents") \
-      .select_related("created_by") \
-      .select_related("external_link") \
-      .select_related("release") \
+      .select_related("created_by",
+        "external_link",
+        "release",
+      ) \
       .get(pk=article.id)
 
 class Article(Creatable):
@@ -44,7 +45,6 @@ class Article(Creatable):
   )
   external_link = models.ForeignKey(Link, null=True, on_delete=models.SET_NULL)
   published_at = models.DateTimeField(null=True)
-  release = models.ForeignKey(Release, null=True, on_delete=models.SET_NULL)
   review_request = models.OneToOneField(ReviewRequest, null=True, on_delete=models.SET_NULL)
 
   def __str__(self):

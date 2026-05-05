@@ -42,10 +42,9 @@ class User(AbstractBaseUser):
   display_name = models.CharField(max_length=50, null=True)
   email = models.EmailField(unique=True)
   role = models.CharField(max_length=20, choices=(
-    ("user", "User"),
     ("contributor", "Contributor"),
     ("editor", "Editor"),
-  ), default="user")
+  ), default="contributor")
 
   USERNAME_FIELD = "username"
   REQUIRED_FIELDS = ["username", "email"]

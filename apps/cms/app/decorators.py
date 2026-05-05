@@ -1,12 +1,11 @@
 from .http import Unauthorized, Forbidden, MethodNotAllowed
 
 _role_map = {
-  "user": ["user", "contributor", "editor"],
   "contributor": ["contributor", "editor"],
   "editor": ["editor"],
 }
 
-def logged_in(role="user"):
+def logged_in(role="contributor"):
   def decorator(view):
     def wrapped(request, *args, **kwargs):
       user = getattr(request, "site_user", None)
@@ -15,6 +14,16 @@ def logged_in(role="user"):
       allowed_roles = _role_map[role]
       if not user.role in allowed_roles:
         return Forbidden()
+      return view(request, *args, **kwargs)
+    return wrapped
+  return decorator
+
+def logged_out():
+  def decorator(view):
+    def wrapped(request, *args, **kwargs):
+      user = getattr(request, "site_user", None)
+      if user:
+        return Unauthorized("You must not be logged in")
       return view(request, *args, **kwargs)
     return wrapped
   return decorator
