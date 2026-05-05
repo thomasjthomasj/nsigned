@@ -152,12 +152,19 @@ class ReleaseLink(models.Model):
     ]
 
 class ReviewRequest(Creatable):
-  release = models.OneToOneField(Release, on_delete=models.CASCADE)
+  release = models.ForeignKey(Release, on_delete=models.CASCADE)
+  rejected = models.BooleanField(default=False)
   claimed_by = models.ForeignKey(
     User,
     null=True,
     on_delete=models.SET_NULL,
-    related_name="claimed_review_requests"
+    related_name="claimed_review_requests",
+  )
+  rejected_by = models.ForeignKey(
+    User,
+    null=True,
+    on_delete=models.SET_NULL,
+    related_name="rejected_review_requests",
   )
 
   def __str__(self):
