@@ -56,7 +56,11 @@ def register(request):
       last_login=datetime.now(timezone.utc)
     )
     tokens = issue_tokens(user)
-    return Ok(tokens)
+    response = Ok()
+    set_auth_cookie(response, "access-token", tokens["access"])
+    set_auth_cookie(response, "refresh-token", tokens["refresh"])
+
+    return response
 
 @method("POST")
 @logged_out()
