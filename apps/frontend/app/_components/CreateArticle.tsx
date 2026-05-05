@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
 import { useCallback, useState } from "react";
+
 import { FormField } from "@/_components/FormField";
 import { getEndpoint } from "@/_utils/api.client";
 
@@ -8,16 +9,16 @@ const AUTHOR_ID = 1;
 const ENDPOINT = getEndpoint("articles/create");
 
 export const CreateArticle = () => {
-  const [title, setTitle] = useState<string>("")
-  const [content, setContent] = useState<string>("")
-  const [externalLink, setExternalLink] = useState<string>("")
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const [externalLink, setExternalLink] = useState<string>("");
 
   const handleSave = useCallback(async () => {
     const formData = new FormData();
-    formData.append("author_id", `${AUTHOR_ID}`)
-    formData.append("title", title)
-    formData.append("content", content)
-    formData.append("external_link", externalLink)
+    formData.append("author_id", `${AUTHOR_ID}`);
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("external_link", externalLink);
     const result = await fetch(ENDPOINT, {
       method: "POST",
       headers: {
@@ -29,10 +30,9 @@ export const CreateArticle = () => {
         content,
         external_link: externalLink,
       }),
-    })
-    const response = await result.json()
-    console.log(response)
-  }, [title, content, externalLink])
+    });
+    await result.json();
+  }, [title, content, externalLink]);
 
   return (
     <div className="flex flex-col gap-[10px]">
@@ -54,11 +54,7 @@ export const CreateArticle = () => {
         onChange={(e) => setContent(e.target.value)}
         value={content}
       />
-      <button
-        onClick={handleSave}
-      >
-        Save
-      </button>
+      <button onClick={handleSave}>Save</button>
     </div>
-  )
-}
+  );
+};

@@ -5,9 +5,14 @@ type ButtonProps = {
   disabled?: boolean;
   label: string;
   onClick: () => void;
-}
+};
 
-export const Button = ({ className, disabled, label, onClick }: ButtonProps) => (
+export const Button = ({
+  className,
+  disabled,
+  label,
+  onClick,
+}: ButtonProps) => (
   <button
     className={classNames(
       "p-[5px] border border-1 border-[#eee]",
@@ -15,11 +20,11 @@ export const Button = ({ className, disabled, label, onClick }: ButtonProps) => 
         "cursor-pointer": !disabled,
         "bg-[#eee] text-[#aaa] cursor-not-allowed": disabled,
       },
-      className
+      className,
     )}
     onClick={onClick}
     disabled={disabled}
   >
     {label}
   </button>
-)
+);

@@ -1,22 +1,26 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { FormField } from "@/_components/FormField";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
 import { Button } from "@/_components/Button";
+import { FormField } from "@/_components/FormField";
 import { ReleaseOverview } from "@/_components/ReleaseOverview";
 import { useDebounce } from "@/_hooks";
 import { get, post } from "@/_utils/api.client";
 
 import type { ReleaseDetails, ReviewRequest } from "@/_types/api";
 
-const BANDCAMP_REGEX = /^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/[a-z0-9-]+/
+const BANDCAMP_REGEX =
+  /^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/[a-z0-9-]+/;
 
 export const RequestReviewForm = () => {
   const [url, setUrl] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [isRetrieving, setIsRetrieving] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [releaseDetails, setReleaseDetails] = useState<ReleaseDetails | null>(null);
+  const [releaseDetails, setReleaseDetails] = useState<ReleaseDetails | null>(
+    null,
+  );
 
   const getReleaseDetails = useCallback(async () => {
     setIsRetrieving(true);
@@ -30,10 +34,10 @@ export const RequestReviewForm = () => {
     } else {
       setReleaseDetails(response.data);
     }
-    setIsRetrieving(false)
+    setIsRetrieving(false);
   }, [url]);
 
-  const debouncedReleaseDetails = useDebounce(getReleaseDetails)
+  const debouncedReleaseDetails = useDebounce(getReleaseDetails);
 
   useEffect(() => {
     if (BANDCAMP_REGEX.test(url)) {
@@ -48,15 +52,15 @@ export const RequestReviewForm = () => {
       endpoint: "music/request-review",
       withAuth: true,
       data: { url },
-    })
+    });
     if (!ok) {
-      setError(data.error)
+      setError(data.error);
     }
-    setIsSubmitting(false)
-  }, [url, isRetrieving, isSubmitting])
+    setIsSubmitting(false);
+  }, [url, isRetrieving, isSubmitting]);
 
   const buttonDisabled = useMemo(() => {
-    return isRetrieving || isSubmitting || !releaseDetails
+    return isRetrieving || isSubmitting || !releaseDetails;
   }, [isRetrieving, isSubmitting, releaseDetails]);
 
   return (
@@ -69,19 +73,17 @@ export const RequestReviewForm = () => {
         onChange={(e) => setUrl(e.target.value)}
       />
       {isRetrieving && <p>Loading...</p>}
-      {releaseDetails && <ReleaseOverview
-        artistName={releaseDetails.artist_name}
-        title={releaseDetails.title}
-        label={releaseDetails.label ?? undefined}
-        imageURL={releaseDetails.images.sm.url}
-        releaseType={releaseDetails.release_type}
-        link={releaseDetails.link}
-      />}
-      <Button
-        label="Submit"
-        onClick={handleSubmit}
-        disabled={buttonDisabled}
-      />
+      {releaseDetails && (
+        <ReleaseOverview
+          artistName={releaseDetails.artist_name}
+          title={releaseDetails.title}
+          label={releaseDetails.label ?? undefined}
+          imageURL={releaseDetails.images.sm.url}
+          releaseType={releaseDetails.release_type}
+          link={releaseDetails.link}
+        />
+      )}
+      <Button label="Submit" onClick={handleSubmit} disabled={buttonDisabled} />
     </div>
-  )
-}
+  );
+};

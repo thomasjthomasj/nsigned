@@ -5,8 +5,8 @@ export type User = {
   username: string;
   display_name: string;
   role: Role;
-}
+};
 
 export type LoggedInUser = User & {
   email: string;
-}
+};

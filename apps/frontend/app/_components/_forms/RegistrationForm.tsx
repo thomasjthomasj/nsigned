@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { useAuth } from "@/_hooks";
@@ -15,33 +16,37 @@ type Errors = {
   username?: string;
   displayName?: string;
   password?: string;
-  confirmPassword?: string
+  confirmPassword?: string;
 };
 
 export const RegistrationForm = () => {
   const { user, getUser } = useAuth();
 
-  const [email, setEmail] = useState<string | null>(null)
-  const [username, setUsername] = useState<string | null>(null)
-  const [displayName, setDisplayName] = useState<string | null>(null)
-  const [password, setPassword] = useState<string | null>(null)
-  const [confirmPassword, setConfirmPassword] = useState<string | null>(null)
+  const [email, setEmail] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+  const [confirmPassword, setConfirmPassword] = useState<string | null>(null);
 
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Errors | null>(null)
+  const [errors, setErrors] = useState<Errors | null>(null);
 
-  const data = useMemo(() => ({
-    email,
-    username,
-    displayName,
-    password,
-    confirmPassword,
-  }), [email, username, displayName, password, confirmPassword])
+  const data = useMemo(
+    () => ({
+      email,
+      username,
+      displayName,
+      password,
+      confirmPassword,
+    }),
+    [email, username, displayName, password, confirmPassword],
+  );
 
-  const showErrors = useMemo(() =>
-    REQUIRED.map(f => data[f]).every((v) => v !== null)
-  , [data])
+  const showErrors = useMemo(
+    () => REQUIRED.map((f) => data[f]).every((v) => v !== null),
+    [data],
+  );
 
   const validate = useCallback(() => {
     const errs: Errors = {};
@@ -55,54 +60,52 @@ export const RegistrationForm = () => {
     }
     setErrors(errs);
     setSubmitError(null);
-  }, [data])
+  }, [data]);
 
   useEffect(() => {
-    validate()
-  }, [validate])
+    validate();
+  }, [validate]);
 
   const isValid = useMemo(
     () => !(errors && Object.values(errors).filter(Boolean).length),
-    [errors]
-  )
+    [errors],
+  );
 
-  const handleRegister = useCallback(
-    async () => {
-      if (errors && Object.values(errors).filter(Boolean).length) {
-        setSubmitError("There are problems with this form.")
-        return;
-      }
-      setIsSubmitting(true);
-      const { data, ok } = await post({
-        endpoint: ENDPOINT,
-        data: {
-          email,
-          username,
-          display_name: displayName,
-          password,
-          password_confirm: confirmPassword,
-        },
-        withAuth: false
-      });
-      setIsSubmitting(false);
-      if (!ok) {
-        setSubmitError(data.error || "There was an issue signing up.")
-        return;
-      }
-      await getUser();
-    },
-    [errors]
-  )
+  const handleRegister = useCallback(async () => {
+    if (errors && Object.values(errors).filter(Boolean).length) {
+      setSubmitError("There are problems with this form.");
+      return;
+    }
+    setIsSubmitting(true);
+    const { data, ok } = await post({
+      endpoint: ENDPOINT,
+      data: {
+        email,
+        username,
+        display_name: displayName,
+        password,
+        password_confirm: confirmPassword,
+      },
+      withAuth: false,
+    });
+    setIsSubmitting(false);
+    if (!ok) {
+      setSubmitError(data.error || "There was an issue signing up.");
+      return;
+    }
+    await getUser();
+  }, [errors]);
 
-  const buttonDisabled = useMemo(() => !isValid || isSubmitting, [isValid, isSubmitting]);
+  const buttonDisabled = useMemo(
+    () => !isValid || isSubmitting,
+    [isValid, isSubmitting],
+  );
 
   if (user) return null;
 
   return (
     <div className="flex flex-col gap-[10px]">
-      {submitError && (
-        <p className="text-red">{submitError}</p>
-      )}
+      {submitError && <p className="text-red">{submitError}</p>}
       <FormField
         error={(showErrors && errors?.email) || undefined}
         label="Email"
@@ -149,5 +152,5 @@ export const RegistrationForm = () => {
         disabled={buttonDisabled}
       />
     </div>
-  )
-}
+  );
+};

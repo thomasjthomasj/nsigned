@@ -6,9 +6,9 @@ type FormFieldProps = {
   name: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   type?: React.HTMLInputTypeAttribute;
-  required?: boolean
+  required?: boolean;
   value: string;
-}
+};
 
 export const FormField = ({
   error,
@@ -33,4 +33,4 @@ export const FormField = ({
     </div>
     {error && <p className="text-red text-[10px]">{error}</p>}
   </div>
-)
+);

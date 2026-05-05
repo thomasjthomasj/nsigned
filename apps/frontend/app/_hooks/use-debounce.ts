@@ -1,7 +1,10 @@
-import { debounce } from "lodash"
+import { debounce } from "lodash";
 import { useEffect, useMemo, useRef } from "react";
 
-export const useDebounce = <F extends (...args: any) => any>(callback: F, timeout: number = 300) => {
+export const useDebounce = <F extends (...args: any) => any>(
+  callback: F,
+  timeout: number = 300,
+) => {
   const ref = useRef<F | undefined>(undefined);
   useEffect(() => {
     ref.current = callback;
@@ -9,11 +12,11 @@ export const useDebounce = <F extends (...args: any) => any>(callback: F, timeou
 
   const debouncedCallback = useMemo(() => {
     const func = (...args: any) => {
-      return ref.current?.(...args)
+      return ref.current?.(...args);
     };
 
     return debounce<(...args: any) => F>(func, timeout);
   }, [timeout]);
 
   return debouncedCallback;
-}
+};

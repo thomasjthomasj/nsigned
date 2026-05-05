@@ -11,6 +11,8 @@ from .models import User
 @logged_in()
 def get_me(request):
   user = request.site_user
+  print(user.serialized)
+  print(user.serialized | {"email": user.email})
   return Ok(user.serialized | { "email": user.email })
 
 def get_user(request, username):
