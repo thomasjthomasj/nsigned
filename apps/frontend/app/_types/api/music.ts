@@ -1,3 +1,4 @@
+import { Article } from "./articles";
 import { Link } from "./links";
 import { User } from "./users";
 
@@ -38,6 +39,8 @@ export type Label = {
 
 export type Release = {
   id: number;
+  title: string;
+  slug: string;
   primary_artist: Artist;
   label: Label | null;
   links: Link[];
@@ -48,5 +51,7 @@ export type Release = {
 export type ReviewRequest = {
   id: number;
   release: Release;
+  created_at: string;
   created_by: User;
+  article: Article | null;
 };

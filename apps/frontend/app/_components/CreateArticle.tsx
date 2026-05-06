@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 
 import { FormField } from "@/_components/FormField";
-import { getEndpoint } from "@/_utils/api.client";
+import { getEndpoint } from "@/_utils/api";
 
 const AUTHOR_ID = 1;
 const ENDPOINT = getEndpoint("articles/create");

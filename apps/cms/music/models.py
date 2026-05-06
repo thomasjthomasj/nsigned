@@ -138,6 +138,8 @@ class Release(Creatable):
   def serialized(self):
     return {
       "id": self.id,
+      "title": self.title,
+      "slug": self.slug,
       "primary_artist": self.primary_artist.serialized if self.primary_artist else None,
       "label": self.label.serialized if self.label else None,
       "links": [l.serialized for l in self.links.all()],
@@ -182,6 +184,6 @@ class ReviewRequest(Creatable):
       "id": self.id,
       "release": self.release.serialized,
       "created_by": self.created_by.serialized if self.created_by else None,
-      "rejected_by": self.rejected_by.serialized if self.rejected_by else None,
-      "article": self.article.serialized if self.article else None,
+      "created_at": self.created_at.isoformat(),
+      "article": self.article.serialized if hasattr(self, "article") else None,
     }

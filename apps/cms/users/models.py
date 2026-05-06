@@ -44,6 +44,7 @@ class User(AbstractBaseUser):
   role = models.CharField(max_length=20, choices=(
     ("contributor", "Contributor"),
     ("editor", "Editor"),
+    ("admin", "Admin"),
   ), default="contributor")
 
   USERNAME_FIELD = "username"

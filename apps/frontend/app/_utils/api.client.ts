@@ -1,25 +1,8 @@
 "use client";
 
-import type { Error, LoggedInUser } from "@/_types/api";
+import { getEndpoint, getQueryString } from "@/_utils/api";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-type QueryParams = Record<string, string | number | boolean | undefined>;
-type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
-
-type ErrorResponse = {
-  ok: false;
-  status: number;
-  data: Error;
-};
-
-type SuccessResponse<TJson> = {
-  ok: true;
-  status: number;
-  data: TJson;
-};
-
-type Response<TJson> = ErrorResponse | SuccessResponse<TJson>;
+import type { QueryParams, Json, LoggedInUser, Response } from "@/_types/api";
 
 type CookieOptions =
   | {
@@ -30,8 +13,6 @@ type CookieOptions =
       withAuth?: false;
       withCookies?: boolean;
     };
-
-export const getEndpoint = (endpoint: string) => `${API_URL}/${endpoint}`;
 
 const request = async <TJson>(
   makeRequest: () => Promise<Response<TJson>>,
@@ -60,13 +41,7 @@ export const get = async <TJson = {}>({
 } & CookieOptions): Promise<Response<TJson>> => {
   const makeRequest = async () => {
     const baseUrl = getEndpoint(endpoint);
-    const searchParams = new URLSearchParams();
-    for (const [k, v] of Object.entries(data ?? {})) {
-      if (v !== undefined) {
-        searchParams.append(k, String(v));
-      }
-    }
-    const queryString = searchParams.toString();
+    const queryString = getQueryString(data);
     const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
 
     const result = await fetch(url, {

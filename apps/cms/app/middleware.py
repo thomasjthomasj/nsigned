@@ -1,4 +1,5 @@
 import json
+import traceback
 from app.http import BadRequest, UnsupportedMediaType, InternalServerError
 
 class JsonMiddleware:
@@ -22,3 +23,7 @@ class JsonMiddleware:
       return self.get_response(request)
     except:
       return InternalServerError()
+
+  def process_exception(self, request, exception):
+    traceback.print_exc()
+    return InternalServerError()

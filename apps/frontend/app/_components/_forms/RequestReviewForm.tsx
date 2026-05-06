@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { ReleaseOverview } from "@/_components/ReleaseOverview";
-import { useDebounce } from "@/_hooks";
+import { useAuth, useDebounce } from "@/_hooks";
 import { get, post } from "@/_utils/api.client";
 
 import type { ReleaseDetails, ReviewRequest } from "@/_types/api";
@@ -13,7 +13,13 @@ import type { ReleaseDetails, ReviewRequest } from "@/_types/api";
 const BANDCAMP_REGEX =
   /^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/[a-z0-9-]+/;
 
-export const RequestReviewForm = () => {
+type RequestReviewFormProps = {
+  existingReviewRequests: ReviewRequest[] | null;
+};
+
+export const RequestReviewForm = ({
+  existingReviewRequests,
+}: RequestReviewFormProps) => {
   const [url, setUrl] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [isRetrieving, setIsRetrieving] = useState<boolean>(false);
@@ -21,6 +27,7 @@ export const RequestReviewForm = () => {
   const [releaseDetails, setReleaseDetails] = useState<ReleaseDetails | null>(
     null,
   );
+  const { user } = useAuth();
 
   const getReleaseDetails = useCallback(async () => {
     setIsRetrieving(true);
@@ -62,6 +69,23 @@ export const RequestReviewForm = () => {
   const buttonDisabled = useMemo(() => {
     return isRetrieving || isSubmitting || !releaseDetails;
   }, [isRetrieving, isSubmitting, releaseDetails]);
+
+  const canRequestReview = useMemo(() => {
+    if (!user) return false;
+    if (!existingReviewRequests?.length) return true;
+    return user.role === "admin";
+  }, [user, existingReviewRequests]);
+
+  if (!user) return null;
+  if (!canRequestReview)
+    return (
+      <p>
+        You cannot currently request any more reviews. Please wait until your
+        existing request
+        {(existingReviewRequests ?? []).length === 1 ? " has" : "s have"} been
+        reviewed.
+      </p>
+    );
 
   return (
     <div className="flex flex-col gap-[10px]">

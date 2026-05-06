@@ -39,7 +39,7 @@ def request_review(request):
     Q(release__primary_artist__user=user)
   ).exists()
 
-  if exists:
+  if exists and user.role != "admin":
     return Forbidden("You have already have an active review request")
 
   artist = release.artist
@@ -107,4 +107,28 @@ def pending_review_requests(request):
     ) \
     .order_by("created_at")
 
-  return Ok([request.serialized for request in review_requests])
+  return Ok([r.serialized for r in review_requests])
+
+@method("GET")
+@logged_in()
+def user_review_request(request):
+  user = request.site_user
+  review_requests = ReviewRequest.objects \
+    .select_related(
+      "release",
+      "release__primary_artist__user",
+      "release__label",
+      "created_by",
+    ) \
+    .prefetch_related("article") \
+    .filter(
+      article__isnull=True,
+      rejected_by=None,
+    ) \
+    .filter(
+      Q(created_by=user) |
+      Q(release__primary_artist__user=user)
+    ) \
+    .order_by("created_at")
+
+  return Ok([r.serialized for r in review_requests])
