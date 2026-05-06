@@ -11,8 +11,6 @@ from .models import User
 @logged_in()
 def get_me(request):
   user = request.site_user
-  print(user.serialized)
-  print(user.serialized | {"email": user.email})
   return Ok(user.serialized | { "email": user.email })
 
 def get_user(request, username):
@@ -85,6 +83,14 @@ def login(request):
   set_auth_cookie(response, "access-token", tokens["access"])
   set_auth_cookie(response, "refresh-token", tokens["refresh"])
 
+  return response
+
+@method("POST")
+@logged_in()
+def logout(request):
+  response = Ok()
+  response.delete_cookie("access-token")
+  response.delete_cookie("refresh-token")
   return response
 
 @method("POST")

@@ -98,7 +98,7 @@ export const post = async <TJson = {}>({
   withCookies = true,
 }: {
   endpoint: string;
-  data: Json;
+  data?: Json;
 } & CookieOptions): Promise<Response<TJson>> => {
   const makeRequest = async () => {
     const result = await fetch(getEndpoint(endpoint), {
@@ -107,7 +107,7 @@ export const post = async <TJson = {}>({
         "Content-Type": "application/json",
       },
       credentials: withCookies ? "include" : "omit",
-      body: JSON.stringify(data),
+      body: JSON.stringify(data ?? {}),
     });
     const response = await result.json();
     return {

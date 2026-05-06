@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "_nsigned Archive",
+  title: "*nsigned",
   description: "Where unsigned artists get heard",
 };
 
@@ -36,8 +36,8 @@ export default function RootLayout({
       <AuthProvider>
         <CookiesProvider>
           <body>
-            <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-              <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+            <div className="flex flex-col flex-1 items-center justify-center font-sans bg-background">
+              <main className="flex flex-1 w-full max-w-[900px] flex-col items-center justify-between px-16 bg-background text-foreground">
                 <Header />
                 <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
                   <div className="w-full">{children}</div>

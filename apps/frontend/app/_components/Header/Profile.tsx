@@ -1,33 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useCookies } from "react-cookie";
 
+import { Button } from "@/_components/Button";
 import { LoginForm } from "@/_components/_forms/LoginForm";
 import { RegistrationForm } from "@/_components/_forms/RegistrationForm";
 import { useAuth } from "@/_hooks/use-auth";
+import { COOKIE_NAMES } from "@/_utils/cookies";
+import { post } from "@/_utils/api.client";
 
 export const Profile = () => {
   const [showForm, setShowForm] = useState<null | "login" | "registration">(
     null,
   );
-  const { user } = useAuth();
+  const { user, getUser, loading } = useAuth();
+  const [, , removeCookie] = useCookies([COOKIE_NAMES.access, COOKIE_NAMES.refresh]);
 
-  if (user) {
-    return <p>Hello {user.display_name}</p>;
-  }
+  const handleLogOut = useCallback(async () => {
+    await post({ endpoint: "users/logout" });
+    await getUser();
+  }, [removeCookie, getUser])
+
+  if (loading) return null;
+  if (user) return <Button label="Log out" onClick={handleLogOut}/>;
+  if (showForm) return <div className="flex">
+    {showForm === "login" && <LoginForm />}
+    {showForm === "registration" && <RegistrationForm />}
+  </div>
 
   return (
-    <div className="flex flex-col">
-      <div className="flex">
-        <a onClick={() => setShowForm("login")}>Login</a>
-        <a onClick={() => setShowForm("registration")}>Registration</a>
-      </div>
-      {showForm !== null && (
-        <div className="flex">
-          {showForm === "login" && <LoginForm />}
-          {showForm === "registration" && <RegistrationForm />}
-        </div>
-      )}
-    </div>
+    <>
+      <Button label="Log in" onClick={() => setShowForm("login")}/>
+      <Button label="Sign up" onClick={() => setShowForm("registration")} />
+    </>
   );
 };

@@ -4,7 +4,7 @@ type ButtonProps = {
   className?: string;
   disabled?: boolean;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 export const Button = ({
@@ -15,10 +15,12 @@ export const Button = ({
 }: ButtonProps) => (
   <button
     className={classNames(
-      "p-[5px] border border-1 border-[#eee]",
+      "p-[5px] font-mono rounded-sm border border-1",
       {
-        "cursor-pointer": !disabled,
-        "bg-[#eee] text-[#aaa] cursor-not-allowed": disabled,
+        "bg-primary-500 hover:bg-primary-700 active:bg-primary-700 border-primary-700 cursor-pointer":
+          !disabled,
+        "bg-disabled-500 hover:bg-disabled-500 border-disabled-800 text-disabled-800 cursor-not-allowed":
+          disabled,
       },
       className,
     )}

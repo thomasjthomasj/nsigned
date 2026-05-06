@@ -13,11 +13,11 @@ def article(request, article_id):
     .prefetch_related("contents") \
     .select_related("created_by") \
     .select_related("external_link") \
-    .get(pk=article.id)
+    .get(pk=article_id)
   if not article:
     return NotFound()
 
-  return Ok(article_json(article))
+  return Ok(article.serialized)
 
 @method("POST")
 @logged_in(role="contributor")
@@ -48,4 +48,4 @@ def create(request):
     external_link=external_link,
   )
 
-  return Ok(article_json(article))
+  return Ok(article.serialized)
