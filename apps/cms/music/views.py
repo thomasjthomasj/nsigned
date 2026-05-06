@@ -30,19 +30,20 @@ def request_review(request):
   except ValueError:
     return BadRequest("Could not get release from URL")
 
-  exists = ReviewRequest.objects.filter(
-    article__isnull=True,
-    rejected_by=None,
-  ).filter(
-    Q(release=release) |
-    Q(created_by=user) |
-    Q(release__primary_artist__user=user)
-  ).exists()
+  if user.role != "admin":
+    exists = ReviewRequest.objects.filter(
+      article__isnull=True,
+      rejected_by=None,
+    ).filter(
+      Q(release=release) |
+      Q(created_by=user) |
+      Q(release__primary_artist__user=user)
+    ).exists()
 
-  if exists and user.role != "admin":
-    return Forbidden("You have already have an active review request")
+    if exists:
+      return Forbidden("You have already have an active review request")
 
-  artist = release.artist
+  artist = release.primary_artist
   if artist and not artist.user:
     artist.user = user
     artist.save()
