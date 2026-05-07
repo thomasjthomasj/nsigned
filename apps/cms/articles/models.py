@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from django.db import models, transaction
 from django.utils.functional import cached_property
 from app.models import Creatable
@@ -21,11 +21,12 @@ class ArticleManager(models.Manager):
       data["external_link"] = link
       if release:
         data["release"] = release
-    article = super().create(published_at=datetime.now(), **data)
+    article = super().create(published_at=datetime.now(timezone.utc), **data)
     ArticleContent.objects.create(
       content=kwargs["content"],
       article=article,
       active=True,
+      created_by=kwargs["created_by"],
     )
 
     return Article.objects \

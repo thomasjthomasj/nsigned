@@ -1,4 +1,5 @@
 import { Error } from "@/_components/Error";
+import { PageLayout } from "@/_components/PageLayout";
 import { ReviewRequestListing } from "@/_components/ReviewRequestListing";
 import { get, getMe } from "@/_utils/api.server";
 
@@ -22,8 +23,7 @@ const ReviewRequests = async () => {
   );
 
   return (
-    <div className="w-full flex-1">
-      <h2>Review requests</h2>
+    <PageLayout title="Review requests">
       {reviewRequests.length ? (
         <>
           <p>The following releases are waiting for a review</p>
@@ -35,7 +35,7 @@ const ReviewRequests = async () => {
       ) : (
         <p>There are no pending review requests.</p>
       )}
-    </div>
+    </PageLayout>
   );
 };
 

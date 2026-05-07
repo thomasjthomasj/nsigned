@@ -55,4 +55,6 @@ export type ReviewRequest = {
   created_at: string;
   created_by: User;
   article: Article | null;
+  claimed_by: User | null;
+  rejected_by: User | null;
 };

@@ -186,4 +186,6 @@ class ReviewRequest(Creatable):
       "created_by": self.created_by.serialized if self.created_by else None,
       "created_at": self.created_at.isoformat(),
       "article": self.article.serialized if hasattr(self, "article") else None,
+      "claimed_by": self.claimed_by.serialized if self.claimed_by else None,
+      "rejected_by": self.rejected_by.serialized if self.rejected_by else None,
     }

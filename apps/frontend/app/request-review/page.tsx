@@ -1,4 +1,5 @@
 import { Error } from "@/_components/Error";
+import { PageLayout } from "@/_components/PageLayout";
 import { ReviewRequestListing } from "@/_components/ReviewRequestListing";
 import { RequestReviewForm } from "@/_components/_forms/RequestReviewForm";
 import { get } from "@/_utils/api.server";
@@ -13,14 +14,13 @@ const RequestReview = async () => {
   if (!ok) return <Error />;
 
   return (
-    <div className="w-full">
-      <h2>My review requests</h2>
+    <PageLayout title="My review requests">
       <ReviewRequestListing
         reviewRequests={reviewRequests}
         includeActions={false}
       />
       <RequestReviewForm existingReviewRequests={reviewRequests} />
-    </div>
+    </PageLayout>
   );
 };
 

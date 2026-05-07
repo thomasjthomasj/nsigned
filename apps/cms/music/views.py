@@ -60,6 +60,15 @@ def request_review(request):
 
   return Ok(review_request.serialized)
 
+@method("GET")
+@logged_in()
+def get_review_request(request, id):
+  try:
+    review_request = ReviewRequest.objects.get(id=id)
+    return Ok(review_request.serialized)
+  except ReviewRequest.DoesNotExist:
+    return NotFound()
+
 @method("POST")
 @logged_in()
 def claim_review_request(request):

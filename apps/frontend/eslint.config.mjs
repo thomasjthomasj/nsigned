@@ -27,6 +27,7 @@ export default [
       "**/*.test.tsx",
       "**/*.stories.tsx",
       ".storybook/**",
+      "**/global.css",
     ],
   },
   {

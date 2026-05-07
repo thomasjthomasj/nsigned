@@ -29,7 +29,7 @@ export const ReviewRequestActions = ({
       data: { id: reviewRequest.id },
     });
     if (ok) {
-      router.push("/articles/write");
+      router.push(`/write-review/${reviewRequest.id}`);
     }
     setIsLoading(false);
   }, [reviewRequest, user, router]);
