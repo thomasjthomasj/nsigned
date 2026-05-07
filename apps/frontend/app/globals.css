@@ -8,6 +8,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-background-500: #272727;
   --color-disabled-500: #aaaaaa;
   --color-disabled-800: #444444;
   --color-primary-500: #8b0000;

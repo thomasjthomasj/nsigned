@@ -14,8 +14,8 @@ export const Header = () => (
         <a href="/review-requests">
           <Button label="Write review" />
         </a>
+        <Profile />
       </div>
-      <Profile />
     </div>
   </div>
 );

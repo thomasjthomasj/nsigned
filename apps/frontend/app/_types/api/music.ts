@@ -29,6 +29,7 @@ export type Artist = {
   id: number;
   name: string;
   slug: string;
+  user: User | null;
 };
 
 export type Label = {
@@ -41,7 +42,7 @@ export type Release = {
   id: number;
   title: string;
   slug: string;
-  primary_artist: Artist;
+  primary_artist: Artist | null;
   label: Label | null;
   links: Link[];
   images: Images;

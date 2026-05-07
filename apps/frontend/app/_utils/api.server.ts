@@ -3,9 +3,8 @@
 import { cookies } from "next/headers";
 
 import { getEndpoint, getQueryString } from "@/_utils/api";
-import { COOKIE_NAMES } from "@/_utils/cookies";
 
-import type { QueryParams, Response } from "@/_types/api";
+import type { LoggedInUser, QueryParams, Response } from "@/_types/api";
 
 type GetParams = {
   endpoint: string;
@@ -58,3 +57,9 @@ export const get = async <TJson = {}>({
 
   return response;
 };
+
+export const getMe = async () =>
+  get<LoggedInUser>({
+    endpoint: "users/me",
+    withAuth: true,
+  });

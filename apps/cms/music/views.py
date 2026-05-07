@@ -120,6 +120,7 @@ def user_review_request(request):
       "release__primary_artist__user",
       "release__label",
       "created_by",
+      "rejected_by",
     ) \
     .prefetch_related("article") \
     .filter(
