@@ -107,7 +107,13 @@ export const RequestReviewForm = ({
           link={releaseDetails.link}
         />
       )}
-      <Button label="Submit" onClick={handleSubmit} disabled={buttonDisabled} />
+      <div>
+        <Button
+          label="Submit"
+          onClick={handleSubmit}
+          disabled={buttonDisabled}
+        />
+      </div>
     </div>
   );
 };

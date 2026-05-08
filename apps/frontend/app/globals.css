@@ -3,23 +3,96 @@
 :root {
   --background: #171717;
   --foreground: #eeeeee;
+  --background-500: #272727;
+  --primary-300: #ff00c9;
+  --primary-500: #c7008f;
+  --secondary-300: #B0E7FF;
+  --secondary-500: #00C9FF;
+  --tertiary-500: #1cf400;
 }
 
 @theme inline {
-  --color-background: var(--background);
+  --color-background: #171717;
   --color-foreground: var(--foreground);
-  --color-background-500: #272727;
+  --color-background-500: var(--background-500);
+  --color-foreground-500: #aaaaaa;
   --color-disabled-500: #aaaaaa;
   --color-disabled-800: #444444;
-  --color-primary-500: #8b0000;
-  --color-primary-700: #650000;
+  --color-primary-300: var(--primary-300);
+  --color-primary-500: var(--primary-500);
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-500: var(--secondary-500);
+  --color-tertiary-500: var(--tertiary-500);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 2rem;
+  font-family: "Courier New", Courier, monospace;
+}
+
+h2 {
+  font-family: "Courier New", Courier, monospace;
+  color: var(--primary-300);
+  font-size: 1.5rem;
+  line-height:1.6rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+h3 {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+h4 {
+  font-style: italic;
+  color: var(--secondary-500);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+p a {
+  color: var(--secondary-500);
+  font-style: italic;
+}
+
+p a:hover {
+  color: var(--primary-300);
+  font-style: italic;
+}
+
+p strong {
+  color: var(--secondary-300)
+}
+
+ul {
+  padding-left: 20px;
+  list-style-type: square;
+}
+
+ol {
+  padding-left: 20px;
+  list-style-type: decimal;
+}
+
+li::marker {
+  color: var(--tertiary-500)
+}
+
+blockquote {
+  padding: 10px 10px 10px 20px;
+  font-style: italic;
+  color: var(--secondary-300);
+  background: var(--background-500)
 }

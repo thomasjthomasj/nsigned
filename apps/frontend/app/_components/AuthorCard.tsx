@@ -5,7 +5,13 @@ type AuthorCardProps = {
 };
 
 export const AuthorCard = ({ user }: AuthorCardProps) => (
-  <div className="w-full">
-    <p>by {user.display_name}</p>
+  <div className="w-full -mt-[5px] mb-[10px] pl-[20px] italic">
+    <p>
+      by{" "}
+      <a href={`/profile/${user.username}`} className="!text-tertiary-500">
+        {user.display_name}
+      </a>
+    </p>
+    <p></p>
   </div>
 );

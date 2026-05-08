@@ -14,7 +14,7 @@ const RequestReview = async () => {
   if (!ok) return <Error />;
 
   return (
-    <PageLayout title="My review requests">
+    <PageLayout title="Request review">
       <ReviewRequestListing
         reviewRequests={reviewRequests}
         includeActions={false}

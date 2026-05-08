@@ -21,9 +21,9 @@ export const Logo = () => {
 
   return (
     <div>
-      <h1 className="text-[20px] font-mono cursor-pointer">
+      <h1>
         <a href="/" onClick={handleClick}>
-          *nsigned
+          _nsigned
         </a>
       </h1>
     </div>

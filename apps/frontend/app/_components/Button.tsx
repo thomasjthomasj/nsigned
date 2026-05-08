@@ -15,9 +15,9 @@ export const Button = ({
 }: ButtonProps) => (
   <button
     className={classNames(
-      "p-[5px] font-mono rounded-sm border border-1",
+      "p-[5px] font-mono rounded-sm",
       {
-        "bg-primary-500 hover:bg-primary-700 active:bg-primary-700 border-primary-700 cursor-pointer":
+        "bg-primary-500 hover:bg-primary-300 active:bg-primary-300 cursor-pointer":
           !disabled,
         "bg-disabled-500 hover:bg-disabled-500 border-disabled-800 text-disabled-800 cursor-not-allowed":
           disabled,

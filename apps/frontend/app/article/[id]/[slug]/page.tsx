@@ -4,7 +4,7 @@ import { AuthorCard } from "@/_components/AuthorCard";
 import { Error } from "@/_components/Error";
 import { PageLayout } from "@/_components/PageLayout";
 import { get } from "@/_utils/api.server";
-import { sanitizeHtml } from "@/_utils/text";
+import { parseISODate, sanitizeHtml } from "@/_utils/text";
 
 import type { ArticleFull } from "@/_types/api";
 
@@ -41,10 +41,19 @@ const Article = async ({ params }: ArticleProps) => {
   return (
     <PageLayout title={title}>
       <div className="flex flex-col w-full">
-        <AuthorCard user={author} />
+        <div className="mb-[10px]">
+          <AuthorCard user={author} />
+          {link && (
+            <p className="text-[1.2rem] font-bold">
+              <a href={link.url} target="_blank">
+                Purchase here
+              </a>
+            </p>
+          )}
+        </div>
         <div className="w-full">
           {release && images && (
-            <div className="p-[10px] float-left">
+            <div className="pr-[20px] pb-[10px] sm:float-left">
               <img
                 src={images.md.url}
                 height={images.md.height}
@@ -53,15 +62,16 @@ const Article = async ({ params }: ArticleProps) => {
               />
             </div>
           )}
-          {link && (
-            <a href={link.url} target="_blank">
-              Listen here
-            </a>
-          )}
           <div
             className="space-y-[10px]"
             dangerouslySetInnerHTML={{ __html: content }}
           />
+          <p className="mt-[10px] text-foreground-500 text-[12px] italic">
+            Published{" "}
+            <time dateTime={article.published_at}>
+              {parseISODate(article.published_at)}
+            </time>
+          </p>
         </div>
       </div>
     </PageLayout>

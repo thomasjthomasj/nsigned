@@ -9,10 +9,14 @@ export const GeneralArticles = ({ articles }: GeneralArticlesProps) => {
 
   return (
     <div className="w-full flex flex-col">
-      <h2>Read this</h2>
-      <div className="w-full grid grid-cols-4 gap-[5px]">
+      <h2>Site news</h2>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-[5px]">
         {articles.map((a) => (
-          <a key={a.id} href={`/article/${a.id}/${a.slug}`}>
+          <a
+            className="text-[1.2rem] p-[5px] hover:bg-background-500"
+            key={a.id}
+            href={`/article/${a.id}/${a.slug}`}
+          >
             {a.title}
           </a>
         ))}
