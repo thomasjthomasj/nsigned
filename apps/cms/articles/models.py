@@ -2,11 +2,19 @@ from datetime import datetime, timezone
 from django.db import models, transaction
 from django.utils.functional import cached_property
 from app.models import Creatable
-from music.models import Release, ReviewRequest
-from links.models import Link
+from music.models import ReviewRequest
 from .utils import parse_markdown
 
 class ArticleManager(models.Manager):
+  @property
+  def prefetched(self):
+    return super() \
+      .filter(deleted=False) \
+      .prefetch_related("contents") \
+      .select_related("created_by") \
+      .select_related("review_request") \
+      .select_related("review_request__release") \
+
   @transaction.atomic
   def create(self, **kwargs):
     data = {
@@ -23,17 +31,13 @@ class ArticleManager(models.Manager):
       created_by=kwargs["created_by"],
     )
 
-    return Article.objects \
-      .prefetch_related("contents") \
-      .select_related("created_by") \
-      .select_related("review_request") \
-      .select_related("review_request__release") \
-      .get(pk=article.id)
+    return self.prefetched.get(pk=article.id)
 
 class Article(Creatable):
   title = models.CharField(max_length=255)
   slug = models.CharField(max_length=255)
   published_at = models.DateTimeField(null=True)
+  deleted = models.BooleanField(default=False)
   review_request = models.OneToOneField(ReviewRequest, null=True, on_delete=models.SET_NULL)
 
   def __str__(self):

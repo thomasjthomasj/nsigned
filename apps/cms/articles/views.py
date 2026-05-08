@@ -4,16 +4,18 @@ from app.http import Ok, BadRequest, NotFound
 from music.models import Release, ReviewRequest
 from .models import Article
 
-def index(request):
-  return Ok("This is the articles index.")
+@method("GET")
+def list(request):
+  page_size = 20
+  page = request.GET.get("page", 1)
+  start = (page - 1) * page_size
+  end = page * page_size
+  articles = Article.cms.prefetched.order_by("-published_at").all()[start:end]
+  return Ok([article.serialized_lite for article in articles])
 
+@method("GET")
 def article(request, article_id):
-  article = Article.objects \
-    .prefetch_related("contents") \
-    .select_related("created_by") \
-    .select_related("review_request") \
-    .select_related("review_request__release") \
-    .get(pk=article_id)
+  article = Article.cms.prefetched.get(pk=article_id)
   if not article:
     return NotFound()
 
