@@ -38,7 +38,13 @@ class Article(Creatable):
   slug = models.CharField(max_length=255)
   published_at = models.DateTimeField(null=True)
   deleted = models.BooleanField(default=False)
-  review_request = models.OneToOneField(ReviewRequest, null=True, on_delete=models.SET_NULL)
+  review_request = models.OneToOneField(
+    ReviewRequest,
+    null=True,
+    on_delete=models.SET_NULL,
+    default=None,
+    blank=True,
+  )
 
   def __str__(self):
     return self.title

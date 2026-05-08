@@ -6,12 +6,24 @@ from .models import Article
 
 @method("GET")
 def list(request):
-  page_size = 20
-  page = request.GET.get("page", 1)
+  page = int(request.GET.get("page", 1))
+  page_size = int(request.GET.get("page_size", 20))
+  if page_size > 100:
+    return BadRequest("Cannot request more than 100 articles.")
+
+  article_type = request.GET.get("type", None)
   start = (page - 1) * page_size
   end = page * page_size
-  articles = Article.cms.prefetched.order_by("-published_at").all()[start:end]
-  return Ok([article.serialized_lite for article in articles])
+  articles = Article.cms.prefetched.order_by("-published_at").all()
+  if article_type:
+    if article_type not in ["general", "album", "track"]:
+      return BadRequest(f"`%{article_type} is not a valid article type.`")
+    if article_type == "general":
+      articles = articles.filter(review_request=None)
+    else:
+      articles = articles.filter(review_request__release__release_type=article_type)
+
+  return Ok([article.serialized_lite for article in articles[start:end]])
 
 @method("GET")
 def article(request, article_id):
