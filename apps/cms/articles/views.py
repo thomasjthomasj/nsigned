@@ -3,7 +3,6 @@ from app.decorators import logged_in, method
 from app.http import Ok, BadRequest, NotFound
 from music.models import Release
 from .models import Article
-from .utils import article_json
 
 def index(request):
   return Ok("This is the articles index.")

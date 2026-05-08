@@ -5,3 +5,4 @@ python-slugify
 psycopg2-binary
 beautifulsoup4
 PyJWT==2.12.*
+markdown-it-py==4.2.*

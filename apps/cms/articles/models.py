@@ -4,7 +4,7 @@ from django.utils.functional import cached_property
 from app.models import Creatable
 from music.models import Release, ReviewRequest
 from links.models import Link
-from .utils import article_json
+from .utils import parse_markdown
 
 class ArticleManager(models.Manager):
   @transaction.atomic
@@ -57,20 +57,27 @@ class Article(Creatable):
   cms = ArticleManager()
 
   @cached_property
-  def serialized(self):
-    return article_json(self)
-
-  @cached_property
   def serialized_lite(self):
     return {
       "id": self.id,
       "title": self.title,
       "slug": self.slug,
       "release": self.release.serialized if self.release else None,
-      "published_at": self.published_at.isotime() if self.published_at else None,
+      "published_at": self.published_at.isoformat() if self.published_at else None,
       "created_by": self.created_by.serialized,
-      "created_at": self.created_at.isotime(),
+      "created_at": self.created_at.isoformat(),
     }
+
+  @cached_property
+  def serialized(self):
+    article = self.serialized_lite
+    content = next(
+      content for content in self.contents.all() if content.active
+    )
+    return article | { "content": {
+      "id": content.id,
+      "content": parse_markdown(content.content)
+    } if content else None }
 
 class ArticleContent(Creatable):
   article = models.ForeignKey(
