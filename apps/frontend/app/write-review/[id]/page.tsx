@@ -75,7 +75,7 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
         </ul>
       </div>
       <div>
-        <CreateArticle release={release} />
+        <CreateArticle reviewRequest={reviewRequest} />
       </div>
     </PageLayout>
   );

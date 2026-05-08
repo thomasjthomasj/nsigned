@@ -1,27 +1,28 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { post } from "@/_utils/api.client";
 
-import type { Release } from "@/_types/api";
+import type { Article, ReviewRequest } from "@/_types/api";
 
 type CreateArticleProps = {
-  release?: Release;
+  reviewRequest?: ReviewRequest;
 };
 
 const MIN_WORDS = 300;
 const MAX_WORDS = 1500;
 
-export const CreateArticle = ({ release }: CreateArticleProps) => {
+export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
+  const router = useRouter();
 
-  const link = useMemo(() => release?.links[0]?.url ?? undefined, [release]);
+  const release = useMemo(() => reviewRequest?.release, [reviewRequest]);
 
   useEffect(() => {
     if (release) {
@@ -38,32 +39,29 @@ export const CreateArticle = ({ release }: CreateArticleProps) => {
 
   const handleSave = useCallback(async () => {
     setIsLoading(true);
-    const result = await post({
+    const result = await post<Article>({
       endpoint: "articles/create",
       data: {
         title,
         content: content.trim(),
-        ...(link
+        ...(reviewRequest
           ? {
-              external_link: link,
+              review_request: reviewRequest.id,
             }
           : {}),
       },
     });
     if (result.ok) {
-      setHasSubmitted(true);
+      const { data: article } = result;
+      router.push(`/article/${article.id}/${article.slug}`);
     }
     setIsLoading(false);
-  }, [title, content, link]);
+  }, [title, content, reviewRequest]);
 
   const disableButton = useMemo(
     () => isLoading || wordCount < MIN_WORDS || wordCount > MAX_WORDS,
     [isLoading, wordCount],
   );
-
-  if (hasSubmitted) {
-    return <p>This article has now been published!</p>;
-  }
 
   return (
     <div className="flex flex-col gap-[10px]">

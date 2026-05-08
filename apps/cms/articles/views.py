@@ -1,7 +1,7 @@
 from slugify import slugify
 from app.decorators import logged_in, method
 from app.http import Ok, BadRequest, NotFound
-from music.models import Release
+from music.models import Release, ReviewRequest
 from .models import Article
 
 def index(request):
@@ -11,7 +11,8 @@ def article(request, article_id):
   article = Article.objects \
     .prefetch_related("contents") \
     .select_related("created_by") \
-    .select_related("external_link") \
+    .select_related("review_request") \
+    .select_related("review_request__release") \
     .get(pk=article_id)
   if not article:
     return NotFound()
@@ -26,16 +27,17 @@ def create(request):
 
   content = data.get("content")
   title = data.get("title")
-  external_link = data.get("external_link")
-  release = None
+  review_request_id = data.get("review_request")
   if not content or not title:
     return BadRequest("`content` and `title` are required")
 
-  if external_link:
-    try:
-      release = Release.bandcamp.get_from_url(external_link)
-    except ValueError:
-      return BadRequest("Could not resolve release from given URL")
+  review_request = None
+
+  try:
+    if review_request_id:
+      review_request = ReviewRequest.objects.get(id=review_request_id)
+  except ReviewRequest.DoesNotExist:
+    return NotFound()
 
   slug = slugify(title)
   article = Article.cms.create(
@@ -43,8 +45,7 @@ def create(request):
     slug=slug,
     created_by=created_by,
     content=content,
-    release=release,
-    external_link=external_link,
+    review_request=review_request,
   )
 
   return Ok(article.serialized)
