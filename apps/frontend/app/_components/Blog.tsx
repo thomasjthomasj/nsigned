@@ -4,12 +4,12 @@ type GeneralArticlesProps = {
   articles: Article[];
 };
 
-export const GeneralArticles = ({ articles }: GeneralArticlesProps) => {
+export const Blog = ({ articles }: GeneralArticlesProps) => {
   if (!articles.length) return null;
 
   return (
     <div className="w-full flex flex-col">
-      <h2>Site news</h2>
+      <h2>Blog</h2>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-[5px]">
         {articles.map((a) => (
           <a

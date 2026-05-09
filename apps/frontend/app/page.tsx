@@ -1,15 +1,15 @@
 import { Error } from "@/_components/Error";
-import { GeneralArticles } from "@/_components/GeneralArticles";
+import { Blog } from "@/_components/Blog";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
 import { get } from "@/_utils/api.server";
 
 import type { Article } from "@/_types/api";
 
 const Home = async () => {
-  const [generalResponse, albumResponse, trackResponse] = await Promise.all([
+  const [blogResponse, albumResponse, trackResponse] = await Promise.all([
     get<Article[]>({
       endpoint: "articles",
-      data: { type: "general", page_size: 4 },
+      data: { type: "blog", page_size: 4 },
       withAuth: false,
     }),
     get<Article[]>({
@@ -24,14 +24,14 @@ const Home = async () => {
     }),
   ]);
 
-  const ok = generalResponse.ok && albumResponse.ok && trackResponse.ok;
+  const ok = blogResponse.ok && albumResponse.ok && trackResponse.ok;
 
   if (!ok)
     return (
       <Error error="The articles didn't load properly, please check back later." />
     );
 
-  const { data: general } = generalResponse;
+  const { data: blog } = blogResponse;
   const { data: albums } = albumResponse;
   const { data: tracks } = trackResponse;
 
@@ -41,7 +41,7 @@ const Home = async () => {
 
   return (
     <div className="w-full flex flex-col gap-[15px]">
-      <GeneralArticles articles={general} />
+      <Blog articles={blog} />
       <div className="hidden md:grid grid-cols-3 gap-[10px]">
         <div className="flex flex-col col-span-2">
           <h2>Album reviews</h2>

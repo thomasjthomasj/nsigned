@@ -16,9 +16,9 @@ def list(request):
   end = page * page_size
   articles = Article.cms.prefetched.order_by("-published_at").all()
   if article_type:
-    if article_type not in ["general", "album", "track"]:
+    if article_type not in ["blog", "album", "track"]:
       return BadRequest(f"`%{article_type} is not a valid article type.`")
-    if article_type == "general":
+    if article_type == "blog":
       articles = articles.filter(review_request=None)
     else:
       articles = articles.filter(review_request__release__release_type=article_type)
