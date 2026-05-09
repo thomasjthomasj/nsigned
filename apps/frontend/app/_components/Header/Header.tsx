@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { Button } from "@/_components/Button";
 
 import { Logo } from "./Logo";
-import { Profile } from "./Profile";
+import { Menu } from "./Menu";
 
 export const Header = () => (
   <div
@@ -21,7 +21,7 @@ export const Header = () => (
         <a href="/review-requests">
           <Button label="Write review" />
         </a>
-        <Profile />
+        <Menu />
       </div>
     </div>
   </div>
