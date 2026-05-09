@@ -8,7 +8,7 @@
   --primary-500: #c7008f;
   --secondary-300: #B0E7FF;
   --secondary-500: #00C9FF;
-  --tertiary-500: #1cf400;
+  --tertiary-500: #eeff00;
 }
 
 @theme inline {
@@ -43,7 +43,7 @@ h2 {
   font-family: "Courier New", Courier, monospace;
   color: var(--primary-300);
   font-size: 1.5rem;
-  line-height:1.6rem;
+  line-height:1.4rem;
   font-weight: bold;
   margin-bottom: 10px;
 }
