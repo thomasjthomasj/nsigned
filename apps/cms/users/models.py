@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import PermissionDenied
+from .validators import fundraiser_link_validator
 
 class UserManager(BaseUserManager):
   def create_user(self, username, email, password, **kwargs):
@@ -46,6 +47,13 @@ class User(AbstractBaseUser):
     ("editor", "Editor"),
     ("admin", "Admin"),
   ), default="contributor")
+  bio = models.TextField(null=True, blank=True)
+  fundraiser_link = models.ForeignKey(
+    "links.Link",
+    null=True,
+    on_delete=models.CASCADE,
+    related_name="fundraiser_owners",
+  )
 
   USERNAME_FIELD = "username"
   REQUIRED_FIELDS = ["username", "email"]
@@ -62,4 +70,5 @@ class User(AbstractBaseUser):
       "username": self.username,
       "display_name": self.display_name,
       "role": self.role,
+      "fundraiser_link": self.fundraiser_link.url if self.fundraiser_link else None,
     }

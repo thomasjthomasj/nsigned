@@ -1,12 +1,14 @@
 import jwt
 from django.db import transaction
 from datetime import datetime, timezone
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out
 from app.http import Ok, NotFound, BadRequest, Unauthorized
 from app.utils import set_auth_cookie
+from links.models import Link
 from .auth import issue_tokens, decode
 from .models import User
+from .validators import fundraiser_link_validator
 
 @logged_in()
 def get_me(request):
@@ -19,6 +21,28 @@ def get_user(request, username):
     return Ok(user.serialized)
   except User.DoesNotExist:
     return NotFound()
+
+@method("POST")
+@logged_in()
+@transaction.atomic()
+def update(request):
+  user = request.site_user
+  data = request.json
+  display_name = data.get("display_name")
+  bio = data.get("bio")
+  fundraiser_link = data.get("fundraiser_link")
+  if fundraiser_link:
+    try:
+      fundraiser_link_validator(fundraiser_link)
+    except ValidationError:
+      return BadRequest("Fundraiser link is not supported")
+    user.fundraiser_link = Link.objects.get_or_create(url=fundraiser_link)[0]
+  if display_name:
+    user.display_name = display_name
+  if bio:
+    user.bio = bio
+  user.save()
+  return Ok(user.serialized)
 
 @method("POST")
 @logged_out()
