@@ -8,6 +8,6 @@ def fundraiser_link_validator(value):
     r"^https:\/\/buymeacoffee\.com", # buymeacoffee
     r"^https:\/\/patreon\.com", # patreon
   ]
-  if any(re.match(rx) for rx in regexes):
+  if any(re.match(rx, value) for rx in regexes):
     return
-  raise ValidationError("Fundraiser link is not supported")
+  raise ValidationError("Fundraiser link is not")

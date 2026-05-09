@@ -1,5 +1,5 @@
-import { Error } from "@/_components/Error";
 import { Blog } from "@/_components/Blog";
+import { Error } from "@/_components/Error";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
 import { get } from "@/_utils/api.server";
 

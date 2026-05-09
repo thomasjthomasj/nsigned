@@ -17,8 +17,8 @@ def get_me(request):
 
 def get_user(request, username):
   try:
-    user = User.objects.get(username=username)
-    return Ok(user.serialized)
+    user = User.objects.select_related("fundraiser_link").get(username=username)
+    return Ok(user.serialized | {"bio": user.bio})
   except User.DoesNotExist:
     return NotFound()
 

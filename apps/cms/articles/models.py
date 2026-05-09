@@ -12,6 +12,7 @@ class ArticleManager(models.Manager):
       .filter(deleted=False) \
       .prefetch_related("contents") \
       .select_related("created_by") \
+      .select_related("created_by__fundraiser_link") \
       .select_related("review_request") \
       .select_related("review_request__release") \
 

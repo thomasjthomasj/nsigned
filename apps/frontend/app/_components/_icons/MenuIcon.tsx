@@ -7,10 +7,6 @@ import type { IconArgs } from "./types";
 
 export const MenuIcon = ({ className, onClick }: IconArgs) => (
   <IconWrapper>
-    <FontAwesomeIcon
-      icon={faBars}
-      className={className}
-      onClick={onClick}
-    />
+    <FontAwesomeIcon icon={faBars} className={className} onClick={onClick} />
   </IconWrapper>
 );
