@@ -41,24 +41,29 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
   const buttonDisabled = useMemo(() => loading, [loading]);
 
   return (
-    <div className="flex flex-col w-full">
-      <FormField
-        name="displayName"
-        value={displayName}
-        onChange={(e) => setDisplayName(e.target.value)}
-      />
-      <FormField
-        name="bio"
-        type="textarea"
-        value={bio ?? ""}
-        onChange={(e) => setBio(e.target.value)}
-        className="w-full"
-      />
-      <FormField
-        name="fundraiserLink"
-        value={fundraiserLink ?? ""}
-        onChange={(e) => setFundraiserLink(e.target.value)}
-      />
+    <div className="flex flex-col gap-[15px]">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_3fr] gap-y-[5px]">
+        <label htmlFor="displayName">Display name</label>
+        <FormField
+          name="displayName"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+        />
+        <label htmlFor="bio">Bio</label>
+        <FormField
+          name="bio"
+          type="textarea"
+          value={bio ?? ""}
+          onChange={(e) => setBio(e.target.value)}
+          className="w-full"
+        />
+        <label htmlFor="fundraiserLink">Fundraiser link</label>
+        <FormField
+          name="fundraiserLink"
+          value={fundraiserLink ?? ""}
+          onChange={(e) => setFundraiserLink(e.target.value)}
+        />
+      </div>
       <div>
         <Button
           label="Update"

@@ -17,7 +17,7 @@ const EditProfile = async () => {
 
   return (
     <PageLayout title={`Editing ${user.display_name}`}>
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col gap-[15px]">
         <div className="flex flex-col">
           <h3>Username</h3>
           <p>{user.username}</p>

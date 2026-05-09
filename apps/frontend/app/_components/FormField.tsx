@@ -34,7 +34,7 @@ export const FormField = ({
         {label && <label htmlFor={name}>{label}</label>}
         <Component
           className={classNames(
-            "p-[3px] border border-1 border-[#ddd] font-mono text-left align-top",
+            "p-[3px] border border-1 border-[#ddd] font-mono text-left align-top w-full border-secondary-500",
             "bg-background-500",
             inputClassName,
           )}
