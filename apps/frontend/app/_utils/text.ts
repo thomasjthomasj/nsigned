@@ -2,7 +2,7 @@ import DOMPurify from "isomorphic-dompurify";
 
 export const sanitizeHtml = (html: string) =>
   DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ["p", "ul", "ol", "li", "blockquote", "em", "strong"],
+    ALLOWED_TAGS: ["a", "p", "ul", "ol", "li", "blockquote", "em", "strong"],
   });
 
 export const upper = (text: string) =>

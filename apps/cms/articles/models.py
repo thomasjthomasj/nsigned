@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from django.db import models, transaction
 from django.utils.functional import cached_property
 from app.models import Creatable
-from app.utils import parse_markdown
+from app.utils import parse_markdown, has_permission
 from music.models import ReviewRequest
 
 class ArticleManager(models.Manager):
@@ -73,7 +73,7 @@ class Article(Creatable):
     )
     return article | { "content": {
       "id": content.id,
-      "content": parse_markdown(content.content)
+      "content": parse_markdown(content.content, has_permission(self.created_by, "editor"))
     } if content else None }
 
 class ArticleContent(Creatable):

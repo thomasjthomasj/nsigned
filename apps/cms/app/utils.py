@@ -15,14 +15,27 @@ def set_auth_cookie(response, name, value):
     samesite="Lax" if DEBUG else "None",
   )
 
-def parse_markdown(text):
-  parser = MarkdownIt("commonmark", {"html": False}).disable([
+def parse_markdown(text, allow_links=False):
+  blacklist = [
     "heading",
     "code",
     "fence",
     "table",
     "image",
-    "link",
     "hr",
-  ])
+  ]
+  if not allow_links:
+    blacklist.append("link")
+  parser = MarkdownIt("commonmark", {"html": False}).disable(blacklist)
   return parser.render(text)
+
+def has_permission(user, role):
+  role_map = {
+    "contributor": ("contributor", "editor", "admin"),
+    "editor": ("editor", "admin"),
+    "admin": ("admin"),
+  }
+  allowed_roles = role_map[role]
+  if not allowed_roles:
+    raise Exception("Invalid role")
+  return user.role in allowed_roles

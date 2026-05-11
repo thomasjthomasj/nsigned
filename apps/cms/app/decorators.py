@@ -1,10 +1,5 @@
 from .http import Unauthorized, Forbidden, MethodNotAllowed
-
-_role_map = {
-  "contributor": ["contributor", "editor", "admin"],
-  "editor": ["editor", "admin"],
-  "admin": ["admin"],
-}
+from .utils import has_permission
 
 def logged_in(role="contributor"):
   def decorator(view):
@@ -12,10 +7,7 @@ def logged_in(role="contributor"):
       user = getattr(request, "site_user", None)
       if not user:
         return Unauthorized()
-      allowed_roles = _role_map[role]
-      if not allowed_roles:
-        raise Exception("Undefined role map")
-      if not user.role in allowed_roles:
+      if not has_permission(user, role):
         return Forbidden()
       return view(request, *args, **kwargs)
     return wrapped
