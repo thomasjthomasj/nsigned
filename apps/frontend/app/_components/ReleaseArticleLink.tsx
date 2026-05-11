@@ -35,8 +35,14 @@ export const ReleaseArticleLink = ({
           />
         </div>
         <div className="py-[10px]">
-          <h3>{release.title}</h3>
-          {release.primary_artist && <h4>{release.primary_artist.name}</h4>}
+          <h3 className={classNames({ "!text-[1rem]": size === "sm" })}>
+            {release.title}
+          </h3>
+          {release.primary_artist && (
+            <h4 className={classNames({ "!text-[0.8rem]": size === "sm" })}>
+              {release.primary_artist.name}
+            </h4>
+          )}
           {showReviewType && (
             <p className="text-[12px]">{upper(release.release_type)} review</p>
           )}

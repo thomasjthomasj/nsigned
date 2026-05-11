@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/_components/Button";
@@ -27,6 +28,7 @@ export const RequestReviewForm = ({
   const [releaseDetails, setReleaseDetails] = useState<ReleaseDetails | null>(
     null,
   );
+  const router = useRouter();
   const { user } = useAuth();
 
   const getReleaseDetails = useCallback(async () => {
@@ -49,6 +51,8 @@ export const RequestReviewForm = ({
   useEffect(() => {
     if (BANDCAMP_REGEX.test(url)) {
       debouncedReleaseDetails();
+    } else {
+      setReleaseDetails(null);
     }
   }, [url]);
 
@@ -62,9 +66,12 @@ export const RequestReviewForm = ({
     });
     if (!ok) {
       setError(data.error);
+    } else {
+      setUrl("");
+      router.refresh();
     }
     setIsSubmitting(false);
-  }, [url, isRetrieving, isSubmitting]);
+  }, [router, url, isRetrieving, isSubmitting]);
 
   const buttonDisabled = useMemo(() => {
     return isRetrieving || isSubmitting || !releaseDetails;

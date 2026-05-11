@@ -166,14 +166,14 @@ export const LoginForm = () => {
               onChange={(e) => setUsername(e.target.value)}
               required
               value={username}
-              error={(showErrors || errors?.username) || undefined}
+              error={showErrors || errors?.username || undefined}
             />
             <FormField
               placeholder="Display name"
               name="displayName"
               onChange={(e) => setDisplayName(e.target.value)}
               value={displayName ?? ""}
-              error={(showErrors || errors?.displayName) || undefined}
+              error={showErrors || errors?.displayName || undefined}
             />
             <FormField
               placeholder="Password"
@@ -182,7 +182,7 @@ export const LoginForm = () => {
               required
               value={password}
               type="password"
-              error={(showErrors || errors?.password) || undefined}
+              error={showErrors || errors?.password || undefined}
             />
             <FormField
               placeholder="Confirm password"
@@ -190,7 +190,7 @@ export const LoginForm = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               type="password"
               value={confirmPassword}
-              error={(showErrors || errors?.confirmPassword) || undefined}
+              error={showErrors || errors?.confirmPassword || undefined}
             />
             <p>
               By registering, you are confirming that you agree to the{" "}
