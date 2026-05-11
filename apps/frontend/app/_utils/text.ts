@@ -34,3 +34,6 @@ export const parseISODate = (isoDate: string) => {
 
   return formatted;
 };
+
+export const getWordCount = (text: string) =>
+  text.trim().split(/\s+/).filter(Boolean).length;

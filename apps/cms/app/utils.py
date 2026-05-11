@@ -1,3 +1,4 @@
+from markdown_it import MarkdownIt
 from urllib.parse import urlsplit, urlunsplit
 from app.settings import DEBUG
 
@@ -13,3 +14,15 @@ def set_auth_cookie(response, name, value):
     secure=not DEBUG,
     samesite="Lax" if DEBUG else "None",
   )
+
+def parse_markdown(text):
+  parser = MarkdownIt("commonmark", {"html": False}).disable([
+    "heading",
+    "code",
+    "fence",
+    "table",
+    "image",
+    "link",
+    "hr",
+  ])
+  return parser.render(text)

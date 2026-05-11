@@ -9,6 +9,7 @@ export type User = {
 };
 
 export type LoggedInUser = User & {
+  bio: string;
   email: string;
 };
 

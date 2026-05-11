@@ -67,6 +67,16 @@ export const Menu = () => {
       primary: false,
     });
     items.push({
+      label: "Editorial guide",
+      link: "/editorial-guide",
+      primary: false,
+    });
+    items.push({
+      label: "FAQs",
+      link: "/faq",
+      primary: false,
+    });
+    items.push({
       label: "Terms and conditions",
       link: "/terms",
       primary: false,

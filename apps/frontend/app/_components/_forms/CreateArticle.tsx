@@ -5,7 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
+import { WordCount } from "@/_components/WordCount";
 import { post } from "@/_utils/api.client";
+import { getWordCount } from "@/_utils/text";
 
 import type { Article, ReviewRequest } from "@/_types/api";
 
@@ -20,6 +22,7 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [wordCount, setWordCount] = useState<number>(0);
   const router = useRouter();
 
   const release = useMemo(() => reviewRequest?.release, [reviewRequest]);
@@ -31,11 +34,6 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
       );
     }
   }, [release]);
-
-  const wordCount = useMemo(
-    () => content.trim().split(/\s+/).filter(Boolean).length,
-    [content],
-  );
 
   const handleSave = useCallback(async () => {
     setIsLoading(true);
@@ -82,9 +80,7 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
         value={content}
         type="textarea"
       />
-      <p>
-        {wordCount} word{wordCount === 1 ? "" : "s"}
-      </p>
+      <WordCount text={content} setWordCount={setWordCount} />
       <div className="flex w-full items-end">
         <Button label="Publish" disabled={disableButton} onClick={handleSave} />
       </div>

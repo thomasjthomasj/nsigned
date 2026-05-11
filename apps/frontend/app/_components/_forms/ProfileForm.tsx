@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
+import { WordCount } from "@/_components/WordCount";
 import { post } from "@/_utils/api.client";
 
 type ProfileFormProps = {
@@ -15,6 +16,8 @@ type ProfileFormProps = {
   };
 };
 
+const MAX_BIO_WORDS = 250;
+
 export const ProfileForm = ({ profile }: ProfileFormProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [displayName, setDisplayName] = useState<string>(profile.displayName);
@@ -22,6 +25,8 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
   const [fundraiserLink, setFundraiserLink] = useState<string | null>(
     profile.fundraiserLink,
   );
+  const [bioWordCount, setBioWordCount] = useState<number>(0);
+
   const router = useRouter();
 
   const handleUpdate = useCallback(async () => {
@@ -38,7 +43,10 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
     setLoading(false);
   }, [displayName, bio, fundraiserLink]);
 
-  const buttonDisabled = useMemo(() => loading, [loading]);
+  const buttonDisabled = useMemo(
+    () => loading || bioWordCount > MAX_BIO_WORDS,
+    [loading, bioWordCount],
+  );
 
   return (
     <div className="flex flex-col gap-[15px]">
@@ -50,13 +58,17 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
           onChange={(e) => setDisplayName(e.target.value)}
         />
         <label htmlFor="bio">Bio</label>
-        <FormField
-          name="bio"
-          type="textarea"
-          value={bio ?? ""}
-          onChange={(e) => setBio(e.target.value)}
-          className="w-full"
-        />
+        <div className="flex flex-col">
+          <FormField
+            name="bio"
+            type="textarea"
+            value={bio ?? ""}
+            onChange={(e) => setBio(e.target.value)}
+            className="w-full"
+            placeholder={`No more than ${MAX_BIO_WORDS} words`}
+          />
+          <WordCount text={bio ?? ""} setWordCount={setBioWordCount} />
+        </div>
         <label htmlFor="fundraiserLink">Fundraiser link</label>
         <FormField
           name="fundraiserLink"

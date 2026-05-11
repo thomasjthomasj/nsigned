@@ -1,3 +1,4 @@
+from django.db.models import Q
 from slugify import slugify
 from app.decorators import logged_in, method
 from app.http import Ok, BadRequest, NotFound
@@ -8,22 +9,40 @@ from .models import Article
 def list(request):
   page = int(request.GET.get("page", 1))
   page_size = int(request.GET.get("page_size", 20))
+  author_id = request.GET.get("author")
+  artist_user_id = request.GET.get("artist_user")
   if page_size > 100:
     return BadRequest("Cannot request more than 100 articles.")
 
   article_type = request.GET.get("type", None)
   start = (page - 1) * page_size
   end = page * page_size
-  articles = Article.cms.prefetched.order_by("-published_at").all()
+  articles = Article.cms.prefetched.order_by("-published_at")
+
   if article_type:
-    if article_type not in ["blog", "album", "track"]:
+    if article_type not in ["blog", "album", "track", "review"]:
       return BadRequest(f"`%{article_type} is not a valid article type.`")
     if article_type == "blog":
       articles = articles.filter(review_request=None)
-    else:
+    elif article_type in ["album", "track"]:
       articles = articles.filter(review_request__release__release_type=article_type)
+    else:
+      articles = articles.exclude(review_request=None)
 
-  return Ok([article.serialized_lite for article in articles[start:end]])
+  if author_id:
+    articles = articles.filter(created_by__id=int(author_id))
+
+  if artist_user_id:
+    artist_user_id = int(artist_user_id)
+    articles = articles.filter(
+      Q(review_request__created_by__id=artist_user_id) |
+      Q(release__artist__user__id=artist_user_id)
+    )
+
+  return Ok([
+    article.serialized_lite
+    for article in articles.all()[start:end]]
+  )
 
 @method("GET")
 def article(request, article_id):

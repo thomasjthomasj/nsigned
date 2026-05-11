@@ -9,11 +9,6 @@ const EditProfile = async () => {
   const userResponse = await getMe();
   if (!userResponse.ok) return <Error />;
   const { data: user } = userResponse;
-  const profileResponse = await get<Profile>({
-    endpoint: `users/get/${user.username}`,
-  });
-  if (!profileResponse.ok) return <Error />;
-  const { data: profile } = profileResponse;
 
   return (
     <PageLayout title={`Editing ${user.display_name}`}>
@@ -28,9 +23,9 @@ const EditProfile = async () => {
         </div>
         <ProfileForm
           profile={{
-            displayName: profile.display_name,
-            bio: profile.bio,
-            fundraiserLink: profile.fundraiser_link,
+            displayName: user.display_name,
+            bio: user.bio,
+            fundraiserLink: user.fundraiser_link,
           }}
         />
       </div>

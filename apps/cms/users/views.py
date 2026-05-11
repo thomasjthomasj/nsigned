@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out
 from app.http import Ok, NotFound, BadRequest, Unauthorized
-from app.utils import set_auth_cookie
+from app.utils import set_auth_cookie, parse_markdown
 from links.models import Link
 from .auth import issue_tokens, decode
 from .models import User
@@ -13,12 +13,12 @@ from .validators import fundraiser_link_validator
 @logged_in()
 def get_me(request):
   user = request.site_user
-  return Ok(user.serialized | { "email": user.email })
+  return Ok(user.serialized | { "email": user.email, "bio": user.bio })
 
 def get_user(request, username):
   try:
     user = User.objects.select_related("fundraiser_link").get(username=username)
-    return Ok(user.serialized | {"bio": user.bio})
+    return Ok(user.serialized | {"bio": parse_markdown(user.bio)})
   except User.DoesNotExist:
     return NotFound()
 
