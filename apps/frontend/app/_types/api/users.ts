@@ -14,3 +14,7 @@ export type LoggedInUser = User & {
 };
 
 export type Profile = User & { bio: string };
+
+export type UserExists = {
+  user_exists: boolean;
+};

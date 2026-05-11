@@ -51,6 +51,7 @@ class User(AbstractBaseUser):
   fundraiser_link = models.ForeignKey(
     "links.Link",
     null=True,
+    blank=True,
     on_delete=models.CASCADE,
     related_name="fundraiser_owners",
   )

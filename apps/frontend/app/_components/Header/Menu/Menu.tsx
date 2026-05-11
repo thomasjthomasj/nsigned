@@ -40,13 +40,8 @@ export const Menu = () => {
     const items: MenuItem[] = [];
     if (!user) {
       items.push({
-        label: "Sign up",
+        label: "Join // Log in",
         link: "/join",
-        primary: true,
-      });
-      items.push({
-        label: "Log in",
-        link: "/log-in",
         primary: true,
       });
     } else {

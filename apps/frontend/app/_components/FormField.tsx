@@ -8,6 +8,7 @@ type FormFieldProps = {
   label?: string;
   name: string;
   onChange: React.ChangeEventHandler<any>;
+  onBlur?: (e: React.FocusEvent<any>) => void;
   placeholder?: string;
   required?: boolean;
   type?: React.HTMLInputTypeAttribute;
@@ -34,7 +35,7 @@ export const FormField = ({
         {label && <label htmlFor={name}>{label}</label>}
         <Component
           className={classNames(
-            "p-[3px] border border-1 border-[#ddd] font-mono text-left align-top w-full border-secondary-500",
+            "p-[3px] pl-[5px] border border-1 border-[#ddd] font-mono text-left align-top w-full border-secondary-500",
             "bg-background-500",
             inputClassName,
           )}

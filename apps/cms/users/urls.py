@@ -6,6 +6,7 @@ app_name = "users"
 
 urlpatterns = [
   path("get/<str:username>", views.get_user, name="get_user"),
+  path("exists", views.exists, name="exists"),
   path("me", views.get_me, name="get_me"),
   path("register", views.register, name="register"),
   path("update", views.update, name="update"),

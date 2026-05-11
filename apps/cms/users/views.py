@@ -1,5 +1,6 @@
 import jwt
 from django.db import transaction
+from django.core.validators import validate_email
 from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out
@@ -21,6 +22,28 @@ def get_user(request, username):
     return Ok(user.serialized | {"bio": parse_markdown(user.bio)})
   except User.DoesNotExist:
     return NotFound()
+
+@method("GET")
+def exists(request):
+  kwargs = {}
+  email = request.GET.get("email")
+  username = request.GET.get("username")
+  if not email and not username:
+    return BadRequest("No `email` or `username` submitted")
+
+  if email:
+    try:
+      validate_email(email)
+    except ValidationError:
+      return BadRequest("Email is not valid")
+    kwargs["email"] = email
+
+  if username:
+    kwargs["username"] = username
+
+  return Ok({
+    "user_exists": User.objects.filter(**kwargs).exists(),
+  })
 
 @method("POST")
 @logged_in()
