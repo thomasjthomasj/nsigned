@@ -200,7 +200,7 @@ export const LoginForm = () => {
         )}
         {mode === "login" && (
           <FormField
-            label="Password"
+            placeholder="Password"
             name="password"
             onChange={(e) => setPassword(e.target.value)}
             required

@@ -34,7 +34,7 @@ class UserManager(BaseUserManager):
       raise PermissionDenied
 
     if not check_password(password, user.password):
-      return None
+      raise PermissionDenied
 
     return user
 

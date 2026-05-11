@@ -120,10 +120,10 @@ def login(request):
 
   try:
     user = User.objects.authenticate(email=email, username=username, password=password)
-    user.last_login = datetime.now(timezone.utc)
-    user.save()
   except PermissionDenied:
-    return Unauthorized("Invalid credentials")
+    return Unauthorized("Incorrect password")
+  user.last_login = datetime.now(timezone.utc)
+  user.save()
 
   tokens = issue_tokens(user)
   response = Ok()
