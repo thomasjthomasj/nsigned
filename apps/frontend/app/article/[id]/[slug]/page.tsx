@@ -1,12 +1,14 @@
 import { redirect } from "next/navigation";
+import { Fragment } from "react";
 
 import { AuthorCard } from "@/_components/AuthorCard";
 import { Error } from "@/_components/Error";
+import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
 import { get } from "@/_utils/api.server";
 import { parseISODate, sanitizeHtml } from "@/_utils/text";
 
-import type { ArticleFull } from "@/_types/api";
+import type { Article as ArticleType, ArticleFull } from "@/_types/api";
 
 type ArticleProps = {
   params: Promise<{
@@ -34,32 +36,70 @@ const Article = async ({ params }: ArticleProps) => {
   }
   if (article.slug !== slug) return redirect(`/article/${id}/${slug}`);
   const { title, created_by: author, release } = article;
+
+  const moreArticles = await (async () => {
+    if (!release?.primary_artist) return [];
+    const moreArticlesResponse = await get<ArticleType[]>({
+      endpoint: "articles",
+      data: {
+        artist: release.primary_artist.slug,
+        page_size: 4,
+        exclude: article.id,
+      },
+    });
+    if (!moreArticlesResponse.ok) return [];
+    return moreArticlesResponse.data;
+  })();
+
   const images = release?.images ?? null;
   const content = sanitizeHtml(article.content.content);
   const link = release?.links[0];
 
+  const links = (() => {
+    const ls: { url: string; text: string }[] = [];
+    if (link)
+      ls.push({
+        url: link.url,
+        text: `Purchase "${release.title}"`,
+      });
+    if (author.fundraiser_link)
+      ls.push({
+        url: author.fundraiser_link,
+        text: `Support ${author.display_name}`,
+      });
+
+    return ls;
+  })();
+
   return (
     <PageLayout title={title}>
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full gap-[15px]">
         <div className="mb-[10px]">
           <AuthorCard user={author} />
-          {link && (
+          {!!links.length && (
             <p className="text-[1.2rem] font-bold">
-              <a href={link.url} target="_blank">
-                Purchase here
-              </a>
+              {links.map((l, i) => (
+                <Fragment key={i}>
+                  <a href={l.url} target="_blank">
+                    {l.text}
+                  </a>
+                  {i < links.length - 1 && <span> // </span>}
+                </Fragment>
+              ))}
             </p>
           )}
         </div>
         <div className="w-full">
           {release && images && (
             <div className="pr-[20px] pb-[10px] sm:float-left">
-              <img
-                src={images.md.url}
-                height={images.md.height}
-                width={images.md.width}
-                alt={`${release.title} cover art`}
-              />
+              <a href={images.lg.url} target="_blank">
+                <img
+                  src={images.md.url}
+                  height={images.md.height}
+                  width={images.md.width}
+                  alt={`${release.title} cover art`}
+                />
+              </a>
             </div>
           )}
           <div
@@ -73,6 +113,15 @@ const Article = async ({ params }: ArticleProps) => {
             </time>
           </p>
         </div>
+        {release?.primary_artist && moreArticles.length && (
+          <div className="mt-[20px]">
+            <MoreReviews
+              articles={moreArticles}
+              title={`More from this artist`}
+              archiveLink={`/archive?artist=${release!.primary_artist!.slug}`}
+            />
+          </div>
+        )}
       </div>
     </PageLayout>
   );

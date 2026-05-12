@@ -12,6 +12,5 @@ export const AuthorCard = ({ user }: AuthorCardProps) => (
         {user.display_name}
       </a>
     </p>
-    <p></p>
   </div>
 );

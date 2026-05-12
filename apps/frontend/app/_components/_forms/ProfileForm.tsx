@@ -13,6 +13,7 @@ type ProfileFormProps = {
     displayName: string;
     bio: string | null;
     fundraiserLink: string | null;
+    username: string;
   };
 };
 
@@ -76,7 +77,14 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
           onChange={(e) => setFundraiserLink(e.target.value)}
         />
       </div>
-      <div>
+      <div className="flex gap-[15px] justify-between">
+        <a href={`/profile/${profile.username}`}>
+          <Button
+            label="View profile"
+            onClick={handleUpdate}
+            disabled={buttonDisabled}
+          />
+        </a>
         <Button
           label="Update"
           onClick={handleUpdate}

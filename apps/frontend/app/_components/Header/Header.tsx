@@ -16,10 +16,12 @@ export const Header = () => (
     <div className="flex items-center h-full gap-[10px]">
       <div className="flex gap-[5px]">
         <a href="/request-review">
-          <Button label="Get reviewed" />
+          <Button label="Get reviewed" className="hidden sm:block" />
+          <Button label="Submit" className="sm:hidden" />
         </a>
         <a href="/review-requests">
-          <Button label="Write review" />
+          <Button label="Write review" className="hidden sm:block" />
+          <Button label="Write" className="sm:hidden" />
         </a>
         <Menu />
       </div>

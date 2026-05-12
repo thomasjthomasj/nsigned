@@ -9,10 +9,11 @@ from .models import Article
 def list(request):
   page = int(request.GET.get("page", 1))
   page_size = int(request.GET.get("page_size", 20))
-  author_id = request.GET.get("author")
-  artist_user_id = request.GET.get("artist_user")
+  author = request.GET.get("author")
+  artist_user = request.GET.get("artist_user")
   artist_slug = request.GET.get("artist")
-  article_type = request.GET.get("type", None)
+  article_type = request.GET.get("type")
+  exclude_id = request.GET.get("exclude")
 
   if page_size > 100:
     return BadRequest("Cannot request more than 100 articles.")
@@ -31,20 +32,22 @@ def list(request):
     else:
       articles = articles.exclude(review_request=None)
 
-  if author_id:
-    articles = articles.filter(created_by__id=int(author_id))
+  if author:
+    articles = articles.filter(created_by__username=author)
 
-  if artist_user_id:
-    artist_user_id = int(artist_user_id)
+  if artist_user:
     articles = articles.filter(
-      Q(review_request__created_by__id=artist_user_id) |
-      Q(release__artist__user__id=artist_user_id)
+      Q(review_request__created_by__username=artist_user) |
+      Q(review_request__release__primary_artist__user__username=artist_user)
     )
 
   if artist_slug:
     articles = articles.filter(
       review_request__release__primary_artist__slug=artist_slug
     )
+
+  if exclude_id:
+    articles = articles.exclude(id=int(exclude_id))
 
   return Ok([
     article.serialized_lite

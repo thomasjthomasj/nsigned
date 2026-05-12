@@ -1,6 +1,6 @@
 import { Error } from "@/_components/Error";
+import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
-import { ProfileReviews } from "@/_components/ProfileReviews";
 import { get } from "@/_utils/api.server";
 import { sanitizeHtml, upper } from "@/_utils/text";
 
@@ -29,11 +29,11 @@ const Profile = async ({ params }: ProfileProps) => {
   const [authoredResponse, reviewsResponse] = await Promise.all([
     get<Article[]>({
       endpoint: "articles",
-      data: { author: profile.id, page_size: 4, type: "review" },
+      data: { author: profile.username, page_size: 4, type: "review" },
     }),
     get<Article[]>({
       endpoint: "articles",
-      data: { artist_user_id: profile.id, page_size: 4, type: "review" },
+      data: { artist_user: profile.username, page_size: 4, type: "review" },
     }),
   ]);
 
@@ -63,8 +63,16 @@ const Profile = async ({ params }: ProfileProps) => {
           />
         )}
         <div className="flex flex-col mt-[20px] gap-[20px]">
-          <ProfileReviews articles={reviewsWritten} title="Writing" />
-          <ProfileReviews articles={reviewsReceived} title="Coverage" />
+          <MoreReviews
+            articles={reviewsWritten}
+            title="Writing"
+            archiveLink={`/archive?author=${profile.username}`}
+          />
+          <MoreReviews
+            articles={reviewsReceived}
+            title="Coverage"
+            archiveLink={`/archive?artistUser=${profile.username}`}
+          />
         </div>
       </div>
     </PageLayout>
