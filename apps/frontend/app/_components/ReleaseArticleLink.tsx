@@ -20,6 +20,9 @@ export const ReleaseArticleLink = ({
 
   const size = (rest.size ?? release.release_type === "album") ? "lg" : "sm";
 
+  const { sm: smImage, md: lgImage } = release.images;
+  const smImgSize = 96;
+  const lgImgSize = 200;
   const image = size === "lg" ? release.images.md : release.images.sm;
   const imgSize = size === "lg" ? 200 : 96;
 
@@ -28,10 +31,23 @@ export const ReleaseArticleLink = ({
       <div className="flex gap-[25px] hover:bg-background-500" key={article.id}>
         <div className="p-[10px] shrink-0">
           <img
-            src={image.url}
+            className={classNames({
+              "hidden": size === "sm",
+              "hidden sm:block": size === "lg",
+            })}
+            src={lgImage.url}
             alt={`${release.title} cover art`}
-            height={imgSize}
-            width={imgSize}
+            height={lgImgSize}
+            width={lgImgSize}
+          />
+          <img
+            className={classNames({
+              "block sm:hidden": size === "lg",
+            })}
+            src={smImage.url}
+            alt={`${release.title} cover art`}
+            height={smImgSize}
+            width={smImgSize}
           />
         </div>
         <div className="py-[10px]">
