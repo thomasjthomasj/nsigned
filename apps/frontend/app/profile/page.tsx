@@ -1,9 +1,7 @@
 import { Error } from "@/_components/Error";
 import { PageLayout } from "@/_components/PageLayout";
 import { ProfileForm } from "@/_components/_forms/ProfileForm";
-import { get, getMe } from "@/_utils/api.server";
-
-import type { Profile } from "@/_types/api";
+import { getMe } from "@/_utils/api.server";
 
 const EditProfile = async () => {
   const userResponse = await getMe();

@@ -11,17 +11,19 @@ def list(request):
   page_size = int(request.GET.get("page_size", 20))
   author_id = request.GET.get("author")
   artist_user_id = request.GET.get("artist_user")
+  artist_slug = request.GET.get("artist")
+  article_type = request.GET.get("type", None)
+
   if page_size > 100:
     return BadRequest("Cannot request more than 100 articles.")
 
-  article_type = request.GET.get("type", None)
   start = (page - 1) * page_size
   end = page * page_size
   articles = Article.cms.prefetched.order_by("-published_at")
 
   if article_type:
     if article_type not in ["blog", "album", "track", "review"]:
-      return BadRequest(f"`%{article_type} is not a valid article type.`")
+      return BadRequest(f"`{article_type}` is not a valid article type.")
     if article_type == "blog":
       articles = articles.filter(review_request=None)
     elif article_type in ["album", "track"]:
@@ -37,6 +39,11 @@ def list(request):
     articles = articles.filter(
       Q(review_request__created_by__id=artist_user_id) |
       Q(release__artist__user__id=artist_user_id)
+    )
+
+  if artist_slug:
+    articles = articles.filter(
+      review_request__release__primary_artist__slug=artist_slug
     )
 
   return Ok([

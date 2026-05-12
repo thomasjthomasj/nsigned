@@ -44,20 +44,26 @@ const Home = async () => {
       <Blog articles={blog} />
       <div className="hidden md:grid grid-cols-3 gap-[10px]">
         <div className="flex flex-col col-span-2">
-          <h2>Album reviews</h2>
+          <h2>
+            <a href="/archive">Album reviews</a>
+          </h2>
           {albums.map((a) => (
             <ReleaseArticleLink article={a} key={a.id} />
           ))}
         </div>
         <div className="flex flex-col">
-          <h2>Track reviews</h2>
+          <h2>
+            <a href="/archive">Track reviews</a>
+          </h2>
           {tracks.map((a) => (
             <ReleaseArticleLink article={a} key={a.id} />
           ))}
         </div>
       </div>
       <div className="flex flex-col block md:hidden">
-        <h2>Reviews</h2>
+        <h2>
+          <a href="/archive">Reviews</a>
+        </h2>
         {reviews.map((a) => (
           <ReleaseArticleLink article={a} key={a.id} size="sm" showReviewType />
         ))}
