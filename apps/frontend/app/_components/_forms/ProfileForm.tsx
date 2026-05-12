@@ -51,7 +51,7 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
 
   return (
     <div className="flex flex-col gap-[15px]">
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr_3fr] gap-y-[5px]">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_3fr] gap-y-[15px]">
         <label htmlFor="displayName">Display name</label>
         <FormField
           name="displayName"
@@ -65,7 +65,7 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
             type="textarea"
             value={bio ?? ""}
             onChange={(e) => setBio(e.target.value)}
-            className="w-full"
+            className="w-full min-h-[350px]"
             placeholder={`No more than ${MAX_BIO_WORDS} words`}
           />
           <WordCount text={bio ?? ""} setWordCount={setBioWordCount} />

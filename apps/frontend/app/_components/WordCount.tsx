@@ -17,7 +17,7 @@ export const WordCount = ({ text, setWordCount }: WordCountProps) => {
   }, [wordCount]);
 
   return (
-    <p className="text-[12px] text-foreground-500 -mt-[5px]">
+    <p className="text-[12px] text-foreground-500]">
       {wordCount} word{wordCount === 1 ? "" : "s"}
     </p>
   );

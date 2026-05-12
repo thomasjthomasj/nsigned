@@ -74,11 +74,16 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
               asterisks (*).
             </li>
             <li>
-              Do <strong className="!text-secondary-300">not</strong> use AI to write your review.
+              Do <strong className="!text-secondary-300">not</strong> use AI to
+              write your review.
             </li>
             <li>
               Refer to the{" "}
-              <a href="/editorial-guide" target="_blank" className="!text-primary-300">
+              <a
+                href="/editorial-guide"
+                target="_blank"
+                className="!text-primary-300"
+              >
                 editorial guide
               </a>
               .

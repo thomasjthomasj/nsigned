@@ -57,6 +57,7 @@ const Article = async ({ params }: ArticleProps) => {
 
   const links = (() => {
     const ls: { url: string; text: string }[] = [];
+    if (!release) return [];
     if (link)
       ls.push({
         url: link.url,
