@@ -6,16 +6,29 @@ import { get, getMe } from "@/_utils/api.server";
 import type { ReviewRequest } from "@/_types/api";
 
 const ReviewRequests = async () => {
-  const [userResponse, pendingReviewRequestsResponse] = await Promise.all([
+  const [
+    userResponse,
+    pendingReviewRequestsResponse,
+    claimedReviewRequestsResponse,
+  ] = await Promise.all([
     getMe(),
     get<ReviewRequest[]>({
       endpoint: "music/review-request/pending",
     }),
+    get<ReviewRequest[]>({
+      endpoint: "music/review-request/claimed",
+    }),
   ]);
 
-  if (!userResponse.ok || !pendingReviewRequestsResponse.ok) return <Error />;
+  if (
+    !userResponse.ok ||
+    !pendingReviewRequestsResponse.ok ||
+    !claimedReviewRequestsResponse.ok
+  )
+    return <Error />;
 
   const user = userResponse.data;
+  const { data: claimedReviewRequests } = claimedReviewRequestsResponse;
   const pendingReviewRequests = pendingReviewRequestsResponse.data.filter(
     (r) =>
       user.role === "admin" ||
@@ -24,17 +37,18 @@ const ReviewRequests = async () => {
 
   return (
     <PageLayout title="Review requests">
-      {pendingReviewRequests.length ? (
-        <>
-          <p>The following releases are waiting for a review</p>
-          <ReviewRequestListing
-            reviewRequests={pendingReviewRequests}
-            includeActions={true}
-          />
-        </>
-      ) : (
-        <p>There are no pending review requests.</p>
-      )}
+      <div className="flex flex-col gap-[20px]">
+        <ReviewRequestListing
+          reviewRequests={claimedReviewRequests}
+          includeActions={true}
+          type="claimed"
+        />
+        <ReviewRequestListing
+          reviewRequests={pendingReviewRequests}
+          includeActions={true}
+          type="pending"
+        />
+      </div>
     </PageLayout>
   );
 };

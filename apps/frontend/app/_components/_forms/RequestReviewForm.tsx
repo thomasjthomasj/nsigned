@@ -95,7 +95,7 @@ export const RequestReviewForm = ({
     );
 
   return (
-    <div className="flex flex-col gap-[10px]">
+    <div className="flex flex-col gap-[15px] my-[25px]">
       {error && <p className="text-red">{error}</p>}
       <FormField
         label="Bandcamp URL"
@@ -103,24 +103,25 @@ export const RequestReviewForm = ({
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
-      {isRetrieving && <p>Loading...</p>}
       {releaseDetails && (
-        <ReleaseOverview
-          artistName={releaseDetails.artist_name}
-          title={releaseDetails.title}
-          label={releaseDetails.label ?? undefined}
-          imageURL={releaseDetails.images.sm.url}
-          releaseType={releaseDetails.release_type}
-          link={releaseDetails.link}
-        />
+        <div className="flex w-full">
+          <ReleaseOverview
+            artistName={releaseDetails.artist_name}
+            title={releaseDetails.title}
+            label={releaseDetails.label ?? undefined}
+            imageURL={releaseDetails.images.sm.url}
+            releaseType={releaseDetails.release_type}
+            link={releaseDetails.link}
+          />
+          <div>
+            <Button
+              label="Submit for review"
+              onClick={handleSubmit}
+              disabled={buttonDisabled}
+            />
+          </div>
+        </div>
       )}
-      <div>
-        <Button
-          label="Submit"
-          onClick={handleSubmit}
-          disabled={buttonDisabled}
-        />
-      </div>
     </div>
   );
 };

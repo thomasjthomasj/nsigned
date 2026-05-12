@@ -7,14 +7,17 @@ import { Button } from "@/_components/Button";
 import { useAuth } from "@/_hooks";
 import { post } from "@/_utils/api.client";
 
+import type { ListingType } from "./types";
 import type { ReviewRequest } from "@/_types/api";
 
 type ReviewRequestActionsProps = {
   reviewRequest: ReviewRequest;
+  type: ListingType;
 };
 
 export const ReviewRequestActions = ({
   reviewRequest,
+  type,
 }: ReviewRequestActionsProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useAuth();
@@ -51,7 +54,14 @@ export const ReviewRequestActions = ({
 
   return (
     <div className="flex flex-col gap-[5px]">
-      <Button disabled={disableButton} onClick={handleClaim} label="Claim" />
+      {type === "pending" && (
+        <Button disabled={disableButton} onClick={handleClaim} label="Claim" />
+      )}
+      {type === "claimed" && (
+        <a href={`/write-review/${reviewRequest.id}`}>
+          <Button label="Review" />
+        </a>
+      )}
       {isAdmin && (
         <Button
           disabled={disableButton}

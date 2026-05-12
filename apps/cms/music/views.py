@@ -69,6 +69,16 @@ def get_review_request(request, id):
   except ReviewRequest.DoesNotExist:
     return NotFound()
 
+@method("GET")
+@logged_in()
+def get_claimed_review_requests(request):
+  user = request.site_user
+  review_requests = ReviewRequest.objects.prefetched.filter(
+    claimed_by=user,
+    article=None,
+  )
+  return Ok([r.serialized for r in review_requests])
+
 @method("POST")
 @logged_in()
 def claim_review_request(request):
@@ -103,13 +113,7 @@ def reject_review_request(request):
 @logged_in()
 def pending_review_requests(request):
   review_requests = ReviewRequest.objects \
-    .select_related(
-      "release",
-      "release__primary_artist__user",
-      "release__label",
-      "created_by",
-    ) \
-    .prefetch_related("article") \
+    .prefetched \
     .filter(
       article__isnull=True,
       claimed_by=None,
@@ -124,14 +128,7 @@ def pending_review_requests(request):
 def user_review_request(request):
   user = request.site_user
   review_requests = ReviewRequest.objects \
-    .select_related(
-      "release",
-      "release__primary_artist__user",
-      "release__label",
-      "created_by",
-      "rejected_by",
-    ) \
-    .prefetch_related("article") \
+    .prefetched \
     .filter(
       article__isnull=True,
       rejected_by=None,

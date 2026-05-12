@@ -2,24 +2,29 @@ import { Error } from "@/_components/Error";
 import { PageLayout } from "@/_components/PageLayout";
 import { ReviewRequestListing } from "@/_components/ReviewRequestListing";
 import { RequestReviewForm } from "@/_components/_forms/RequestReviewForm";
-import { get } from "@/_utils/api.server";
+import { get, getMe } from "@/_utils/api.server";
 
 import type { ReviewRequest } from "@/_types/api";
 
 const RequestReview = async () => {
-  const { ok, data: reviewRequests } = await get<ReviewRequest[]>({
+  const reviewRequestsResponse = await get<ReviewRequest[]>({
     endpoint: "music/review-request/current",
   });
 
-  if (!ok) return <Error />;
+  if (!reviewRequestsResponse.ok) return <Error />;
+
+  const { data: reviewRequests } = reviewRequestsResponse;
 
   return (
     <PageLayout title="Request review">
-      <ReviewRequestListing
-        reviewRequests={reviewRequests}
-        includeActions={false}
-      />
-      <RequestReviewForm existingReviewRequests={reviewRequests} />
+      <div className="flex flex-col gap-[15px]">
+        <RequestReviewForm existingReviewRequests={reviewRequests} />
+        <ReviewRequestListing
+          reviewRequests={reviewRequests}
+          includeActions={false}
+          type="mine"
+        />
+      </div>
     </PageLayout>
   );
 };

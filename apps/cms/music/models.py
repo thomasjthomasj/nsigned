@@ -159,6 +159,19 @@ class ReleaseLink(models.Model):
       )
     ]
 
+class ReviewRequestManager(models.Manager):
+  @property
+  def prefetched(self):
+    return self.select_related(
+      "release",
+      "release__primary_artist__user",
+      "release__label",
+      "created_by",
+      "claimed_by",
+      "rejected_by",
+    ) \
+    .prefetch_related("article")
+
 class ReviewRequest(Creatable):
   release = models.ForeignKey(Release, on_delete=models.CASCADE)
   rejected = models.BooleanField(default=False)
@@ -174,6 +187,8 @@ class ReviewRequest(Creatable):
     on_delete=models.SET_NULL,
     related_name="rejected_review_requests",
   )
+
+  objects = ReviewRequestManager()
 
   def __str__(self):
     return f"{self.release}"

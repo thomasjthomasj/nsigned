@@ -15,7 +15,7 @@ export const ReleaseOverview = ({
   releaseType,
   link,
 }: ReleaseOverviewProps) => (
-  <div className="flex gap-[10px]">
+  <div className="flex gap-[10px] w-full">
     <a href={link} target="_blank">
       <img src={imageURL} />
     </a>

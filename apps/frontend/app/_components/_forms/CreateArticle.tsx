@@ -76,7 +76,16 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
         inputClassName="w-full h-[500px]"
         name="content"
         onChange={(e) => setContent(e.target.value)}
-        placeholder={`Keep your review between ${MIN_WORDS} and ${MAX_WORDS} words`}
+        placeholder={`Keep your review between ${MIN_WORDS} and ${MAX_WORDS} words.
+
+Formatting help:
+
+ **bold**
+ *italics*
+ > quote
+ - list
+ 1. numbered list
+`}
         value={content}
         type="textarea"
       />
