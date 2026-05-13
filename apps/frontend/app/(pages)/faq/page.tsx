@@ -15,7 +15,7 @@ const FAQ = async () => (
       <p>
         <strong>_nsigned</strong> is primarily aimed at three types of people:
       </p>
-      <ul>
+      <ul className="space-y-[7px]">
         <li>
           DIY musicians who want to get their music heard and talked about.
         </li>
@@ -44,7 +44,7 @@ const FAQ = async () => (
       <p>
         The site currently only supports Bandcamp for purely practical reasons:
       </p>
-      <ul>
+      <ul className="space-y-[7px]">
         <li>
           Most DIY artists use Bandcamp, even if they prefer other platforms.
         </li>
@@ -104,6 +104,12 @@ const FAQ = async () => (
         and is an essential part of society. This site should really function
         closer to a forum than a genuine editorial site.
       </p>
+      <p>
+        That said, reviewers can add a fundraiser link to their profile which
+        will appear on all reviews they write. Currently the supported platforms
+        are PayPal, Ko-Fi, Buymeacoffee, and Patreon.
+      </p>
+
       <h3>Will the site ever be monetized?</h3>
       <p>
         Currently the site has no monetization at all, and if the site remains
@@ -113,6 +119,13 @@ const FAQ = async () => (
         clear. However, any monetization would absolutely not involve the
         ability for artists to pay for extra coverage. The playing field must
         remain level at all times.
+      </p>
+
+      <h3>Why is it called that?</h3>
+      <p>
+        It is a rule of the internet that the most successful websites are
+        typically ones where the name is a normal word with one letter either
+        removed or added.
       </p>
     </div>
   </PageLayout>
