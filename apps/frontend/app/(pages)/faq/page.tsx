@@ -68,6 +68,13 @@ const FAQ = async () => (
         platforms.
       </p>
 
+      <h3>Which music qualifies?</h3>
+      <p>
+        Almost anything, as long as it's on Bandcamp. The only restrictions are
+        that it must be <strong>music</strong> and not a podcast or anything
+        like that, and it must not have been made by AI.
+      </p>
+
       <h3>Is it possible to filter reviews by genre?</h3>
       <p>
         No, and hopefully it never will be. While genres are a useful way to
@@ -93,9 +100,9 @@ const FAQ = async () => (
       <p>
         To put it bluntly, while the site may ape some of the aesthetics of
         journalism, it is not genuine journalism and should not be viewed as
-        such. Journalism is an essential part of society that is taken for
-        granted in the modern era, but this site should really function closer
-        to a forum than a genuine editorial site.
+        such. Journalism is a legitimate career that takes skill and training,
+        and is an essential part of society. This site should really function
+        closer to a forum than a genuine editorial site.
       </p>
       <h3>Will the site ever be monetized?</h3>
       <p>
