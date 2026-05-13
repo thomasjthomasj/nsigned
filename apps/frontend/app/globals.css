@@ -4,6 +4,7 @@
   --background: #171717;
   --foreground: #eeeeee;
   --background-500: #272727;
+  --primary-100: #FF90DA;
   --primary-300: #ff00c9;
   --primary-500: #c7008f;
   --secondary-300: #B0E7FF;
@@ -78,6 +79,10 @@ p a:hover {
 
 p strong {
   color: var(--secondary-300)
+}
+
+li strong {
+  color: var(--primary-100)
 }
 
 ul {
