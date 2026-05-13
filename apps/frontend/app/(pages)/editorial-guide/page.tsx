@@ -2,7 +2,7 @@ import { PageLayout } from "@/_components/PageLayout";
 
 const EditorialGuide = async () => (
   <PageLayout title="Editorial guide">
-    <div className="w-full space-y-[10px]">
+    <div className="w-full space-y-[10px] page">
       <p>
         It's important that people reviewing on <strong>_nsigned</strong> feels
         comfortable and free to express themselves through their review how they
@@ -68,12 +68,12 @@ const EditorialGuide = async () => (
           </strong>
         </li>
       </ol>
-      <h3 className="mt-[10px] text-secondary-500">Guidelines</h3>
+      <h3>Guidelines</h3>
       <p>
         These are not hard rules, but things you should keep in mind when
         writing your reviews.
       </p>
-      <ol>
+      <ol className="space-y-[7px]">
         <li>
           <strong>Be yourself.</strong> These are your reviews and you should
           feel free to get creative with it. If you want to use a specific

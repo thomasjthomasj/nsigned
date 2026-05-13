@@ -103,5 +103,9 @@ blockquote {
   padding: 10px 10px 10px 20px;
   font-style: italic;
   color: var(--secondary-300);
-  background: var(--background-500)
+  background: var(--background-500);
+}
+
+.page h3 {
+  margin-top: 20px;
 }
