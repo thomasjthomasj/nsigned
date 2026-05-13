@@ -115,7 +115,7 @@ def comment(request, article_id):
   dupe = Comment.objects.filter(
     created_by=user,
     created_at__gte=dupe_time_limit,
-    comments__content=content,
+    contents__content=content,
   ).exists()
   spam = Comment.objects.filter(
     created_by=user,

@@ -19,3 +19,10 @@ export type Content = {
 export type ArticleFull = Article & {
   content: Content | null;
 };
+
+export type Comment = {
+  id: number;
+  created_by: User;
+  created_at: string;
+  content: string;
+};

@@ -42,7 +42,7 @@ const Home = async () => {
   return (
     <div className="w-full flex flex-col gap-[15px]">
       <Blog articles={blog} />
-      <div className="hidden md:grid grid-cols-3 gap-[10px]">
+      <div className="hidden md:grid grid-cols-3 gap-[20px]">
         <div className="flex flex-col col-span-2">
           <h2>
             <a href="/archive">Album reviews</a>
