@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "_nsigned",
-  description: "Where unsigned artists get heard",
+  description: "The DIY music magazine",
 };
 
 export default function RootLayout({

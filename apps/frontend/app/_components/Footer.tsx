@@ -1,6 +1,6 @@
 export const Footer = () => (
-  <footer className="max-w-[900px] w-full overflow-auto border-t border-t-secondary-500 pt-[20px] pb-[40px] text-[12px]">
-    <div className="flex justify-between">
+  <footer className="max-w-[900px] w-full overflow-auto border-t border-t-secondary-500 pt-[20px] pb-[40px] px-[15px] text-[12px]">
+    <div className="flex flex-col sm:flex-row justify-between gap-[15px] mb-[10px]">
       <div className="flex flex-col">
         <h4 className="mb-[0.5rem]">Recommended sites</h4>
         <ul>
@@ -19,22 +19,52 @@ export const Footer = () => (
               Ether Diver
             </a>
           </li>
+          <li>
+            <a
+              href="https://www.soundclick.com/forum/default.cfm"
+              target="_blank"
+            >
+              SoundClick Forum
+            </a>
+          </li>
         </ul>
       </div>
-      <div>
-        <h4 className="mb-[0.5rem]">Sister sites</h4>
-        <ul>
-          <li>
-            <a href="https://releasecalendar.games" target="_blank">
-              Video Game Release Calendar
-            </a>
-          </li>
-          <li>
-            <a href="https://moviemagic.fun" target="_blank">
-              Movie Magic
-            </a>
-          </li>
-        </ul>
+      <div className="flex flex-col gap-[15px]">
+        <div>
+          <h4 className="mb-[0.5rem]">Sister sites</h4>
+          <ul>
+            <li>
+              <a href="https://releasecalendar.games" target="_blank">
+                Video Game Release Calendar
+              </a>
+            </li>
+            <li>
+              <a href="https://moviemagic.fun" target="_blank">
+                Movie Magic
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="mb-[0.5rem]">Other places</h4>
+          <ul>
+            <li>
+              <a href="https://godribbon.bsky.social" target="_blank">
+                Follow me on Bluesky
+              </a>
+            </li>
+            <li>
+              <a href="https://ko-fi.com/godribbon" target="_blank">
+                Donate on Ko-fi
+              </a>
+            </li>
+            <li>
+              <a href="https://linktr.ee/GodRibbon" target="_blank">
+                Other stuff on Linktree
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
     <div className="flex justify-end">

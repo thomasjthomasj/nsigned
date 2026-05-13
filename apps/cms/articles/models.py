@@ -4,6 +4,7 @@ from django.utils.functional import cached_property
 from app.models import Creatable
 from app.utils import parse_markdown, has_permission
 from music.models import ReviewRequest
+from .utils import get_content
 
 class ArticleManager(models.Manager):
   @property
@@ -26,7 +27,7 @@ class ArticleManager(models.Manager):
 
     article = super().create(published_at=datetime.now(timezone.utc), **data)
     ArticleContent.objects.create(
-      content=kwargs["content"],
+      content=kwargs["content"].strip(),
       article=article,
       active=True,
       created_by=kwargs["created_by"],
@@ -68,9 +69,7 @@ class Article(Creatable):
   @cached_property
   def serialized(self):
     article = self.serialized_lite
-    content = next(
-      content for content in self.contents.all() if content.active
-    )
+    content = get_content(self.contents)
     return article | { "content": {
       "id": content.id,
       "content": parse_markdown(content.content, has_permission(self.created_by, "editor"))
@@ -81,6 +80,43 @@ class ArticleContent(Creatable):
     Article,
     on_delete=models.CASCADE,
     related_name="contents",
+  )
+  content = models.TextField()
+  active = models.BooleanField(default=True)
+
+class CommentManager(models.Manager):
+  @property
+  def prefetched(self):
+    return self.filter(deleted=False) \
+      .prefetch_related("contents") \
+      .select_related("created_by", "article")
+
+class Comment(Creatable):
+  article = models.ForeignKey(
+    Article,
+    on_delete=models.CASCADE,
+    related_name="comments"
+  )
+  deleted = models.BooleanField(default=False)
+  idempotency_key = models.CharField(max_length=255, unique=True)
+
+  objects = CommentManager()
+
+  @cached_property
+  def serialized(self):
+    content = get_content(self.contents)
+    return {
+      "id": self.id,
+      "created_by": self.created_by.serialized,
+      "created_at": self.created_at.isoformat(),
+      "content": parse_markdown(content.content, has_permission(self.created_by, "editor")),
+    }
+
+class CommentContent(Creatable):
+  comment = models.ForeignKey(
+    Comment,
+    on_delete=models.CASCADE,
+    related_name="contents"
   )
   content = models.TextField()
   active = models.BooleanField(default=True)

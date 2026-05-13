@@ -1,9 +1,11 @@
+from datetime import datetime, timedelta
 from django.db.models import Q
+from django.db import transaction
 from slugify import slugify
 from app.decorators import logged_in, method
 from app.http import Ok, BadRequest, NotFound
 from music.models import Release, ReviewRequest
-from .models import Article
+from .models import Article, Comment, CommentContent
 
 @method("GET")
 def list(request):
@@ -63,13 +65,13 @@ def article(request, article_id):
   return Ok(article.serialized)
 
 @method("POST")
-@logged_in(role="contributor")
+@logged_in()
 def create(request):
   data = request.json
   created_by = request.site_user
 
-  content = data.get("content")
-  title = data.get("title")
+  content = data.get("content", "").strip()
+  title = data.get("title", "").strip()
   review_request_id = data.get("review_request")
   if not content or not title:
     return BadRequest("`content` and `title` are required")
@@ -92,3 +94,57 @@ def create(request):
   )
 
   return Ok(article.serialized)
+
+@method("POST")
+@logged_in()
+@transaction.atomic()
+def comment(request, article_id):
+  user = request.site_user
+  data = request.json
+  content = data["content"].strip()
+  idempotency_key = data["idempotency_key"]
+  if not content:
+    return BadRequest("Comment has no content")
+  if not idempotency_key:
+    return BadRequest()
+
+  article = Article.objects.get(id=article_id)
+  dupe_time_limit = datetime.now() - timedelta(minutes=5)
+  spam_time_limit = datetime.now() - timedelta(seconds=15)
+
+  dupe = Comment.objects.filter(
+    created_by=user,
+    created_at__gte=dupe_time_limit,
+    comments__content=content,
+  ).exists()
+  spam = Comment.objects.filter(
+    created_by=user,
+    created_at__gte=spam_time_limit,
+  ).exists()
+
+  if dupe:
+    return BadRequest("You have recently commented this comment.")
+  if spam:
+    return BadRequest("Please wait a moment before commenting again.")
+
+  comment = Comment.objects.create(
+    article=article,
+    created_by=user,
+    idempotency_key=idempotency_key,
+  )
+  CommentContent.objects.create(
+    comment=comment,
+    content=content,
+  )
+
+  reloaded = Comment.objects.prefetched.get(id=comment.id)
+
+  return Ok(reloaded.serialized)
+
+@method("GET")
+def get_comments(request, article_id):
+  comments = Comment.objects.prefetched.filter(
+    article__id=article_id
+  ).order_by("created_at")
+
+  return Ok([comment.serialized for comment in comments])
