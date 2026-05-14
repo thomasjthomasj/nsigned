@@ -61,6 +61,12 @@ const Terms = async () => (
           Users must neither solicit nor offer payment for positive reviews.
         </li>
         <li>
+          Users must not use the platform or any related third party channel to
+          share their own or others' personal information including but not
+          limited to email addresses, home addresses, phone numbers, bank
+          details, etc.
+        </li>
+        <li>
           Users are responsible for maintaining the confidentiality of their
           login credentials.
         </li>
@@ -71,6 +77,11 @@ const Terms = async () => (
         <li>
           The site maintain the rights to display, store, distribute, and
           moderate any content posted to the platform.
+        </li>
+        <li>
+          The site will hold personal information such as email addresses in
+          accordance with GDPR and entirely for functional purposes such as
+          logging in.
         </li>
         <li>
           The site does not accept responsibility for the contents of any links

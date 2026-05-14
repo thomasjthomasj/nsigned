@@ -19,6 +19,7 @@
   --color-foreground-500: #aaaaaa;
   --color-disabled-500: #aaaaaa;
   --color-disabled-800: #444444;
+  --color-primary-100: var(--primary-100);
   --color-primary-300: var(--primary-300);
   --color-primary-500: var(--primary-500);
   --color-secondary-300: var(--secondary-300);
@@ -86,6 +87,16 @@ li a:hover {
   color: var(--primary-300);
   font-style: italic;
 }
+
+footer li a {
+  color: var(--foreground);
+  font-style: normal;
+}
+
+footer li a:hover {
+  font-style: normal;
+}
+
 
 p strong {
   color: var(--secondary-300)

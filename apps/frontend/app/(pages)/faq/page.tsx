@@ -127,6 +127,18 @@ const FAQ = async () => (
         typically ones where the name is a normal word with one letter either
         removed or added.
       </p>
+      <p>
+        You could also say that by removing the capital letter of the name,
+        you're showing that it's about focusing on the smaller artists, but to
+        be honest this is a thought that only occurred to me long after naming
+        the site. The fact is that naming the GitHub repo is like the first
+        thing you do when you start working on a project (which is an absurdly
+        early point in development to come up with something), and I already had
+        a GitHub repo that began with the letter U and I wanted to be able to
+        use tab to auto-complete the folder name in my terminal. But also since
+        about 2011 I've wanted to build a website called "The Unsigned Archive"
+        and that idea is where this site finally evolved from.
+      </p>
     </div>
   </PageLayout>
 );

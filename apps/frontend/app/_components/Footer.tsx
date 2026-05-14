@@ -46,21 +46,16 @@ export const Footer = () => (
           </ul>
         </div>
         <div>
-          <h4 className="mb-[0.5rem]">Other places</h4>
+          <h4 className="mb-[0.5rem]">Support</h4>
           <ul>
             <li>
               <a href="https://godribbon.bsky.social" target="_blank">
-                Follow me on Bluesky
+                Bluesky
               </a>
             </li>
             <li>
               <a href="https://ko-fi.com/godribbon" target="_blank">
-                Donate on Ko-fi
-              </a>
-            </li>
-            <li>
-              <a href="https://linktr.ee/GodRibbon" target="_blank">
-                Other stuff on Linktree
+                Donate
               </a>
             </li>
           </ul>
