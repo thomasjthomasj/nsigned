@@ -77,6 +77,16 @@ p a:hover {
   font-style: italic;
 }
 
+li a {
+  color: var(--secondary-500);
+  font-style: italic;
+}
+
+li a:hover {
+  color: var(--primary-300);
+  font-style: italic;
+}
+
 p strong {
   color: var(--secondary-300)
 }

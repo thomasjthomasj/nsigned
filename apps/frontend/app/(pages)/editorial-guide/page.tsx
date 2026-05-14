@@ -15,7 +15,7 @@ const EditorialGuide = async () => (
         It's for these reasons that the site has some hard rules, as well as
         general guidelines, on how reviews should be written.
       </p>
-      <h3 className="mt-[10px] text-secondary-500">Rules</h3>
+      <h3>Rules</h3>
       <p>
         Reviews that do not follow these rules may be edited or deleted, and
         severe offenses may result in a site-wide ban.

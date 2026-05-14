@@ -19,11 +19,17 @@ const Terms = async () => (
           platform, and may duplicate it on any blog or forum as they choose.
         </li>
         <li>
+          Users must only submit works for review that are freely available for
+          reviewers to listen. This does not mean that the release must be free
+          to download, but the entire release must be available to stream for
+          free.
+        </li>
+        <li>
           Users must not act in any way that is harmful to any group of people,
           including but not limited to acts of racism, sexism/misogyny,
           homophobia, biphobia, transphobia (including gender criticism and
-          trans-exclusionary radical feminism), religious discrimination, and
-          xenophobia.
+          trans-exclusionary radical feminism), ablism, religious
+          discrimination, and xenophobia.
         </li>
         <li>Users must not engage in culture wars while using the platform.</li>
         <li>
@@ -34,7 +40,8 @@ const Terms = async () => (
         </li>
         <li>
           Users must not post any content produced by generative AI, with the
-          sole exception of translation tools such as Google Translate.
+          sole exception of tools such as translators, spell-checkers, assisted
+          writing tools, etc.
         </li>
         <li>Users must not post any pornographic content.</li>
         <li>
@@ -57,8 +64,8 @@ const Terms = async () => (
           login credentials.
         </li>
         <li>
-          The site may remove users or content from the platform for any reason
-          at any time without warning or reason.
+          The site may remove user accounts or content from the platform for any
+          reason at any time without warning or reason.
         </li>
         <li>
           The site maintain the rights to display, store, distribute, and
@@ -74,8 +81,8 @@ const Terms = async () => (
           warning.
         </li>
         <li>
-          The site itself including its codebase, branding, and design is the intellectual
-          property to Thomas Marchant.
+          The site itself including its codebase, branding, and design is the
+          intellectual property to Thomas Marchant.
         </li>
         <li>The terms of the site may change at any moment.</li>
       </ol>
