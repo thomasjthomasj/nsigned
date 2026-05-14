@@ -20,12 +20,22 @@ const ReviewRequests = async () => {
     }),
   ]);
 
-  if (
-    !userResponse.ok ||
-    !pendingReviewRequestsResponse.ok ||
-    !claimedReviewRequestsResponse.ok
-  )
-    return <Error requireLoggedIn />;
+  if (!userResponse.ok)
+    return <Error errorResponse={userResponse.data} requireLoggedIn />;
+  if (!pendingReviewRequestsResponse.ok)
+    return (
+      <Error
+        errorResponse={pendingReviewRequestsResponse.data}
+        requireLoggedIn
+      />
+    );
+  if (!claimedReviewRequestsResponse.ok)
+    return (
+      <Error
+        errorResponse={claimedReviewRequestsResponse.data}
+        requireLoggedIn
+      />
+    );
 
   const user = userResponse.data;
   const { data: claimedReviewRequests } = claimedReviewRequestsResponse;

@@ -11,7 +11,10 @@ const RequestReview = async () => {
     endpoint: "music/review-request/current",
   });
 
-  if (!reviewRequestsResponse.ok) return <Error requireLoggedIn />;
+  if (!reviewRequestsResponse.ok)
+    return (
+      <Error errorResponse={reviewRequestsResponse.data} requireLoggedIn />
+    );
 
   const { data: reviewRequests } = reviewRequestsResponse;
 

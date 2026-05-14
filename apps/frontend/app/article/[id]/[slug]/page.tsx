@@ -38,12 +38,13 @@ const Article = async ({ params }: ArticleProps) => {
     return (
       <Error
         error={articleResponse.status === 404 ? "Article not found" : undefined}
+        errorResponse={articleResponse.data}
       />
     );
 
   const article = articleResponse.data;
   if (!article.content) {
-    return <Error />;
+    return <Error errorResponse={{ error: "No article content" }} />;
   }
   if (article.slug !== slug) return redirect(`/article/${id}/${slug}`);
   const { title, created_by: author, release } = article;

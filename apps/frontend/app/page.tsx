@@ -24,11 +24,26 @@ const Home = async () => {
     }),
   ]);
 
-  const ok = blogResponse.ok && albumResponse.ok && trackResponse.ok;
-
-  if (!ok)
+  if (!blogResponse.ok)
     return (
-      <Error error="The articles didn't load properly, please check back later." />
+      <Error
+        errorResponse={blogResponse.data}
+        error="The articles didn't load properly, please check back later."
+      />
+    );
+  if (!albumResponse.ok)
+    return (
+      <Error
+        errorResponse={albumResponse.data}
+        error="The articles didn't load properly, please check back later."
+      />
+    );
+  if (!trackResponse.ok)
+    return (
+      <Error
+        errorResponse={trackResponse.data}
+        error="The articles didn't load properly, please check back later."
+      />
     );
 
   const { data: blog } = blogResponse;
