@@ -58,10 +58,10 @@ const About = async () => (
       </ul>
       <p>
         Many of the greatest musicians of the past 100 years have been working
-        class, many have been shy and awkward, many have been reclusive, but the
-        systems currently in place put unfair limitations on those people and
-        the world at large is missing out on great music that never gets heard
-        as a result.
+        class, many have been shy and awkward, or outright reclusive, but the
+        systems currently in place put unfair limitations on those people, and
+        so the world at large is missing out on great music that never gets
+        heard as a result.
       </p>
     </div>
   </PageLayout>

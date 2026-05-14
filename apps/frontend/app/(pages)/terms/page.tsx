@@ -28,15 +28,16 @@ const Terms = async () => (
           Users must not act in any way that is harmful to any group of people,
           including but not limited to acts of racism, sexism/misogyny,
           homophobia, biphobia, transphobia (including gender criticism and
-          trans-exclusionary radical feminism), ablism, religious
-          discrimination, and xenophobia.
+          trans-exclusionary radical feminism), ablism, antisemitism,
+          islamophobia, religious discrimination, and xenophobia.
         </li>
         <li>Users must not engage in culture wars while using the platform.</li>
         <li>
           Users must accept that although a wide range of viewpoints are
           tolerated, the platform as no obligation to be politically neutral. As
-          such, promotion of far-right or zionist groups, including MAGA,
-          Reform, and the Israeli Defense Force, is strictly prohibited.
+          such, promotion of far-right groups, hate groups, or genocide,
+          including but not limited to MAGA, Reform, and the Israeli Defense
+          Force, is strictly prohibited.
         </li>
         <li>
           Users must not post any content produced by generative AI, with the
