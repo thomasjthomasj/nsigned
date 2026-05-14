@@ -28,6 +28,7 @@ export const LoginForm = () => {
   const [errors, setErrors] = useState<Errors | null>(null);
   const [userEmailExists, setUserEmailExists] = useState<boolean | null>(null);
   const [usernameExists, setUsernameExists] = useState<boolean | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
 
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -43,6 +44,7 @@ export const LoginForm = () => {
   useEffect(() => {
     setPassword("");
     setConfirmPassword("");
+    setTermsAccepted(mode === "login");
   }, [mode]);
 
   const checkUserEmailExists = useCheckUserExists({
@@ -94,7 +96,10 @@ export const LoginForm = () => {
     }
   }, [mode, email, username, password, confirmPassword]);
 
-  const isValid = useMemo(() => !errors, [errors]);
+  const isValid = useMemo(
+    () => !errors && termsAccepted,
+    [errors, termsAccepted],
+  );
 
   const handleRegister = useCallback(async () => {
     const { data, ok } = await post({
@@ -166,14 +171,14 @@ export const LoginForm = () => {
               onChange={(e) => setUsername(e.target.value)}
               required
               value={username}
-              error={showErrors || errors?.username || undefined}
+              error={showErrors ? errors?.username : undefined}
             />
             <FormField
               placeholder="Display name"
               name="displayName"
               onChange={(e) => setDisplayName(e.target.value)}
               value={displayName ?? ""}
-              error={showErrors || errors?.displayName || undefined}
+              error={showErrors ? errors?.displayName : undefined}
             />
             <FormField
               placeholder="Password"
@@ -182,7 +187,7 @@ export const LoginForm = () => {
               required
               value={password}
               type="password"
-              error={showErrors || errors?.password || undefined}
+              error={showErrors ? errors?.password : undefined}
             />
             <FormField
               placeholder="Confirm password"
@@ -190,9 +195,15 @@ export const LoginForm = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               type="password"
               value={confirmPassword}
-              error={showErrors || errors?.confirmPassword || undefined}
+              error={showErrors ? errors?.confirmPassword : undefined}
             />
             <p>
+              <input
+                type="checkbox"
+                onChange={() => setTermsAccepted((prev) => !prev)}
+                checked={termsAccepted}
+                className="mr-[5px]"
+              />
               By registering, you are confirming that you agree to the{" "}
               <a href="/terms">terms and conditions</a>.
             </p>

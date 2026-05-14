@@ -17,7 +17,7 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
     get<ReviewRequest>({ endpoint: `music/review-request/${id}` }),
   ]);
 
-  if (!userResponse.ok) return <Error />;
+  if (!userResponse.ok) return <Error requireLoggedIn />;
   if (!reviewRequestResponse.ok)
     return reviewRequestResponse.status === 404 ? (
       <Error error="Not found" />
@@ -58,7 +58,7 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
         </div>
         <div>
           <h3>Tips for reviewing</h3>
-          <ul>
+          <ul className="space-y-[7px]">
             <li>
               Be honest, while still considering the feelings of the artist.
               Someone worked hard on this release and they deserve to be treated
@@ -74,8 +74,7 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
               asterisks (*).
             </li>
             <li>
-              Do <strong className="!text-secondary-300">not</strong> use AI to
-              write your review.
+              Do <strong>not</strong> use AI to write your review.
             </li>
             <li>
               Refer to the{" "}

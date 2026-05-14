@@ -15,27 +15,17 @@ export const ReleaseOverview = ({
   releaseType,
   link,
 }: ReleaseOverviewProps) => (
-  <div className="flex gap-[10px] w-full">
-    <a href={link} target="_blank">
+  <a href={link} target="_blank">
+    <div className="flex gap-[10px] w-full">
       <img src={imageURL} />
-    </a>
-    <div className="flex-col gap-[5px]">
-      {artistName && (
+      <div className="flex-col gap-[5px]">
+        {artistName && <p>{artistName}</p>}
+        <p>{title}</p>
+        {label && <p>{label}</p>}
         <p>
-          <a href={link} target="_blank">
-            {artistName}
-          </a>
+          Release type: <span className="capitalize">{releaseType}</span>
         </p>
-      )}
-      <p>
-        <a href={link} target="_blank">
-          {title}
-        </a>
-      </p>
-      {label && <p>{label}</p>}
-      <p>
-        Release type: <span className="capitalize">{releaseType}</span>
-      </p>
+      </div>
     </div>
-  </div>
+  </a>
 );

@@ -25,7 +25,7 @@ const ReviewRequests = async () => {
     !pendingReviewRequestsResponse.ok ||
     !claimedReviewRequestsResponse.ok
   )
-    return <Error />;
+    return <Error requireLoggedIn />;
 
   const user = userResponse.data;
   const { data: claimedReviewRequests } = claimedReviewRequestsResponse;

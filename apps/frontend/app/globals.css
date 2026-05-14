@@ -97,11 +97,6 @@ footer li a:hover {
   font-style: normal;
 }
 
-
-p strong {
-  color: var(--secondary-300)
-}
-
 li strong {
   color: var(--primary-100)
 }

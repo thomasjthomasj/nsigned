@@ -7,7 +7,7 @@ import type { Article } from "@/_types/api";
 
 const MyReviews = async () => {
   const userResponse = await getMe();
-  if (!userResponse.ok) return <Error />;
+  if (!userResponse.ok) return <Error requireLoggedIn />;
   const { data: user } = userResponse;
 
   const [artistResponse, authorResponse] = await Promise.all([
