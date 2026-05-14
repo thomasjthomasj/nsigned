@@ -7,3 +7,4 @@ beautifulsoup4
 PyJWT==2.12.*
 markdown-it-py==4.2.*
 gunicorn
+whitenoise
