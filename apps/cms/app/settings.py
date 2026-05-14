@@ -60,6 +60,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:9000",
+    "https://nsigned.vercel.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
