@@ -13,6 +13,7 @@ def set_auth_cookie(response, name, value):
     httponly=True,
     secure=not DEBUG,
     samesite="Lax" if DEBUG else "None",
+    domain=None if DEBUG else ".nsigned.com"
   )
 
 def parse_markdown(text, allow_links=False):
