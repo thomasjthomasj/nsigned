@@ -5,8 +5,7 @@ import { getMe } from "@/_utils/api.server";
 
 const EditProfile = async () => {
   const userResponse = await getMe();
-  if (!userResponse.ok)
-    return <Error errorResponse={userResponse.data} requireLoggedIn />;
+  if (!userResponse.ok) return <Error requireLoggedIn />;
   const { data: user } = userResponse;
 
   return (

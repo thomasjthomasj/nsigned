@@ -19,9 +19,9 @@ const Profile = async ({ params }: ProfileProps) => {
   });
   if (!profileResponse.ok)
     return profileResponse.status === 404 ? (
-      <Error errorResponse={profileResponse.data} error="This user not found" />
+      <Error error="This user not found" />
     ) : (
-      <Error errorResponse={profileResponse.data} />
+      <Error />
     );
 
   const { data: profile } = profileResponse;

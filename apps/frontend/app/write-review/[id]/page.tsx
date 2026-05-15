@@ -17,13 +17,12 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
     get<ReviewRequest>({ endpoint: `music/review-request/${id}` }),
   ]);
 
-  if (!userResponse.ok)
-    return <Error errorResponse={userResponse.data} requireLoggedIn />;
+  if (!userResponse.ok) return <Error requireLoggedIn />;
   if (!reviewRequestResponse.ok)
     return reviewRequestResponse.status === 404 ? (
-      <Error errorResponse={reviewRequestResponse.data} error="Not found" />
+      <Error error="Not found" />
     ) : (
-      <Error errorResponse={reviewRequestResponse.data} />
+      <Error />
     );
 
   const { data: user } = userResponse;

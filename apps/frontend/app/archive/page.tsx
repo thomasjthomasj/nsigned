@@ -26,13 +26,7 @@ const Reviews = async ({ searchParams }: ReviewsProps) => {
     },
   });
 
-  if (!reviewsResponse.ok)
-    return (
-      <Error
-        error="Could't load reviews."
-        errorResponse={reviewsResponse.data}
-      />
-    );
+  if (!reviewsResponse.ok) return <Error error="Could't load reviews." />;
 
   const { data: articles } = reviewsResponse;
 
