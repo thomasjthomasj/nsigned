@@ -96,7 +96,7 @@ export const RequestReviewForm = ({
 
   return (
     <div className="flex flex-col gap-[15px] my-[25px]">
-      {error && <p className="text-red">{error}</p>}
+      {error && <p className="text-primary-500">{error}</p>}
       <FormField
         label="Bandcamp URL"
         name="url"
@@ -104,7 +104,16 @@ export const RequestReviewForm = ({
         onChange={(e) => setUrl(e.target.value)}
       />
       {releaseDetails && (
-        <div className="flex w-full">
+        <div className="flex flex-col gap-[20px] w-full">
+          {releaseDetails.artist_name && (
+            <div className="w-full bg-background-500 p-[15px]">
+              <p>
+                Submitting a release for review will tie{" "}
+                <strong>{releaseDetails.artist_name}</strong> to your account,
+                preventing others from requesting reviews for them.
+              </p>
+            </div>
+          )}
           <ReleaseOverview
             artistName={releaseDetails.artist_name}
             title={releaseDetails.title}

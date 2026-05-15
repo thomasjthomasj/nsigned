@@ -47,7 +47,7 @@ export const FormField = ({
           placeholder={placeholder}
         />
       </div>
-      {error && <p className="text-red text-[10px]">{error}</p>}
+      {error && <p className="text-primary-500 text-[10px]">{error}</p>}
     </div>
   );
 };

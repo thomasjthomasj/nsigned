@@ -131,7 +131,7 @@ export const RegisterForm = () => {
         handleSubmit();
       }}
     >
-      {error && <p className="text-red">{error}</p>}
+      {error && <p className="text-primary-500">{error}</p>}
       <div className="flex flex-col w-full gap-[10px]">
         <FormField
           placeholder="Email"
