@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from markdown_it import MarkdownIt
 from urllib.parse import urlsplit, urlunsplit
 from app.settings import DEBUG
@@ -21,6 +22,8 @@ def delete_auth_cookies(response):
   response.delete_cookie("refresh-token", domain=None if DEBUG else ".nsigned.com")
 
 def parse_markdown(text, allow_links=False):
+  if not text:
+    return ""
   blacklist = [
     "heading",
     "code",
@@ -44,3 +47,20 @@ def has_permission(user, role):
   if not allowed_roles:
     raise Exception("Invalid role")
   return user.role in allowed_roles
+
+def get_cache_key(key, id_val=None, get_params=[], get_data={}):
+  cache_key = f"NSOGNED:{key}{f":{id_val}" if id_val else ""}"
+
+  get_params.sort()
+  for param in get_params:
+    val = get_data
+    if val:
+      cache_key = f"{cache_key}:{param}={val}"
+
+  return cache_key
+
+def delete_cache(key, id=None, get_params=[]):
+  cache.delete(get_cache_key(key))
+
+def delete_cache_prefix(prefix):
+  cache.delete_pattern(f"{get_cache_key(prefix)}:*")

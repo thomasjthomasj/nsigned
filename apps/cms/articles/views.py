@@ -2,12 +2,14 @@ from datetime import datetime, timedelta
 from django.db.models import Q
 from django.db import transaction
 from slugify import slugify
-from app.decorators import logged_in, method
+from app.decorators import logged_in, method, cached
 from app.http import Ok, BadRequest, NotFound
-from music.models import Release, ReviewRequest
+from app.utils import delete_cache, delete_cache_prefix
+from music.models import ReviewRequest
 from .models import Article, Comment, CommentContent
 
 @method("GET")
+@cached("ARTICLES", get_params=["page", "page_size", "author", "artist_user", "artist", "type", "exclude"])
 def list(request):
   page = int(request.GET.get("page", 1))
   page_size = int(request.GET.get("page_size", 20))
@@ -57,6 +59,7 @@ def list(request):
   )
 
 @method("GET")
+@cached("ARTICLE", id_kwarg="article_id")
 def article(request, article_id):
   article = Article.cms.prefetched.get(pk=article_id)
   if not article:
@@ -92,6 +95,7 @@ def create(request):
     content=content,
     review_request=review_request,
   )
+  delete_cache_prefix("ARTICLES")
 
   return Ok(article.serialized)
 
@@ -138,10 +142,12 @@ def comment(request, article_id):
   )
 
   reloaded = Comment.objects.prefetched.get(id=comment.id)
+  delete_cache("ARTICLE-COMMENTS", id_val=article_id)
 
   return Ok(reloaded.serialized)
 
 @method("GET")
+@cached("ARTICLE-COMMENTS", id_kwarg="article_id")
 def get_comments(request, article_id):
   comments = Comment.objects.prefetched.filter(
     article__id=article_id
