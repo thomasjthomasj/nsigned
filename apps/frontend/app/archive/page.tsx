@@ -1,7 +1,7 @@
-import { Error } from "@/_components/Error";
 import { PageLayout } from "@/_components/PageLayout";
 import { ReviewArchive } from "@/_components/ReviewArchive";
 import { get } from "@/_utils/api.server";
+import { handleError } from "@/_utils/errors.server";
 
 import type { Article } from "@/_types/api";
 
@@ -26,7 +26,11 @@ const Reviews = async ({ searchParams }: ReviewsProps) => {
     },
   });
 
-  if (!reviewsResponse.ok) return <Error error="Could't load reviews." />;
+  if (!reviewsResponse.ok)
+    return handleError({
+      errorResponse: reviewsResponse,
+      message: "Could not load reviews",
+    });
 
   const { data: articles } = reviewsResponse;
 

@@ -1,9 +1,9 @@
 import { Blog } from "@/_components/Blog";
-import { Error } from "@/_components/Error";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
 import { get } from "@/_utils/api.server";
+import { handleError } from "@/_utils/errors.server";
 
-import type { Article } from "@/_types/api";
+import type { Article, ErrorResponse } from "@/_types/api";
 
 const Home = async () => {
   const [blogResponse, albumResponse, trackResponse] = await Promise.all([
@@ -24,12 +24,14 @@ const Home = async () => {
     }),
   ]);
 
-  const ok = blogResponse.ok && albumResponse.ok && trackResponse.ok;
-
-  if (!ok)
-    return (
-      <Error error="The articles didn't load properly, please check back later." />
-    );
+  const handleArticlesError = (r: ErrorResponse) =>
+    handleError({
+      errorResponse: r,
+      message: "The articles didn't load properly, please check back later",
+    });
+  if (!blogResponse.ok) return handleArticlesError(blogResponse);
+  if (!albumResponse.ok) return handleArticlesError(albumResponse);
+  if (!trackResponse.ok) return handleArticlesError(trackResponse);
 
   const { data: blog } = blogResponse;
   const { data: albums } = albumResponse;

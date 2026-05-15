@@ -2,7 +2,14 @@
 
 import { getEndpoint, getQueryString } from "@/_utils/api";
 
-import type { QueryParams, Json, LoggedInUser, Response } from "@/_types/api";
+import type {
+  Error,
+  ErrorStatus,
+  QueryParams,
+  Json,
+  LoggedInUser,
+  Response,
+} from "@/_types/api";
 
 type CookieOptions =
   | {
@@ -39,7 +46,7 @@ export const get = async <TJson = {}>({
   endpoint: string;
   data?: QueryParams;
 } & CookieOptions): Promise<Response<TJson>> => {
-  const makeRequest = async () => {
+  const makeRequest = async (): Promise<Response<TJson>> => {
     const baseUrl = getEndpoint(endpoint);
     const queryString = getQueryString(data);
     const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
@@ -50,10 +57,20 @@ export const get = async <TJson = {}>({
       },
       credentials: withCookies ? "include" : "omit",
     });
+
+    const response = await result.json();
+    if (result.ok) {
+      return {
+        ok: true,
+        status: result.status,
+        data: response as TJson,
+      };
+    }
+
     return {
-      ok: result.ok,
-      status: result.status,
-      data: await result.json(),
+      ok: false,
+      status: result.status as ErrorStatus,
+      data: response as Error,
     };
   };
 
@@ -75,7 +92,7 @@ export const post = async <TJson = {}>({
   endpoint: string;
   data?: Json;
 } & CookieOptions): Promise<Response<TJson>> => {
-  const makeRequest = async () => {
+  const makeRequest = async (): Promise<Response<TJson>> => {
     const result = await fetch(getEndpoint(endpoint), {
       method: "POST",
       headers: {
@@ -85,10 +102,18 @@ export const post = async <TJson = {}>({
       body: JSON.stringify(data ?? {}),
     });
     const response = await result.json();
+
+    if (result.ok) {
+      return {
+        ok: true,
+        status: result.status,
+        data: response as TJson,
+      };
+    }
     return {
-      ok: result.ok,
-      status: result.status,
-      data: response,
+      ok: false,
+      status: result.status as ErrorStatus,
+      data: response as Error,
     };
   };
 

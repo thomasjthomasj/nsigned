@@ -1,8 +1,8 @@
-import { Error } from "@/_components/Error";
 import { PageLayout } from "@/_components/PageLayout";
 import { ReleaseOverview } from "@/_components/ReleaseOverview";
 import { CreateArticle } from "@/_components/_forms/CreateArticle";
 import { get, getMe } from "@/_utils/api.server";
+import { handleError } from "@/_utils/errors.server";
 
 import type { ReviewRequest } from "@/_types/api";
 
@@ -17,26 +17,23 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
     get<ReviewRequest>({ endpoint: `music/review-request/${id}` }),
   ]);
 
-  if (!userResponse.ok) return <Error requireLoggedIn />;
+  if (!userResponse.ok) return handleError({ errorResponse: userResponse });
   if (!reviewRequestResponse.ok)
-    return reviewRequestResponse.status === 404 ? (
-      <Error error="Not found" />
-    ) : (
-      <Error />
-    );
+    return handleError({ errorResponse: reviewRequestResponse });
 
   const { data: user } = userResponse;
   const { data: reviewRequest } = reviewRequestResponse;
+
   if (reviewRequest.claimed_by?.id !== user.id) {
-    return <Error error="You have not claimed this review." />;
+    return handleError({ message: "You have not claimed this review" });
   }
+
   if (reviewRequest.rejected_by) {
-    return (
-      <Error error="This release has been deemed ineligible for review." />
-    );
+    return handleError({ message: "This release is not eligible for review." });
   }
+
   if (reviewRequest.article) {
-    return <Error error="This release has already been reviewed." />;
+    return handleError({ message: "This release has already been reviewed." });
   }
 
   const { release } = reviewRequest;

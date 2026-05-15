@@ -1,7 +1,7 @@
-import { Error } from "@/_components/Error";
 import { PageLayout } from "@/_components/PageLayout";
 import { ReviewRequestListing } from "@/_components/ReviewRequestListing";
 import { get, getMe } from "@/_utils/api.server";
+import { handleError } from "@/_utils/errors.server";
 
 import type { ReviewRequest } from "@/_types/api";
 
@@ -20,12 +20,11 @@ const ReviewRequests = async () => {
     }),
   ]);
 
-  if (
-    !userResponse.ok ||
-    !pendingReviewRequestsResponse.ok ||
-    !claimedReviewRequestsResponse.ok
-  )
-    return <Error requireLoggedIn />;
+  if (!userResponse.ok) return handleError({ errorResponse: userResponse });
+  if (!pendingReviewRequestsResponse.ok)
+    return handleError({ errorResponse: pendingReviewRequestsResponse });
+  if (!claimedReviewRequestsResponse.ok)
+    return handleError({ errorResponse: claimedReviewRequestsResponse });
 
   const user = userResponse.data;
   const { data: claimedReviewRequests } = claimedReviewRequestsResponse;

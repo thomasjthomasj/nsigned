@@ -3,10 +3,10 @@ import { Fragment } from "react";
 
 import { AuthorCard } from "@/_components/AuthorCard";
 import { Comments } from "@/_components/Comments";
-import { Error } from "@/_components/Error";
 import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
 import { get } from "@/_utils/api.server";
+import { handleError } from "@/_utils/errors.server";
 import { parseISODate, sanitizeHtml } from "@/_utils/text";
 
 import type {
@@ -35,16 +35,14 @@ const Article = async ({ params }: ArticleProps) => {
     }),
   ]);
   if (!articleResponse.ok)
-    return (
-      <Error
-        error={articleResponse.status === 404 ? "Article not found" : undefined}
-      />
-    );
+    return handleError({
+      errorResponse: articleResponse,
+    });
 
   const article = articleResponse.data;
-  if (!article.content) {
-    return <Error />;
-  }
+  if (!article.content)
+    return handleError({ message: "Article has no content" });
+
   if (article.slug !== slug) return redirect(`/article/${id}/${slug}`);
   const { title, created_by: author, release } = article;
 

@@ -1,13 +1,13 @@
-import { Error } from "@/_components/Error";
 import { MyReviewsListing } from "@/_components/MyReviewsListing";
 import { PageLayout } from "@/_components/PageLayout";
 import { get, getMe } from "@/_utils/api.server";
+import { handleError } from "@/_utils/errors.server";
 
 import type { Article } from "@/_types/api";
 
 const MyReviews = async () => {
   const userResponse = await getMe();
-  if (!userResponse.ok) return <Error requireLoggedIn />;
+  if (!userResponse.ok) return handleError({ errorResponse: userResponse });
   const { data: user } = userResponse;
 
   const [artistResponse, authorResponse] = await Promise.all([
@@ -25,7 +25,8 @@ const MyReviews = async () => {
     }),
   ]);
 
-  if (!artistResponse.ok || !authorResponse.ok) return <Error />;
+  if (!artistResponse.ok) return handleError({ errorResponse: artistResponse });
+  if (!authorResponse.ok) return handleError({ errorResponse: authorResponse });
 
   return (
     <PageLayout title="Your articles">

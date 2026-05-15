@@ -4,7 +4,13 @@ import { cookies } from "next/headers";
 
 import { getEndpoint, getQueryString } from "@/_utils/api";
 
-import type { LoggedInUser, QueryParams, Response } from "@/_types/api";
+import type {
+  Error,
+  ErrorStatus,
+  LoggedInUser,
+  QueryParams,
+  Response,
+} from "@/_types/api";
 
 type GetParams = {
   endpoint: string;
@@ -18,7 +24,7 @@ export const get = async <TJson = {}>({
   withAuth = true,
 }: GetParams): Promise<Response<TJson>> => {
   const cookieHeader = (await cookies()).toString();
-  const makeRequest = async (cookie: string) => {
+  const makeRequest = async (cookie: string): Promise<Response<TJson>> => {
     const baseUrl = getEndpoint(endpoint);
     const queryString = getQueryString(data);
     const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
@@ -30,10 +36,19 @@ export const get = async <TJson = {}>({
       cache: "no-store",
     });
 
+    const resultData = await result.json();
+    if (result.ok) {
+      return {
+        ok: true,
+        status: result.status,
+        data: resultData as TJson,
+      };
+    }
+
     return {
-      ok: result.ok,
-      status: result.status,
-      data: await result.json(),
+      ok: false,
+      status: result.status as ErrorStatus,
+      data: resultData as Error,
     };
   };
 

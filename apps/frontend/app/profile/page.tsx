@@ -1,11 +1,11 @@
-import { Error } from "@/_components/Error";
 import { PageLayout } from "@/_components/PageLayout";
 import { ProfileForm } from "@/_components/_forms/ProfileForm";
 import { getMe } from "@/_utils/api.server";
+import { handleError } from "@/_utils/errors.server";
 
 const EditProfile = async () => {
   const userResponse = await getMe();
-  if (!userResponse.ok) return <Error requireLoggedIn />;
+  if (!userResponse.ok) return handleError({ errorResponse: userResponse });
   const { data: user } = userResponse;
 
   return (

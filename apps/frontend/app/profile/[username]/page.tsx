@@ -1,8 +1,8 @@
-import { Error } from "@/_components/Error";
 import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
 import { get } from "@/_utils/api.server";
-import { sanitizeHtml, upper } from "@/_utils/text";
+import { handleError } from "@/_utils/errors.server";
+import { sanitizeHtml } from "@/_utils/text";
 
 import type { Article, Profile as ProfileType } from "@/_types/api";
 
@@ -18,11 +18,7 @@ const Profile = async ({ params }: ProfileProps) => {
     endpoint: `users/get/${username}`,
   });
   if (!profileResponse.ok)
-    return profileResponse.status === 404 ? (
-      <Error error="This user not found" />
-    ) : (
-      <Error />
-    );
+    return handleError({ errorResponse: profileResponse });
 
   const { data: profile } = profileResponse;
 
