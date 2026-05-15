@@ -16,6 +16,10 @@ def set_auth_cookie(response, name, value):
     domain=None if DEBUG else ".nsigned.com"
   )
 
+def delete_auth_cookies(response):
+  response.delete_cookie("access-token", domain=None if DEBUG else ".nsigned.com")
+  response.delete_cookie("refresh-token", domain=None if DEBUG else ".nsigned.com")
+
 def parse_markdown(text, allow_links=False):
   blacklist = [
     "heading",

@@ -5,7 +5,8 @@ from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out
 from app.http import Ok, NotFound, BadRequest, Unauthorized
-from app.utils import set_auth_cookie, parse_markdown
+from app.settings import DEBUG
+from app.utils import set_auth_cookie, parse_markdown, delete_auth_cookies
 from links.models import Link
 from .auth import issue_tokens, decode
 from .models import User
@@ -136,8 +137,7 @@ def login(request):
 @logged_in()
 def logout(request):
   response = Ok()
-  response.delete_cookie("access-token")
-  response.delete_cookie("refresh-token")
+  delete_auth_cookies(response)
   return response
 
 @method("POST")
