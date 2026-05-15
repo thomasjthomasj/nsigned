@@ -24,7 +24,7 @@ export const get = async <TJson = {}>({
   withAuth = true,
 }: GetParams): Promise<Response<TJson>> => {
   const cookieHeader = (await cookies()).toString();
-  console.error((await cookies()).getAll())
+
   const makeRequest = async (cookie: string): Promise<Response<TJson>> => {
     const baseUrl = getEndpoint(endpoint);
     const queryString = getQueryString(data);

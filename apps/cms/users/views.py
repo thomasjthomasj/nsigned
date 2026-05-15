@@ -80,7 +80,7 @@ def register(request):
 
   email = data.get("email")
   username = data.get("username")
-  display_name = data.get("display_name")
+  display_name = data.get("display_name", username)
   password = data.get("password")
   password_confirm = data.get("password_confirm")
 
@@ -114,15 +114,13 @@ def register(request):
 @logged_out()
 def login(request):
   data = request.json
-
-  username = data.get("username")
-  email = data.get("email")
+  username_or_email = data.get("username_or_email")
   password = data.get("password")
 
   try:
-    user = User.objects.authenticate(email=email, username=username, password=password)
+    user = User.objects.authenticate(username_or_email=username_or_email, password=password)
   except PermissionDenied:
-    return Unauthorized("Incorrect password")
+    return Unauthorized("Incorrect login details, please check and try again.")
   user.last_login = datetime.now(timezone.utc)
   user.save()
 

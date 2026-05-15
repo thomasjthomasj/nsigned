@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { PageLayout } from "@/_components/PageLayout";
-import { RegisterForm } from "@/_components/_forms/RegisterForm";
+import { LoginForm } from "@/_components/_forms/LoginForm";
 import { getMe } from "@/_utils/api.server";
 
 type JoinProps = {
@@ -18,9 +18,9 @@ const Join = async ({ searchParams }: JoinProps) => {
   }
 
   return (
-    <PageLayout title="Join">
+    <PageLayout title="Log in">
       <div className="w-full">
-        <RegisterForm />
+        <LoginForm />
       </div>
     </PageLayout>
   );

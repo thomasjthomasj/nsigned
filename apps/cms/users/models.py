@@ -22,15 +22,17 @@ class UserManager(BaseUserManager):
     user.save()
     return user
 
-  def authenticate(self, password, **kwargs):
-    email = kwargs["email"]
-    username = kwargs["username"]
-    if not email and not username:
+  def authenticate(self, password, username_or_email):
+    if not username_or_email:
       raise ValueError("Either a username or email must be provided")
-    get_kwargs = { "username": username } if username else { "email": email }
-    try:
-      user = super().get(**get_kwargs)
-    except User.DoesNotExist:
+    user = None
+    for kwargs in ({ "username": username_or_email }, { "email": username_or_email }):
+      try:
+        user = super().get(**kwargs)
+      except User.DoesNotExist:
+        pass
+
+    if not user:
       raise PermissionDenied
 
     if not check_password(password, user.password):
