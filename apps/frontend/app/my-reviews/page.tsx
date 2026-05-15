@@ -1,7 +1,7 @@
 import { MyReviewsListing } from "@/_components/MyReviewsListing";
 import { PageLayout } from "@/_components/PageLayout";
+import { handleError } from "@/_fns/handle-error";
 import { get, getMe } from "@/_utils/api.server";
-import { handleError } from "@/_utils/errors.server";
 
 import type { Article } from "@/_types/api";
 

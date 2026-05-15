@@ -1,7 +1,7 @@
 import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
+import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
-import { handleError } from "@/_utils/errors.server";
 import { sanitizeHtml } from "@/_utils/text";
 
 import type { Article, Profile as ProfileType } from "@/_types/api";

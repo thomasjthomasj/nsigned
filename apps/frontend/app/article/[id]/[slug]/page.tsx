@@ -5,8 +5,8 @@ import { AuthorCard } from "@/_components/AuthorCard";
 import { Comments } from "@/_components/Comments";
 import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
+import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
-import { handleError } from "@/_utils/errors.server";
 import { parseISODate, sanitizeHtml } from "@/_utils/text";
 
 import type {

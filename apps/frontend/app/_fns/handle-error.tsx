@@ -1,6 +1,6 @@
 "use server";
 
-import { HttpError } from "@/_errors";
+import { Error } from "@/_components/Error";
 
 import type { ErrorStatus, ErrorResponse } from "@/_types/api";
 
@@ -40,8 +40,10 @@ export const handleError = async ({
     DEFAULT_MESSAGES[errorStatus] ?? `Error code ${errorStatus}`;
   const errorMessage =
     (showMessage && errorResponse?.data?.error) || message || defaultError;
+  const requireLoggedIn = errorStatus === 401;
 
   // eslint-disable-next-line no-console
   console.error("ERROR THROWN", errorStatus, errorMessage);
-  throw new HttpError(errorMessage, errorStatus);
+
+  return <Error error={errorMessage} requireLoggedIn={requireLoggedIn} />;
 };

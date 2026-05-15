@@ -1,7 +1,7 @@
 import { Blog } from "@/_components/Blog";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
+import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
-import { handleError } from "@/_utils/errors.server";
 
 import type { Article, ErrorResponse } from "@/_types/api";
 

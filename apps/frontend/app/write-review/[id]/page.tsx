@@ -1,8 +1,8 @@
 import { PageLayout } from "@/_components/PageLayout";
 import { ReleaseOverview } from "@/_components/ReleaseOverview";
 import { CreateArticle } from "@/_components/_forms/CreateArticle";
+import { handleError } from "@/_fns/handle-error";
 import { get, getMe } from "@/_utils/api.server";
-import { handleError } from "@/_utils/errors.server";
 
 import type { ReviewRequest } from "@/_types/api";
 
