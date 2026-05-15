@@ -23,7 +23,7 @@ const ErrorPage = ({ error }: ErrorPageProps) => {
 
   useEffect(() => {
     // eslint-disable-next-line no-console
-    console.error("ERROR CAUGHT", error);
+    console.error("ERROR CAUGHT", error, error.digest);
   }, [error]);
 
   return <ErrorComponent error={message} requireLoggedIn={requireLoggedIn} />;
