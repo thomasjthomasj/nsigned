@@ -10,10 +10,15 @@ type ErrorPageProps = {
 };
 
 const ErrorPage = ({ error }: ErrorPageProps) => {
-  const isHttpError = "status" in error;
-  const status = isHttpError ? error.status : 500;
-  const message =
-    (isHttpError && error.message) || "Something somewhere went very wrong.";
+  const { status, message } = (() => {
+    try {
+      const { status, message } = JSON.parse(error.message);
+      return { status, message };
+    } catch {
+      return { status: 500, message: error.message };
+    }
+  })()
+
   const requireLoggedIn = [401, 403].includes(status);
 
   useEffect(() => {
