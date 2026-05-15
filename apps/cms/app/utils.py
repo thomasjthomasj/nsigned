@@ -59,8 +59,8 @@ def get_cache_key(key, id_val=None, get_params=[], get_data={}):
 
   return cache_key
 
-def delete_cache(key, id=None, get_params=[]):
-  cache.delete(get_cache_key(key))
+def delete_cache(key, id_val=None, get_params=[], get_data={}):
+  cache.delete(get_cache_key(key, id_val=id_val, get_params=get_params, get_data=get_data))
 
 def delete_cache_prefix(prefix):
   cache.delete_pattern(f"{get_cache_key(prefix)}:*")

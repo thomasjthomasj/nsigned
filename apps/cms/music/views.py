@@ -1,10 +1,12 @@
 from django.db.models import Q
 from django.db import transaction
 from app.http import Ok, BadRequest, NotFound, Forbidden
-from app.decorators import logged_in, method
+from app.decorators import logged_in, method, cached
+from app.utils import delete_cache, delete_cache_prefix
 from .bandcamp import get_release_details, BandcampError
 from .models import Release, ReviewRequest
 
+@cached("RELEASE-DETAILS", get_params=["url"])
 @logged_in()
 def release_details(request):
   url = request.GET.get("url")
@@ -58,10 +60,13 @@ def request_review(request):
     created_by=user,
   )
 
+  delete_cache("REVIEW-REQUESTS")
+
   return Ok(review_request.serialized)
 
 @method("GET")
 @logged_in()
+@cached("REVIEW-REQUEST", id_kwarg="id")
 def get_review_request(request, id):
   try:
     review_request = ReviewRequest.objects.get(id=id)
@@ -91,6 +96,8 @@ def claim_review_request(request):
     return NotFound()
   review_request.claimed_by = request.site_user
   review_request.save()
+  delete_cache("REVIEW-REQUESTS")
+  delete_cache("REVIEW-REQUEST", id_val=review_request_id)
 
   return Ok(review_request.serialized)
 
@@ -106,11 +113,14 @@ def reject_review_request(request):
     return NotFound()
   review_request.rejected_by = request.site_user
   review_request.save()
+  delete_cache("REVIEW-REQUESTS")
+  delete_cache("REVIEW-REQUEST", id_val=review_request_id)
 
   return Ok(review_request.serialized)
 
 @method("GET")
 @logged_in()
+@cached("REVIEW-REQUESTS")
 def pending_review_requests(request):
   review_requests = ReviewRequest.objects \
     .prefetched \
