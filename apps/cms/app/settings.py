@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", default='django-insecure-k*(#otnubo_fh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1,cms,nsigned.onrender.com").split(",")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1,cms,nsigned.onrender.com,nsigned.com").split(",")
 
 # Application definition
 
@@ -61,11 +61,13 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:9000",
     "https://nsigned.vercel.app",
+    "https://nsigned.com",
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_TRUSTED_ORIGINS = [
     "http://localhost:9000",
-    "https://nsigned.vercel.app"
+    "https://nsigned.vercel.app",
+    "https://nsigned.com",
 ]
 
 ROOT_URLCONF = 'app.urls'
