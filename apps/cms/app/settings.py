@@ -63,6 +63,10 @@ CORS_ALLOWED_ORIGINS = [
     "https://nsigned.vercel.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
+CORS_TRUSTED_ORIGINS = [
+    "http://localhost:9000",
+    "https://nsigned.vercel.app"
+]
 
 ROOT_URLCONF = 'app.urls'
 
