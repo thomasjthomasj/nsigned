@@ -81,7 +81,7 @@ class User(AbstractBaseUser):
 
   def update_otp(self):
     otp = get_otp()
-    self.password = otp
+    self.set_password(otp)
     self.password_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
     self.save()
     return otp

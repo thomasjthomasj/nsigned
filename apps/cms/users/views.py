@@ -95,7 +95,6 @@ def request_otp(request):
 
   otp = user.update_otp()
   result = send_otp(user, otp)
-  print(result, result.__dict__)
   if result.status_code != 200:
     raise Exception(f"Received status {result.status_code} when sending OTP.")
   return Ok({ "action": "otp_sent" })
@@ -143,7 +142,6 @@ def login(request):
   data = request.json
   username_or_email = data.get("username_or_email")
   password = data.get("password")
-
   try:
     user = User.objects.authenticate(username_or_email=username_or_email, password=password)
   except PermissionDenied:
