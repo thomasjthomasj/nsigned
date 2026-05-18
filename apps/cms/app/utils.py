@@ -51,9 +51,9 @@ def has_permission(user, role):
 def get_cache_key(key, id_val=None, get_params=[], get_data={}):
   cache_key = f"NSIGNED:{key}{f":{id_val}" if id_val else ""}"
 
-  get_params.sort()
+  get_params.sort(key=str)
   for param in get_params:
-    val = get_data
+    val = get_data.get(param)
     if val:
       cache_key = f"{cache_key}:{param}={val}"
 

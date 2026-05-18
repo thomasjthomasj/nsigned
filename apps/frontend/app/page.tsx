@@ -2,6 +2,7 @@ import { Blog } from "@/_components/Blog";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
+import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 
 import type { Article, ErrorResponse } from "@/_types/api";
 
@@ -11,16 +12,28 @@ const Home = async () => {
       endpoint: "articles",
       data: { type: "blog", page_size: 4 },
       withAuth: false,
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.ARTICLES,
+        getData: { type: "blog", page_size: 4 },
+      }),
     }),
     get<Article[]>({
       endpoint: "articles",
       data: { type: "album" },
       withAuth: false,
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.ARTICLES,
+        getData: { type: "album" },
+      }),
     }),
     get<Article[]>({
       endpoint: "articles",
       data: { type: "track" },
       withAuth: false,
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.ARTICLES,
+        getData: { type: "track" },
+      }),
     }),
   ]);
 

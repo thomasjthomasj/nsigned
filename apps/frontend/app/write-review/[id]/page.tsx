@@ -3,6 +3,7 @@ import { ReleaseOverview } from "@/_components/ReleaseOverview";
 import { CreateArticle } from "@/_components/_forms/CreateArticle";
 import { handleError } from "@/_fns/handle-error";
 import { get, getMe } from "@/_utils/api.server";
+import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 
 import type { ReviewRequest } from "@/_types/api";
 
@@ -14,7 +15,13 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
   const { id } = await params;
   const [userResponse, reviewRequestResponse] = await Promise.all([
     getMe(),
-    get<ReviewRequest>({ endpoint: `music/review-request/${id}` }),
+    get<ReviewRequest>({
+      endpoint: `music/review-request/${id}`,
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.REVIEW_REQUEST,
+        idVal: id,
+      }),
+    }),
   ]);
 
   if (!userResponse.ok) return handleError({ errorResponse: userResponse });

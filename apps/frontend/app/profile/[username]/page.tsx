@@ -2,6 +2,7 @@ import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
+import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 import { sanitizeHtml } from "@/_utils/text";
 
 import type { Article, Profile as ProfileType } from "@/_types/api";
@@ -16,6 +17,7 @@ const Profile = async ({ params }: ProfileProps) => {
   const { username } = await params;
   const profileResponse = await get<ProfileType>({
     endpoint: `users/get/${username}`,
+    cacheKey: getCacheKey({ key: CACHE_KEY.USER, idVal: username }),
   });
   if (!profileResponse.ok)
     return handleError({ errorResponse: profileResponse });
@@ -26,10 +28,26 @@ const Profile = async ({ params }: ProfileProps) => {
     get<Article[]>({
       endpoint: "articles",
       data: { author: profile.username, page_size: 4, type: "review" },
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.ARTICLES,
+        getData: {
+          author: profile.username,
+          page_size: 4,
+          type: "review",
+        },
+      }),
     }),
     get<Article[]>({
       endpoint: "articles",
       data: { artist_user: profile.username, page_size: 4, type: "review" },
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.ARTICLES,
+        getData: {
+          artist_user: profile.username,
+          page_size: 4,
+          type: "review",
+        },
+      }),
     }),
   ]);
 

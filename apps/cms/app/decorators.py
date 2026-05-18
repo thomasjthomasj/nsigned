@@ -51,13 +51,13 @@ def cached(key, id_kwarg=None, get_params=[], timeout=3600):
         )
         cached_body = cache.get(cache_key)
         try:
+          print("cached", cached_body)
           if cached_body:
-            return Ok(json.loads(cached_body))
+            return Ok(cached_body)
         except:
           pass
         response = view(request, *args, **kwargs)
-        response.render()
-        cache.set(cache_key, response.content, timeout=timeout)
+        cache.set(cache_key, json.loads(response.content), timeout=timeout)
         return response
       except:
         traceback.print_exc()

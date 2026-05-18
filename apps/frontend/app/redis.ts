@@ -4,16 +4,7 @@ export const revalidate = 3600;
 
 let redisInstance: IORedis | null = null;
 
-const {
-  REDIS_URL,
-
-  NODE_ENV,
-  REDIS_HOST,
-  REDIS_PORT,
-  REDIS_PASSWORD,
-  UPSTASH_REDIS_KV_REST_API_URL,
-  UPSTASH_REDIS_KV_REST_API_TOKEN,
-} = process.env;
+const { REDIS_URL } = process.env;
 
 export const getRedis = () => {
   if (redisInstance) return redisInstance;

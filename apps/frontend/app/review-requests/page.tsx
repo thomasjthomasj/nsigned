@@ -2,6 +2,7 @@ import { PageLayout } from "@/_components/PageLayout";
 import { ReviewRequestListing } from "@/_components/ReviewRequestListing";
 import { handleError } from "@/_fns/handle-error";
 import { get, getMe } from "@/_utils/api.server";
+import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 
 import type { ReviewRequest } from "@/_types/api";
 
@@ -14,6 +15,9 @@ const ReviewRequests = async () => {
     getMe(),
     get<ReviewRequest[]>({
       endpoint: "music/review-request/pending",
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.REVIEW_REQUESTS,
+      }),
     }),
     get<ReviewRequest[]>({
       endpoint: "music/review-request/claimed",

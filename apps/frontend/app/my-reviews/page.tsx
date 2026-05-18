@@ -2,6 +2,7 @@ import { MyReviewsListing } from "@/_components/MyReviewsListing";
 import { PageLayout } from "@/_components/PageLayout";
 import { handleError } from "@/_fns/handle-error";
 import { get, getMe } from "@/_utils/api.server";
+import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 
 import type { Article } from "@/_types/api";
 
@@ -16,12 +17,20 @@ const MyReviews = async () => {
       data: {
         artist_user: user.username,
       },
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.ARTICLES,
+        getData: { artist_user: user.username },
+      }),
     }),
     get<Article[]>({
       endpoint: "articles",
       data: {
         author: user.username,
       },
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.ARTICLES,
+        getData: { author: user.username },
+      }),
     }),
   ]);
 

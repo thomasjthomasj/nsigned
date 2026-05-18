@@ -7,6 +7,7 @@ import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
+import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 import { parseISODate, sanitizeHtml } from "@/_utils/text";
 
 import type {
@@ -24,14 +25,25 @@ type ArticleProps = {
 
 const Article = async ({ params }: ArticleProps) => {
   const { id, slug } = await params;
+
+  const articleCacheKey = getCacheKey({
+    key: CACHE_KEY.ARTICLE,
+    idVal: id,
+  });
+  const commentsCacheKey = getCacheKey({
+    key: CACHE_KEY.ARTICLE_COMMENTS,
+    idVal: id,
+  });
   const [articleResponse, commentsResponse] = await Promise.all([
     get<ArticleFull>({
       endpoint: `articles/${id}`,
       withAuth: false,
+      cacheKey: articleCacheKey,
     }),
     get<Comment[]>({
       endpoint: `articles/${id}/comments`,
       withAuth: false,
+      cacheKey: commentsCacheKey,
     }),
   ]);
   if (!articleResponse.ok)
@@ -50,6 +62,14 @@ const Article = async ({ params }: ArticleProps) => {
 
   const moreArticles = await (async () => {
     if (!release?.primary_artist) return [];
+    const moreArticlesCacheKey = getCacheKey({
+      key: CACHE_KEY.ARTICLES,
+      getData: {
+        artist: release.primary_artist.slug,
+        page_size: 4,
+        exclude: article.id,
+      },
+    });
     const moreArticlesResponse = await get<ArticleType[]>({
       endpoint: "articles",
       data: {
@@ -57,6 +77,7 @@ const Article = async ({ params }: ArticleProps) => {
         page_size: 4,
         exclude: article.id,
       },
+      cacheKey: moreArticlesCacheKey,
     });
     if (!moreArticlesResponse.ok) return [];
     return moreArticlesResponse.data;

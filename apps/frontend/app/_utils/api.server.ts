@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 
 import { getEndpoint, getQueryString } from "@/_utils/api";
+import { getFromCache } from "@/redis";
 
 import type {
   Error,
@@ -16,14 +17,30 @@ type GetParams = {
   endpoint: string;
   data?: QueryParams;
   withAuth?: boolean;
+  cacheKey?: string;
 };
 
 export const get = async <TJson = {}>({
   endpoint,
   data,
   withAuth = true,
+  cacheKey,
 }: GetParams): Promise<Response<TJson>> => {
   const cookieHeader = (await cookies()).toString();
+
+  if (cacheKey) {
+    const cachedValue = await getFromCache(cacheKey);
+    if (cachedValue) {
+      // eslint-disable-next-line no-console
+      console.error("CACHE HIT");
+      return {
+        ok: true,
+        data: cachedValue as TJson,
+        status: 200,
+        cached: true,
+      };
+    }
+  }
 
   const makeRequest = async (cookie: string): Promise<Response<TJson>> => {
     const baseUrl = getEndpoint(endpoint);
@@ -43,6 +60,7 @@ export const get = async <TJson = {}>({
         ok: true,
         status: result.status,
         data: resultData as TJson,
+        cached: false,
       };
     }
 
@@ -50,6 +68,7 @@ export const get = async <TJson = {}>({
       ok: false,
       status: result.status as ErrorStatus,
       data: resultData as Error,
+      cached: false,
     };
   };
 

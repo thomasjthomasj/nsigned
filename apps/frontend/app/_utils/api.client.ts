@@ -64,6 +64,7 @@ export const get = async <TJson = {}>({
         ok: true,
         status: result.status,
         data: response as TJson,
+        cached: false,
       };
     }
 
@@ -71,6 +72,7 @@ export const get = async <TJson = {}>({
       ok: false,
       status: result.status as ErrorStatus,
       data: response as Error,
+      cached: false,
     };
   };
 
@@ -108,12 +110,14 @@ export const post = async <TJson = {}>({
         ok: true,
         status: result.status,
         data: response as TJson,
+        cached: false,
       };
     }
     return {
       ok: false,
       status: result.status as ErrorStatus,
       data: response as Error,
+      cached: false,
     };
   };
 

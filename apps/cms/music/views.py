@@ -7,7 +7,6 @@ from .bandcamp import get_release_details, BandcampError
 from .models import Release, ReviewRequest
 
 @cached("RELEASE-DETAILS", get_params=["url"])
-@logged_in()
 def release_details(request):
   url = request.GET.get("url")
   if not url:
@@ -65,7 +64,6 @@ def request_review(request):
   return Ok(review_request.serialized)
 
 @method("GET")
-@logged_in()
 @cached("REVIEW-REQUEST", id_kwarg="id")
 def get_review_request(request, id):
   try:
@@ -119,7 +117,6 @@ def reject_review_request(request):
   return Ok(review_request.serialized)
 
 @method("GET")
-@logged_in()
 @cached("REVIEW-REQUESTS")
 def pending_review_requests(request):
   review_requests = ReviewRequest.objects \
