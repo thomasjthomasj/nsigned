@@ -8,57 +8,55 @@ import { FormField } from "@/_components/FormField";
 import { useAuth } from "@/_hooks";
 import { post } from "@/_utils/api.client";
 
+import { OTPForm } from "./OTPForm";
+
 type Errors = {
   usernameOrEmail?: string;
   password?: string;
 };
 
 export const LoginForm = () => {
-  const { user, getUser } = useAuth();
+  const { user } = useAuth();
 
   const [usernameOrEmail, setUsernameOrEmail] = useState<string | null>(null);
-  const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<Errors | null>(null);
 
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  const router = useRouter();
+  const [hasRequestedOTP, setHasRequestedOTP] = useState<boolean>(false);
 
   useEffect(() => {
     setErrors(() => {
       const newErrors: Errors = {};
       const REQ = "This field is required.";
       if (!usernameOrEmail) newErrors.usernameOrEmail = REQ;
-      if (!password) newErrors.password = REQ;
       if (Object.values(newErrors).filter(Boolean).length === 0) return null;
       return newErrors;
     });
-  }, [usernameOrEmail, password]);
+  }, [usernameOrEmail]);
 
   const isValid = useMemo(() => !errors, [errors]);
-
-  const handleLogin = useCallback(async () => {
-    const { data, ok } = await post({
-      endpoint: "users/login",
-      data: { username_or_email: usernameOrEmail, password },
-    });
-    if (!ok) {
-      setError(data.error || "There was an issue logging in.");
-      return;
-    }
-    router.refresh();
-  }, [usernameOrEmail, password, router]);
 
   const handleSubmit = useCallback(async () => {
     if (!isValid) return;
     setIsSubmitting(true);
-    await handleLogin();
-    await getUser();
+    const { ok } = await post({
+      endpoint: "users/request-otp",
+      data: { username_or_email: usernameOrEmail },
+    });
+    if (ok) {
+      setHasRequestedOTP(true);
+    } else {
+      setError("There was a problem sending your password.");
+    }
     setIsSubmitting(false);
-  }, [isValid, handleLogin]);
+  }, [isValid, usernameOrEmail]);
 
   if (user) return null;
+
+  if (hasRequestedOTP && usernameOrEmail) {
+    return <OTPForm usernameOrEmail={usernameOrEmail} />;
+  }
 
   return (
     <form
@@ -77,18 +75,10 @@ export const LoginForm = () => {
           onChange={(e) => setUsernameOrEmail(e.target.value)}
           value={usernameOrEmail ?? ""}
         />
-        <FormField
-          placeholder="Password"
-          name="password"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          value={password}
-          type="password"
-        />
       </div>
       <div>
         <Button
-          label="Log in"
+          label="Request password"
           type="submit"
           disabled={!isValid || isSubmitting}
         />

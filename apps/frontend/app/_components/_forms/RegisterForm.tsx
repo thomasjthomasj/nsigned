@@ -9,6 +9,8 @@ import { useAuth, useCheckUserExists } from "@/_hooks";
 import { post } from "@/_utils/api.client";
 import { validateEmail } from "@/_utils/validation";
 
+import { OTPForm } from "./OTPForm";
+
 type Errors = {
   email?: string;
   username?: string;
@@ -18,16 +20,15 @@ type Errors = {
 };
 
 export const RegisterForm = () => {
-  const { user, getUser } = useAuth();
+  const { user } = useAuth();
 
   const [email, setEmail] = useState<string | null>(null);
   const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [errors, setErrors] = useState<Errors | null>(null);
   const [userEmailExists, setUserEmailExists] = useState<boolean | null>(null);
   const [usernameExists, setUsernameExists] = useState<boolean | null>(null);
   const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
+  const [hasRequestedOTP, setHasRequestedOTP] = useState<boolean>(false);
 
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -59,36 +60,20 @@ export const RegisterForm = () => {
       const newErrors: Errors = {};
       const REQ = "This field is required.";
       if (!email) newErrors.email = REQ;
-      if (!password) newErrors.password = REQ;
       if (email && !validateEmail)
         newErrors.email = "Email address is not valid";
       if (!username) newErrors.username = REQ;
-      if (!confirmPassword) newErrors.confirmPassword = REQ;
       if (userEmailExists === true)
         newErrors.email = "This email is already registered.";
       if (usernameExists === true)
         newErrors.username = "This username already exists.";
-      if (password && password.length < 8)
-        newErrors.password = "Password must be at least 8 characters.";
-      if (confirmPassword && password !== confirmPassword)
-        newErrors.confirmPassword = "Passwords do not match.";
 
       if (Object.values(newErrors).filter(Boolean).length === 0) return null;
       return newErrors;
     });
-  }, [
-    userEmailExists,
-    usernameExists,
-    email,
-    username,
-    password,
-    confirmPassword,
-  ]);
+  }, [userEmailExists, usernameExists, email, username]);
 
-  const showErrors = useMemo(
-    () => email && username && password && confirmPassword,
-    [email, username, password, confirmPassword],
-  );
+  const showErrors = useMemo(() => email && username, [email, username]);
 
   const isValid = useMemo(
     () => !errors && termsAccepted,
@@ -101,27 +86,28 @@ export const RegisterForm = () => {
       data: {
         email,
         username,
-        password,
-        password_confirm: confirmPassword,
       },
       withAuth: false,
     });
     if (!ok) {
       setError(data.error || "There was an issue signing up.");
       return;
+    } else {
+      setHasRequestedOTP(true);
     }
     router.refresh();
-  }, [email, username, password, confirmPassword, router]);
+  }, [email, username, router]);
 
   const handleSubmit = useCallback(async () => {
     if (!isValid) return;
     setIsSubmitting(true);
     await handleRegister();
-    await getUser();
     setIsSubmitting(false);
   }, [isValid, handleRegister]);
 
   if (user) return null;
+
+  if (email && hasRequestedOTP) return <OTPForm usernameOrEmail={email} />;
 
   return (
     <form
@@ -149,23 +135,6 @@ export const RegisterForm = () => {
           required
           value={username}
           error={showErrors ? errors?.username : undefined}
-        />
-        <FormField
-          placeholder="Password"
-          name="password"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          value={password}
-          type="password"
-          error={showErrors ? errors?.password : undefined}
-        />
-        <FormField
-          placeholder="Confirm password"
-          name="confirmPassword"
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          type="password"
-          value={confirmPassword}
-          error={showErrors ? errors?.confirmPassword : undefined}
         />
         <p>
           <input

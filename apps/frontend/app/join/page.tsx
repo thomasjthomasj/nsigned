@@ -11,7 +11,7 @@ type JoinProps = {
 };
 
 const Join = async ({ searchParams }: JoinProps) => {
-  const { redirect: redirectURL } = await searchParams;
+  const redirectURL = (await searchParams).redirect ?? "/profile";
   const userResponse = await getMe();
   if (userResponse.status !== 401) {
     return redirect(redirectURL ?? "/");
@@ -19,8 +19,17 @@ const Join = async ({ searchParams }: JoinProps) => {
 
   return (
     <PageLayout title="Join">
-      <div className="w-full">
-        <RegisterForm />
+      <div className="flex flex-col gap-[10px]">
+        <p>
+          If you already have an account, you can{" "}
+          <a href={`/login${redirectURL ? `?redirect=${redirectURL}` : ""}`}>
+            log in here
+          </a>
+          .
+        </p>
+        <div className="w-full">
+          <RegisterForm />
+        </div>
       </div>
     </PageLayout>
   );
