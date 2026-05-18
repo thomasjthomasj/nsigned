@@ -10,8 +10,6 @@ import { post } from "@/_utils/api.client";
 
 import { OTPForm } from "./OTPForm";
 
-import type { OTP } from "@/_types/api";
-
 type Errors = {
   usernameOrEmail?: string;
   password?: string;
@@ -26,7 +24,6 @@ export const LoginForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasRequestedOTP, setHasRequestedOTP] = useState<boolean>(false);
-  const [hasConsentedEmails, setHasConsentedEmails] = useState<boolean>(false);
 
   useEffect(() => {
     setErrors(() => {
@@ -40,27 +37,25 @@ export const LoginForm = () => {
 
   const isValid = useMemo(() => !errors, [errors]);
 
-
   const handleSubmit = useCallback(async () => {
     if (!isValid) return;
     setIsSubmitting(true);
-    const { data, ok } = await post<OTP>({
+    const { ok } = await post({
       endpoint: "users/request-otp",
       data: { username_or_email: usernameOrEmail },
     });
     if (ok) {
-      setHasConsentedEmails(data.action === "otp_sent")
       setHasRequestedOTP(true);
     } else {
       setError("There was a problem sending your password.");
     }
     setIsSubmitting(false);
-  }, [isValid]);
+  }, [isValid, usernameOrEmail]);
 
   if (user) return null;
 
   if (hasRequestedOTP && usernameOrEmail) {
-    return <OTPForm usernameOrEmail={usernameOrEmail} hasConsented={hasConsentedEmails} />;
+    return <OTPForm usernameOrEmail={usernameOrEmail} />;
   }
 
   return (

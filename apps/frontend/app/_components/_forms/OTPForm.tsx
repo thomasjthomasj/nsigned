@@ -10,10 +10,9 @@ import { post } from "@/_utils/api.client";
 
 type OTPFormProps = {
   usernameOrEmail: string;
-  hasConsented: boolean;
 };
 
-export const OTPForm = ({ usernameOrEmail, hasConsented }: OTPFormProps) => {
+export const OTPForm = ({ usernameOrEmail }: OTPFormProps) => {
   const { user, getUser } = useAuth();
   const [otp, setOTP] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -51,15 +50,7 @@ export const OTPForm = ({ usernameOrEmail, hasConsented }: OTPFormProps) => {
 
   return (
     <div className="flex flex-col gap-[10px]">
-      {hasConsented && <p>
-        Thank you! A single-use password has been sent to your email.
-      </p>}
-      {!hasConsented && <p>
-        Before receiving your single-use password, you will be sent an email to confirm
-        that you are happy to receive emails from _nsigned. The <strong>only</strong> emails
-        this site will send you beyond this are single-use passwords, but if you do not consent
-        then you will be unable to log in.
-      </p>}
+      <p>Thank you! A single-use password has been sent to your email.</p>
       <p>Please check your spam folder if it doesn't arrive.</p>
       <form
         className="flex flex-col gap-[15px] max-w-[450px]"
@@ -81,11 +72,7 @@ export const OTPForm = ({ usernameOrEmail, hasConsented }: OTPFormProps) => {
         </div>
         {!autoSubmit && (
           <div>
-            <Button
-              label="Log in"
-              type="submit"
-              disabled={!isValid}
-            />
+            <Button label="Log in" type="submit" disabled={!isValid} />
           </div>
         )}
       </form>

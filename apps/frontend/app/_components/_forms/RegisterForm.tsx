@@ -92,6 +92,8 @@ export const RegisterForm = () => {
     if (!ok) {
       setError(data.error || "There was an issue signing up.");
       return;
+    } else {
+      setHasRequestedOTP(true);
     }
     router.refresh();
   }, [email, username, router]);
@@ -100,13 +102,12 @@ export const RegisterForm = () => {
     if (!isValid) return;
     setIsSubmitting(true);
     await handleRegister();
-    setHasRequestedOTP(true);
     setIsSubmitting(false);
   }, [isValid, handleRegister]);
 
   if (user) return null;
 
-  if (email && hasRequestedOTP) return <OTPForm usernameOrEmail={email} hasConsented={false} />
+  if (email && hasRequestedOTP) return <OTPForm usernameOrEmail={email} />;
 
   return (
     <form

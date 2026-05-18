@@ -18,7 +18,3 @@ export type Profile = User & { bio: string };
 export type UserExists = {
   user_exists: boolean;
 };
-
-export type OTP = {
-  action: "consent_requested" | "otp_sent",
-}

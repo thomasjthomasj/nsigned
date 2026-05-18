@@ -9,9 +9,10 @@ from app.http import Ok, NotFound, BadRequest, Unauthorized
 from app.utils import set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache
 from links.models import Link
 from .auth import issue_tokens, decode
-from .email import send_otp, request_consent
+from .email import send_otp
 from .models import User
 from .validators import fundraiser_link_validator
+from .utils import get_otp
 
 @logged_in()
 def get_me(request):
@@ -81,17 +82,13 @@ def request_otp(request):
   user = None
   for field in ("username", "email"):
     try:
-      user = User.objects.get(**{field: username_or_email})
+      kwargs = { field: username_or_email }
+      print(kwargs)
+      user = User.objects.get(**kwargs)
     except User.DoesNotExist:
       pass
   if not user:
     return BadRequest()
-
-  if not user.email_consent:
-    result = request_consent(user)
-    if result.status_code != 200:
-      raise Exception(f"Received status {result.status_code} when sending consent email.")
-    return Ok({  "action": "consent_requested" })
 
   otp = user.update_otp()
   result = send_otp(user, otp)
@@ -103,7 +100,7 @@ def request_otp(request):
 @method("POST")
 @logged_out()
 def register(request):
-  required = ["email", "username", "password", "password_confirm"]
+  required = ["email", "username"]
   data = request.json
 
   for field in required:
@@ -123,16 +120,16 @@ def register(request):
     return BadRequest("This username is taken")
 
   with transaction.atomic():
-    otp = user.update_otp()
     user = User.objects.create_user(
       username=username,
       email=email,
-      password=otp,
-      password_expiry=datetime.now(timezone.utc) + timedelta(minutes=10),
+      password=get_otp(),
+      password_expiry=datetime.now(timezone.utc),
       display_name=display_name,
       last_login=datetime.now(timezone.utc)
     )
-    request_consent()
+    otp = user.update_otp()
+    send_otp(user, otp)
 
     return Ok()
 

@@ -29,16 +29,3 @@ def send_otp(user, otp):
       }
     }
   )
-
-def request_consent(user):
-  url = "https://api.goodsender.com/v1/emails/consent"
-  return requests.post(
-    url=url,
-    json={
-      "domain": "nsigned.com",
-      "emails": [
-        { "email": user.email },
-      ]
-    },
-    headers=get_headers(),
-  )

@@ -59,7 +59,6 @@ class User(AbstractBaseUser):
     related_name="fundraiser_owners",
   )
   password_expiry = models.DateTimeField(auto_now_add=True)
-  email_consent = models.BooleanField(default=False)
 
   USERNAME_FIELD = "username"
   REQUIRED_FIELDS = ["username", "email"]
