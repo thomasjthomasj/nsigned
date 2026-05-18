@@ -10,41 +10,24 @@ def get_headers():
     "Content-Type": "application/json",
   }
 
-def send_email(
-  email,
-  subject,
-  body,
-  fromAddress="noreply@nsigned.com",
-  fromName="_nsigned"
-):
-  url = "https://api.goodsender.com/v1/emails/send"
+def send_otp(user, otp):
+  url = "https://api.goodsender.com/v1/emails/template"
   return requests.post(
     url=url,
-    json={
-      "emails": [{
-        "from": { "email": fromAddress, "name": fromName },
-        "to": [{ "email": email }],
-        "subject": subject,
-        "text_content": body,
-      }],
-    },
     headers=get_headers(),
-  )
-
-def send_otp(user, otp):
-  message = f"""
-Hello {user.display_name}
-
-Here is your single use password for _nsigned.
-
-{otp}
-
-Copy and paste it onto the login form (https://nsigned.com/login) to sign in.
-"""
-  return send_email(
-    email=user.email,
-    subject="Welcome to _nsigned",
-    body=message,
+    json={
+      "from": { "email": "noreply@nsigned.com", "name": "_nsigned" },
+      "to": { "email": user.email, "name": user.display_name },
+      "subject": "Welcome to _nsigned",
+      "template": {
+        "template_id": "otp_code",
+        "variables": {
+          "app_name": "_nsigned",
+          "otp_code": otp,
+          "expiry_minutes": "10",
+        }
+      }
+    }
   )
 
 def request_consent(user):
