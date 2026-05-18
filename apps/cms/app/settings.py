@@ -29,6 +29,11 @@ DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1,cms,nsigned.onrender.com,api.nsigned.com").split(",")
 
+GOODSENDER = {
+  "SECRET": os.environ.get("GOODSENDER_SECRET"),
+  "ID": os.environ.get("GOODSENDER_ID"),
+}
+
 # Application definition
 
 INSTALLED_APPS = [

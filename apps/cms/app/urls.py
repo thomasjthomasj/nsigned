@@ -6,4 +6,5 @@ urlpatterns = [
     path('articles/', include("articles.urls")),
     path("music/", include("music.urls")),
     path('users/', include("users.urls")),
+    path("webhooks/", include("webhooks.urls")),
 ]

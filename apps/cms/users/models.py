@@ -1,10 +1,11 @@
+from datetime import datetime, timedelta, timezone
 from django.db import models
 from django.utils.functional import cached_property
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import PermissionDenied
-from .validators import fundraiser_link_validator
+from .utils import get_otp
 
 class UserManager(BaseUserManager):
   def create_user(self, username, email, password, **kwargs):
@@ -57,6 +58,8 @@ class User(AbstractBaseUser):
     on_delete=models.CASCADE,
     related_name="fundraiser_owners",
   )
+  password_expiry = models.DateTimeField(auto_now_add=True)
+  email_consent = models.BooleanField(default=False)
 
   USERNAME_FIELD = "username"
   REQUIRED_FIELDS = ["username", "email"]
@@ -75,3 +78,10 @@ class User(AbstractBaseUser):
       "role": self.role,
       "fundraiser_link": self.fundraiser_link.url if self.fundraiser_link else None,
     }
+
+  def update_otp(self):
+    otp = get_otp()
+    self.password = otp
+    self.password_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
+    self.save()
+    return otp

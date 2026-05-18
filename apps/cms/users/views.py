@@ -1,4 +1,5 @@
 import jwt
+from datetime import timezone, timedelta
 from django.db import transaction
 from django.core.validators import validate_email
 from datetime import datetime, timezone
@@ -8,6 +9,7 @@ from app.http import Ok, NotFound, BadRequest, Unauthorized
 from app.utils import set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache
 from links.models import Link
 from .auth import issue_tokens, decode
+from .email import send_otp, request_consent
 from .models import User
 from .validators import fundraiser_link_validator
 
@@ -71,6 +73,36 @@ def update(request):
 
 @method("POST")
 @logged_out()
+def request_otp(request):
+  data = request.json
+  username_or_email = data["username_or_email"]
+  if not username_or_email:
+    return BadRequest("Must provide `username_or_email`")
+  user = None
+  for field in ("username", "email"):
+    try:
+      user = User.objects.get(**{field: username_or_email})
+    except User.DoesNotExist:
+      pass
+  if not user:
+    return BadRequest()
+
+  if not user.email_consent:
+    result = request_consent(user)
+    if result.status_code != 200:
+      raise Exception(f"Received status {result.status_code} when sending consent email.")
+    return Ok({  "action": "consent_requested" })
+
+  otp = user.update_otp()
+  result = send_otp(user, otp)
+  print(result, result.__dict__)
+  if result.status_code != 200:
+    raise Exception(f"Received status {result.status_code} when sending OTP.")
+  return Ok({ "action": "otp_sent" })
+
+
+@method("POST")
+@logged_out()
 def register(request):
   required = ["email", "username", "password", "password_confirm"]
   data = request.json
@@ -82,11 +114,6 @@ def register(request):
   email = data.get("email")
   username = data.get("username")
   display_name = data.get("display_name", username)
-  password = data.get("password")
-  password_confirm = data.get("password_confirm")
-
-  if not password == password_confirm:
-    return BadRequest("`password` does not match `password_confirm`")
 
   email_exists = User.objects.filter(email=email).exists()
   if email_exists:
@@ -97,19 +124,18 @@ def register(request):
     return BadRequest("This username is taken")
 
   with transaction.atomic():
+    otp = user.update_otp()
     user = User.objects.create_user(
       username=username,
       email=email,
-      password=password,
+      password=otp,
+      password_expiry=datetime.now(timezone.utc) + timedelta(minutes=10),
       display_name=display_name,
       last_login=datetime.now(timezone.utc)
     )
-    tokens = issue_tokens(user)
-    response = Ok()
-    set_auth_cookie(response, "access-token", tokens["access"])
-    set_auth_cookie(response, "refresh-token", tokens["refresh"])
+    request_consent()
 
-    return response
+    return Ok()
 
 @method("POST")
 @logged_out()
@@ -122,7 +148,11 @@ def login(request):
     user = User.objects.authenticate(username_or_email=username_or_email, password=password)
   except PermissionDenied:
     return Unauthorized("Incorrect login details, please check and try again.")
+  if user.password_expiry < datetime.now(timezone.utc):
+    return Unauthorized("One-time password is no longer valid.")
+
   user.last_login = datetime.now(timezone.utc)
+  user.password_expiry = datetime.now(timezone.utc)
   user.save()
 
   tokens = issue_tokens(user)
