@@ -31,8 +31,6 @@ export const get = async <TJson = {}>({
   if (cacheKey) {
     const cachedValue = await getFromCache(cacheKey);
     if (cachedValue) {
-      // eslint-disable-next-line no-console
-      console.error("CACHE HIT");
       return {
         ok: true,
         data: cachedValue as TJson,
