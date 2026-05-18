@@ -51,7 +51,6 @@ def cached(key, id_kwarg=None, get_params=[], timeout=3600):
         )
         cached_body = cache.get(cache_key)
         try:
-          print("cached", cached_body)
           if cached_body:
             return Ok(cached_body)
         except:
