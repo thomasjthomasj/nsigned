@@ -56,6 +56,7 @@ def cached(key, id_kwarg=None, get_params=[], timeout=3600):
         except:
           pass
         response = view(request, *args, **kwargs)
+        response.render()
         cache.set(cache_key, response.content, timeout=timeout)
         return response
       except:
