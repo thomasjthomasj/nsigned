@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out, cached
 from app.http import Ok, NotFound, BadRequest, Unauthorized
-from app.utils import set_auth_cookie, parse_markdown, delete_auth_cookies
+from app.utils import set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache
 from links.models import Link
 from .auth import issue_tokens, decode
 from .models import User
@@ -66,6 +66,7 @@ def update(request):
   if bio:
     user.bio = bio
   user.save()
+  delete_cache("USER", id_val=user.username)
   return Ok(user.serialized)
 
 @method("POST")
