@@ -13,6 +13,7 @@
     "@fortawesome/fontawesome-svg-core": "*",
     "@fortawesome/free-solid-svg-icons": "*",
     "@fortawesome/react-fontawesome": "*",
+    "@vercel/analytics": "^2.0.1",
     "isomorphic-dompurify": "2.20.0",
     "ioredis": "^5.10.1",
     "lodash": "^4.17.21",

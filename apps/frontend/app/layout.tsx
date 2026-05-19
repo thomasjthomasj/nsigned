@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { CookieNotice } from "@/_components/CookieNotice";
 import { Footer } from "@/_components/Footer";
 import { Header } from "@/_components/Header";
 import { CookiesProvider } from "@/_components/_providers/CookiesProvider";
@@ -44,6 +45,7 @@ export default function RootLayout({
                   <div className="w-full">{children}</div>
                 </div>
               </main>
+              <CookieNotice />
               <Footer />
             </div>
           </body>
