@@ -149,7 +149,7 @@ const Article = async ({ params }: ArticleProps) => {
           )}
         </div>
         {release && <Comments article={article} comments={comments} />}
-        {release?.primary_artist && moreArticles.length && (
+        {release?.primary_artist && !!moreArticles.length && (
           <div className="">
             <MoreReviews
               articles={moreArticles}

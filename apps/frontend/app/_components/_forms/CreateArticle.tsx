@@ -7,7 +7,6 @@ import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { WordCount } from "@/_components/WordCount";
 import { post } from "@/_utils/api.client";
-import { getWordCount } from "@/_utils/text";
 
 import type { Article, ReviewRequest } from "@/_types/api";
 
@@ -15,7 +14,7 @@ type CreateArticleProps = {
   reviewRequest?: ReviewRequest;
 };
 
-const MIN_WORDS = 300;
+const MIN_WORDS = 200;
 const MAX_WORDS = 1500;
 
 export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {

@@ -31,10 +31,24 @@ export const ReviewRequestListing = ({
     }
   })();
 
+  const helpText = (() => {
+    switch (type) {
+      case "pending":
+        return "Claiming a release for review attaches you to it and prevents others from reviewing before you.";
+      case "claimed":
+        return "These are releases that you have already claimed for review.";
+      default:
+        return "These are your releases that have not yet been reviewed.";
+    }
+  })();
+
   return (
     <div className="flex-1">
       <div className="flex flex-col w-full gap-[15px]">
-        <h3>{title}</h3>
+        <div>
+          <h3>{title}</h3>
+          <p>{helpText}</p>
+        </div>
         {reviewRequests.map((r, i) => (
           <div
             className={classNames("grid w-full p-[7px]", {
