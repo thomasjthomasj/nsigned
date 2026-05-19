@@ -87,7 +87,7 @@ export const Menu = () => {
       link: "https://docs.google.com/forms/d/e/1FAIpQLSfPoSCGRfsqlxlyIz9WisoZAinJU9A7KesnTiz61N3cJ_aunA/viewform?usp=publish-editor",
       primary: false,
       external: true,
-    })
+    });
 
     return items;
   }, [user]);

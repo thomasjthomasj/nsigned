@@ -3,7 +3,7 @@ import classNames from "classnames";
 type ButtonProps = {
   className?: string;
   disabled?: boolean;
-  label: string;
+  label: React.ReactNode;
   type?: "button" | "submit" | "reset";
   onClick?: () => void;
 };

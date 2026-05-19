@@ -72,8 +72,19 @@ class Article(Creatable):
     content = get_content(self.contents)
     return article | { "content": {
       "id": content.id,
-      "content": parse_markdown(content.content, has_permission(self.created_by, "editor"))
+      "content": parse_markdown(content.content, has_permission(self.created_by, "editor")),
+      "raw": content.content,
     } if content else None }
+
+  @transaction.atomic()
+  def update_content(self, content, user):
+    self.contents.update(active=False)
+    ArticleContent.objects.create(
+      article=self,
+      content=content,
+      created_by=user,
+      active=True,
+    )
 
 class ArticleContent(Creatable):
   article = models.ForeignKey(

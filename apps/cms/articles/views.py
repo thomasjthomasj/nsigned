@@ -3,8 +3,8 @@ from django.db.models import Q
 from django.db import transaction
 from slugify import slugify
 from app.decorators import logged_in, method, cached
-from app.http import Ok, BadRequest, NotFound
-from app.utils import delete_cache, delete_cache_prefix
+from app.http import Ok, BadRequest, NotFound, Forbidden
+from app.utils import delete_cache, delete_cache_prefix, has_permission
 from music.models import ReviewRequest
 from .models import Article, Comment, CommentContent
 
@@ -69,6 +69,7 @@ def article(request, article_id):
 
 @method("POST")
 @logged_in()
+@transaction.atomic()
 def create(request):
   data = request.json
   created_by = request.site_user
@@ -99,6 +100,26 @@ def create(request):
   if review_request:
     delete_cache("REVIEW-REQUEST", id_val=review_request.id)
 
+  return Ok(article.serialized)
+
+@method("POST")
+@logged_in()
+@transaction.atomic()
+def update(request, article_id):
+  data = request.json
+  user = request.site_user
+  try:
+    article = Article.objects.get(id=article_id)
+  except Article.NotFound:
+    return NotFound()
+  content = data.get("content")
+  if not content:
+    return BadRequest()
+  has_right = has_permission(user, "editor") or article.created_by.id == user.id
+  if not has_right:
+    return Forbidden()
+  article.update_content(content, user)
+  delete_cache("ARTICLE", id_val=article_id)
   return Ok(article.serialized)
 
 @method("POST")

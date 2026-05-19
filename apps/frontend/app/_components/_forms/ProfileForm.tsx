@@ -80,6 +80,7 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
       <div className="flex gap-[15px] justify-between">
         <a href={`/profile/${profile.username}`}>
           <Button
+            className="!bg-background-500 border border-primary-500 hover:!bg-background"
             label="View profile"
             onClick={handleUpdate}
             disabled={buttonDisabled}

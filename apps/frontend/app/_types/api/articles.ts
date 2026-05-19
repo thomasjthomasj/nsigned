@@ -14,6 +14,7 @@ export type Article = {
 export type Content = {
   id: number;
   content: string;
+  raw: string;
 };
 
 export type ArticleFull = Article & {

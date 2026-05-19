@@ -5,6 +5,7 @@ import { AuthorCard } from "@/_components/AuthorCard";
 import { Comments } from "@/_components/Comments";
 import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
+import { EditArticle } from "@/_components/_forms/EditArticle";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
@@ -117,21 +118,27 @@ const Article = async ({ params }: ArticleProps) => {
           </p>
         </div>
         <div className="w-full">
-          {release && images && (
-            <div className="pr-[20px] pb-[10px] sm:float-left">
-              <a href={images.lg.url} target="_blank">
-                <img
-                  src={images.md.url}
-                  height={images.md.height}
-                  width={images.md.width}
-                  alt={`${release.title} cover art`}
-                />
-              </a>
-            </div>
-          )}
-          <div
-            className="space-y-[10px]"
-            dangerouslySetInnerHTML={{ __html: content }}
+          <div id={`article-body-${article.id}`}>
+            {release && images && (
+              <div className="pr-[20px] pb-[10px] sm:float-left">
+                <a href={images.lg.url} target="_blank">
+                  <img
+                    src={images.md.url}
+                    height={images.md.height}
+                    width={images.md.width}
+                    alt={`${release.title} cover art`}
+                  />
+                </a>
+              </div>
+            )}
+            <div
+              className="space-y-[10px]"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          </div>
+          <EditArticle
+            article={article}
+            containerID={`article-body-${article.id}`}
           />
           {!!links.length && (
             <p className="mt-[15px] text-[1.2rem] font-bold">
