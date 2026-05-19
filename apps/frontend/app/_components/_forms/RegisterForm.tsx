@@ -7,7 +7,7 @@ import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { useAuth, useCheckUserExists } from "@/_hooks";
 import { post } from "@/_utils/api.client";
-import { validateEmail } from "@/_utils/validation";
+import { validateEmail, validateUsername } from "@/_utils/validation";
 
 import { OTPForm } from "./OTPForm";
 
@@ -67,6 +67,9 @@ export const RegisterForm = () => {
         newErrors.email = "This email is already registered.";
       if (usernameExists === true)
         newErrors.username = "This username already exists.";
+      if (!validateUsername(username))
+        newErrors.username =
+          "Username must consist of only letters, numbers, and hyphens.";
 
       if (Object.values(newErrors).filter(Boolean).length === 0) return null;
       return newErrors;
