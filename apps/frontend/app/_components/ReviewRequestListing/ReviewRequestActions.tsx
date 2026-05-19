@@ -37,6 +37,18 @@ export const ReviewRequestActions = ({
     setIsLoading(false);
   }, [reviewRequest, user, router]);
 
+  const handleUnclaim = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
+    const { ok } = await post<ReviewRequest>({
+      endpoint: "music/review-request/unclaim",
+      data: { id: reviewRequest.id },
+    });
+    if (ok) {
+      window.location.reload();
+    }
+  }, [reviewRequest, user]);
+
   const handleReject = useCallback(async () => {
     if (!user) return;
     setIsLoading(true);
@@ -58,9 +70,16 @@ export const ReviewRequestActions = ({
         <Button disabled={disableButton} onClick={handleClaim} label="Claim" />
       )}
       {type === "claimed" && (
-        <a href={`/write-review/${reviewRequest.id}`}>
-          <Button label="Review" />
-        </a>
+        <>
+          <a href={`/write-review/${reviewRequest.id}`}>
+            <Button label="Review" />
+          </a>
+          <Button
+            label="Unclaim"
+            onClick={handleUnclaim}
+            disabled={disableButton}
+          />
+        </>
       )}
       {isAdmin && (
         <Button

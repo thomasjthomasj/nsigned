@@ -100,6 +100,33 @@ def claim_review_request(request):
   return Ok(review_request.serialized)
 
 @method("POST")
+@logged_in()
+def unclaim_review_request(request):
+  data = request.json
+  review_request_id = data.get("id")
+  user = request.site_user
+  if not review_request_id:
+    return BadRequest("No review request ID")
+  review_request = ReviewRequest.objects.get(id=review_request_id)
+  if not review_request:
+    return NotFound()
+  if not review_request.claimed_by:
+    return BadRequest("This review request has not been claimed")
+  try:
+    if review_request.article:
+      return BadRequest("A review has already been written for this review request")
+  except ReviewRequest.article.RelatedObjectDoesNotExist:
+    pass
+  if review_request.claimed_by.id != user.id:
+    return Forbidden()
+  review_request.claimed_by = None
+  review_request.save()
+  delete_cache("REVIEW-REQUESTS")
+  delete_cache("REVIEW-REQUEST", id_val=review_request_id)
+
+  return Ok(review_request.serialized)
+
+@method("POST")
 @logged_in("editor")
 def reject_review_request(request):
   data = request.json
