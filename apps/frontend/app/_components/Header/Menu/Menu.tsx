@@ -11,6 +11,7 @@ type MenuItem = {
   label: string;
   link: string;
   primary: boolean;
+  external?: boolean;
 };
 
 export const Menu = () => {
@@ -81,6 +82,12 @@ export const Menu = () => {
       link: "/terms",
       primary: false,
     });
+    items.push({
+      label: "Contact",
+      link: "https://docs.google.com/forms/d/e/1FAIpQLSfPoSCGRfsqlxlyIz9WisoZAinJU9A7KesnTiz61N3cJ_aunA/viewform?usp=publish-editor",
+      primary: false,
+      external: true,
+    })
 
     return items;
   }, [user]);
@@ -115,6 +122,7 @@ export const Menu = () => {
                 key={i.label}
                 className="text-secondary-300 hover:underline hover:text-primary-300"
                 href={i.link}
+                target={i.external ? "_blank" : undefined}
               >
                 {i.label}
               </a>
