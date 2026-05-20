@@ -24,6 +24,32 @@ type ArticleProps = {
   }>;
 };
 
+export const generateMetadata = async ({ params }: ArticleProps) => {
+  const { id } = await params;
+  const { data, ok } = await get<ArticleFull>({
+    endpoint: `articles/${id}`,
+    withAuth: false,
+    cacheKey: getCacheKey({
+      key: CACHE_KEY.ARTICLE,
+      idVal: id,
+    }),
+  });
+
+  const title = ok ? `_nsigned // ${data.title}` : "_nsigned";
+  const description = (() => {
+    if (!ok || !data.content?.raw) return undefined;
+    const base = data.content.raw.split(".").slice(0, 3).join(".");
+    const trunc = base.substring(0, 150);
+    return `${trunc}...`;
+  })();
+  const openGraph = (() => {
+    if (!ok || !data.release) return undefined;
+    return { images: [data.release.images.lg] };
+  })();
+
+  return { title, description, openGraph };
+};
+
 const Article = async ({ params }: ArticleProps) => {
   const { id, slug } = await params;
 
@@ -56,7 +82,7 @@ const Article = async ({ params }: ArticleProps) => {
   if (!article.content)
     return handleError({ message: "Article has no content" });
 
-  if (article.slug !== slug) return redirect(`/article/${id}/${slug}`);
+  if (article.slug !== slug) return redirect(`/article/${id}/${article.slug}`);
   const { title, created_by: author, release } = article;
 
   const comments = commentsResponse.ok ? commentsResponse.data : [];
