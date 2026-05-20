@@ -38,7 +38,11 @@ export const generateMetadata = async ({ params }: ArticleProps) => {
   const title = ok ? `_nsigned // ${data.title}` : "_nsigned";
   const description = (() => {
     if (!ok || !data.content?.raw) return undefined;
-    const base = data.content.raw.split(".").slice(0, 3).join(".");
+    const base = data.content.raw
+      .replace(/[^a-zA-Z0-9., -]+/g, "")
+      .split(".")
+      .slice(0, 3)
+      .join(".");
     const trunc = base.substring(0, 150);
     return `${trunc}...`;
   })();
