@@ -16,5 +16,5 @@ export const AuthRedirect = () => {
     if (isLoggedOut) router.push(`/join?redirect=${pathname}`);
   }, [isLoggedOut, router, pathname]);
 
-  return <></>;
+  return null;
 };

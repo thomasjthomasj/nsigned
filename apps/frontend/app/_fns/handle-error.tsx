@@ -45,5 +45,19 @@ export const handleError = async ({
   // eslint-disable-next-line no-console
   console.error("ERROR THROWN", errorStatus, errorMessage);
 
-  return <Error error={errorMessage} requireLoggedIn={requireLoggedIn} />;
+  const title = (() => {
+    if (errorStatus === 401) return "Login required";
+    if (errorStatus === 403) return "Permission denied";
+    if (errorStatus === 404) return "There's nothing here";
+
+    return undefined;
+  })();
+
+  return (
+    <Error
+      error={errorMessage}
+      requireLoggedIn={requireLoggedIn}
+      title={title}
+    />
+  );
 };
