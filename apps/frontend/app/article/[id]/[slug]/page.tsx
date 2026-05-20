@@ -39,7 +39,7 @@ export const generateMetadata = async ({ params }: ArticleProps) => {
   const description = (() => {
     if (!ok || !data.content?.raw) return undefined;
     const base = data.content.raw
-      .replace(/[^a-zA-Z0-9., -]+/g, "")
+      .replace(/[^a-zA-Z0-9., -'!?]+/g, "")
       .split(".")
       .slice(0, 3)
       .join(".");
