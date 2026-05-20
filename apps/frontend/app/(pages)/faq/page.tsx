@@ -107,7 +107,7 @@ const FAQ = async () => (
       <p>
         That said, reviewers can add a fundraiser link to their profile which
         will appear on all reviews they write. Currently the supported platforms
-        are PayPal, Ko-Fi, Buymeacoffee, and Patreon.
+        are Bandcamp, PayPal, Ko-Fi, Buymeacoffee, and Patreon.
       </p>
 
       <h3>Will the site ever be monetized?</h3>

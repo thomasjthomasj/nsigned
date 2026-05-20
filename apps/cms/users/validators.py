@@ -7,6 +7,7 @@ def fundraiser_link_validator(value):
     r"^https:\/\/ko-fi\.com", # kofi
     r"^https:\/\/buymeacoffee\.com", # buymeacoffee
     r"^https:\/\/patreon\.com", # patreon
+    r"^https:\/\/[a-zA-Z0-9]+\.bandcamp\.com" # bandcamp
   ]
   if any(re.match(rx, value) for rx in regexes):
     return
