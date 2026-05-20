@@ -19,6 +19,8 @@ export type Content = {
 
 export type ArticleFull = Article & {
   content: Content | null;
+  deleted: boolean;
+  deleted_reason: string | null;
 };
 
 export type Comment = {

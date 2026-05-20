@@ -105,6 +105,19 @@ const Article = async ({ params }: ArticleProps) => {
     return ls;
   })();
 
+  if (article.deleted) {
+    return (
+      <PageLayout title="Deleted article">
+        <div className="w-full">
+          <p>
+            This article has been deleted
+            {article.deleted_reason ? `: ${article.deleted_reason}` : "."}
+          </p>
+        </div>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout title={title}>
       <div className="flex flex-col w-full gap-[15px]">

@@ -61,7 +61,7 @@ def list(request):
 @method("GET")
 @cached("ARTICLE", id_kwarg="article_id")
 def article(request, article_id):
-  article = Article.cms.prefetched.get(pk=article_id)
+  article = Article.cms.prefetched_w_deleted.get(pk=article_id)
   if not article:
     return NotFound()
 
@@ -120,6 +120,31 @@ def update(request, article_id):
     return Forbidden()
   article.update_content(content, user)
   delete_cache("ARTICLE", id_val=article_id)
+  return Ok(article.serialized)
+
+@method("POST")
+@logged_in("admin")
+def delete(request, article_id):
+  data = request.json
+  try:
+    article = Article.objects.get(id=article_id)
+  except Article.NotFound:
+    return NotFound()
+  reason = data.get("reason")
+  if not reason:
+    return BadRequest("No reason given")
+  article.deleted = True
+  article.deleted_reason = reason
+  if article.review_request:
+    review_request = article.review_request
+    review_request.claimed_by = None
+    review_request.save()
+    delete_cache("REVIEW-REQUESTS")
+    delete_cache("REVIEW-REQUEST", id_val=review_request.id)
+    article.review_request = None
+  delete_cache("ARTICLE", id_val=article_id)
+  delete_cache_prefix("ARTICLES")
+  article.save()
   return Ok(article.serialized)
 
 @method("POST")

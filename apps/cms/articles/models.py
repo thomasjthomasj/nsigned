@@ -8,14 +8,16 @@ from .utils import get_content
 
 class ArticleManager(models.Manager):
   @property
-  def prefetched(self):
-    return super() \
-      .filter(deleted=False) \
-      .prefetch_related("contents") \
+  def prefetched_w_deleted(self):
+    return self.prefetch_related("contents") \
       .select_related("created_by") \
       .select_related("created_by__fundraiser_link") \
       .select_related("review_request") \
       .select_related("review_request__release") \
+
+  @property
+  def prefetched(self):
+    return self.prefetched_w_deleted.filter(deleted=False)
 
   @transaction.atomic
   def create(self, **kwargs):
@@ -71,11 +73,15 @@ class Article(Creatable):
   def serialized(self):
     article = self.serialized_lite
     content = get_content(self.contents)
-    return article | { "content": {
-      "id": content.id,
-      "content": parse_markdown(content.content, has_permission(self.created_by, "editor")),
-      "raw": content.content,
-    } if content else None }
+    return article | {
+      "content": {
+        "id": content.id,
+        "content": parse_markdown(content.content, has_permission(self.created_by, "editor")),
+        "raw": content.content,
+      } if content else None,
+      "deleted": self.deleted,
+      "deleted_reason": self.deleted_reason,
+    }
 
   @transaction.atomic()
   def update_content(self, content, user):
