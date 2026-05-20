@@ -40,6 +40,7 @@ class Article(Creatable):
   slug = models.CharField(max_length=255)
   published_at = models.DateTimeField(null=True)
   deleted = models.BooleanField(default=False)
+  deleted_reason = models.TextField(null=True, blank=True)
   review_request = models.OneToOneField(
     ReviewRequest,
     null=True,
