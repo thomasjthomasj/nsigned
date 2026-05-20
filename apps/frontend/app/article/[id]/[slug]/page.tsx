@@ -94,7 +94,7 @@ const Article = async ({ params }: ArticleProps) => {
     if (link)
       ls.push({
         url: link.url,
-        text: `Purchase "${release.title}"`,
+        text: `Listen to "${release.title}"`,
       });
     if (author.fundraiser_link)
       ls.push({
