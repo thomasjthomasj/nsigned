@@ -134,7 +134,7 @@ const Article = async ({ params }: ArticleProps) => {
           <div id={`article-body-${article.id}`}>
             {release && images && (
               <div className="pr-[20px] pb-[10px] sm:float-left">
-                <a href={images.lg.url} target="_blank">
+                <a href={link?.url ?? images.lg.url} target="_blank">
                   <img
                     src={images.md.url}
                     height={images.md.height}
