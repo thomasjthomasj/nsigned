@@ -30,7 +30,7 @@ export const ReleaseArticleLink = ({
       <div className="flex gap-[25px] hover:bg-background-500" key={article.id}>
         <div className="p-[10px] shrink-0">
           <img
-            className={classNames({
+            className={classNames("border border-background-500", {
               hidden: size === "sm",
               "hidden sm:block": size === "lg",
             })}
@@ -40,7 +40,7 @@ export const ReleaseArticleLink = ({
             width={IMG_SIZE_LG}
           />
           <img
-            className={classNames({
+            className={classNames("border border-background-500", {
               "block sm:hidden": size === "lg",
             })}
             src={smImage.url}

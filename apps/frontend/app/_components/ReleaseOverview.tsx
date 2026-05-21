@@ -17,7 +17,7 @@ export const ReleaseOverview = ({
 }: ReleaseOverviewProps) => (
   <a href={link} target="_blank">
     <div className="flex gap-[10px] w-full">
-      <img src={imageURL} />
+      <img src={imageURL} className="border border-background-500" />
       <div className="flex-col gap-[5px]">
         {artistName && <p>{artistName}</p>}
         <p>{title}</p>
