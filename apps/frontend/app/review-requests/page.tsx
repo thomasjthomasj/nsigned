@@ -24,19 +24,24 @@ const ReviewRequests = async () => {
     }),
   ]);
 
-  if (!userResponse.ok) return handleError({ errorResponse: userResponse });
+  if (!userResponse.ok && userResponse.status !== 401) return handleError({ errorResponse: userResponse });
   if (!pendingReviewRequestsResponse.ok)
     return handleError({ errorResponse: pendingReviewRequestsResponse });
   if (!claimedReviewRequestsResponse.ok)
     return handleError({ errorResponse: claimedReviewRequestsResponse });
 
-  const user = userResponse.data;
   const { data: claimedReviewRequests } = claimedReviewRequestsResponse;
-  const pendingReviewRequests = pendingReviewRequestsResponse.data.filter(
-    (r) =>
-      user.role === "admin" ||
-      ![r.created_by.id, r.release.primary_artist?.user?.id].includes(user.id),
-  );
+
+  const pendingReviewRequests = (() => {
+    if (!userResponse.ok) return [];
+    const user = userResponse.data;
+    return pendingReviewRequestsResponse.data.filter(
+      (r) =>
+        user.role === "admin" ||
+        ![r.created_by.id, r.release.primary_artist?.user?.id].includes(user.id),
+    );
+  })()
+
 
   return (
     <PageLayout title="Review requests">

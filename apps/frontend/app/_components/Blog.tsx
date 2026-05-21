@@ -10,16 +10,19 @@ export const Blog = ({ articles }: GeneralArticlesProps) => {
   return (
     <div className="w-full flex flex-col">
       <h2>Announcements</h2>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-[5px]">
-        {articles.map((a) => (
-          <a
-            className="text-[1.2rem] p-[5px] hover:bg-background-500"
-            key={a.id}
-            href={`/article/${a.id}/${a.slug}`}
-          >
-            {a.title}
-          </a>
-        ))}
+      <div className="w-full flex flex-col">
+        <ul>
+          {articles.map((a) => (
+            <li key={a.id}>
+              <a
+                className="text-[1.2rem] leading-[1.2rem] p-[5px] hover:bg-background-500 !text-foreground"
+                href={`/article/${a.id}/${a.slug}`}
+              >
+                {a.title}
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

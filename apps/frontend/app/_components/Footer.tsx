@@ -49,6 +49,11 @@ export const Footer = () => (
           <h4 className="mb-[0.5rem]">Support</h4>
           <ul>
             <li>
+              <a href="https://discord.gg/A4hRDQmUYk" target="_blank">
+                Discord
+              </a>
+            </li>
+            <li>
               <a href="https://godribbon.bsky.social" target="_blank">
                 Bluesky
               </a>

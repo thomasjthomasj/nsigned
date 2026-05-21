@@ -59,18 +59,25 @@ export const ReleaseArticleLink = ({
             </h4>
           )}
           {showReviewType && (
-            <p className="text-[12px]">{upper(release.release_type)} review</p>
+            <p className="text-[12px]">
+              {upper(release.release_type)} review by{" "}
+              <span className="text-tertiary-500">
+                {article.created_by.display_name}
+              </span>
+            </p>
           )}
-          <p
-            className={classNames("italic pl-[20x] hidden sm:inline", {
-              "!text-[0.7rem] leading-[10px]": size === "sm",
-            })}
-          >
-            by{" "}
-            <span className="text-tertiary-500">
-              {article.created_by.display_name}
-            </span>
-          </p>
+          {!showReviewType && (
+            <p
+              className={classNames("italic pl-[20x] hidden sm:inline", {
+                "!text-[0.7rem] leading-[10px]": size === "sm",
+              })}
+            >
+              by{" "}
+              <span className="text-tertiary-500">
+                {article.created_by.display_name}
+              </span>
+            </p>
+          )}
         </div>
       </div>
     </a>
