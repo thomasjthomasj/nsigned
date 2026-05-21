@@ -24,28 +24,36 @@ const ReviewRequests = async () => {
     }),
   ]);
 
-  if (!userResponse.ok && userResponse.status !== 401) return handleError({ errorResponse: userResponse });
+  if (!userResponse.ok && userResponse.status !== 401)
+    return handleError({ errorResponse: userResponse });
+  const user = userResponse.ok ? userResponse.data : null;
+
   if (!pendingReviewRequestsResponse.ok)
     return handleError({ errorResponse: pendingReviewRequestsResponse });
-  if (!claimedReviewRequestsResponse.ok)
-    return handleError({ errorResponse: claimedReviewRequestsResponse });
 
-  const { data: claimedReviewRequests } = claimedReviewRequestsResponse;
-
-  const pendingReviewRequests = (() => {
-    if (!userResponse.ok) return [];
-    const user = userResponse.data;
-    return pendingReviewRequestsResponse.data.filter(
-      (r) =>
-        user.role === "admin" ||
-        ![r.created_by.id, r.release.primary_artist?.user?.id].includes(user.id),
-    );
-  })()
-
+  const claimedReviewRequests = claimedReviewRequestsResponse.ok
+    ? claimedReviewRequestsResponse.data
+    : [];
+  const pendingReviewRequests = pendingReviewRequestsResponse.data.filter(
+    (r) =>
+      !user ||
+      user.role === "admin" ||
+      ![r.created_by.id, r.release.primary_artist?.user?.id].includes(user.id),
+  );
 
   return (
     <PageLayout title="Review requests">
       <div className="flex flex-col gap-[20px]">
+        {!user && (
+          <div>
+            <p>
+              You must be{" "}
+              <a href="/join?redirect=/review-requests">registered</a> and{" "}
+              <a href="/login?redirect=/review-requests">logged in</a> to write
+              a review.
+            </p>
+          </div>
+        )}
         <ReviewRequestListing
           reviewRequests={claimedReviewRequests}
           includeActions={true}
