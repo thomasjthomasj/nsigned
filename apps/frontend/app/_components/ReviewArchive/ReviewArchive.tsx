@@ -9,9 +9,12 @@ type ReviewArchiveProps = {
   queryParams?: QueryParams;
 };
 
-export const ReviewArchive = ({ articles }: ReviewArchiveProps) => (
+export const ReviewArchive = ({
+  articles,
+  queryParams,
+}: ReviewArchiveProps) => (
   <div className="w-full flex flex-col">
     <Listing articles={articles} />
-    <Paginator />
+    <Paginator queryParams={queryParams} />
   </div>
 );
