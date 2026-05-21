@@ -38,7 +38,13 @@ export const Menu = () => {
   );
 
   const menuItems = useMemo(() => {
-    const items: MenuItem[] = [];
+    const items: MenuItem[] = [
+      {
+        label: "Home",
+        link: "/",
+        primary: true,
+      },
+    ];
     if (!user) {
       items.push({
         label: "Join",
@@ -85,12 +91,6 @@ export const Menu = () => {
     items.push({
       label: "Discord",
       link: "https://discord.gg/A4hRDQmUYk",
-      primary: false,
-      external: true,
-    });
-    items.push({
-      label: "Contact",
-      link: "https://docs.google.com/forms/d/e/1FAIpQLSfPoSCGRfsqlxlyIz9WisoZAinJU9A7KesnTiz61N3cJ_aunA/viewform?usp=publish-editor",
       primary: false,
       external: true,
     });
