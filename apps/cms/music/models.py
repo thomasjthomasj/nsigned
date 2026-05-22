@@ -174,6 +174,7 @@ class ReviewRequestManager(models.Manager):
 
 class ReviewRequest(Creatable):
   release = models.ForeignKey(Release, on_delete=models.CASCADE)
+  notify_on_review = models.BooleanField(default=True)
   rejected = models.BooleanField(default=False)
   claimed_by = models.ForeignKey(
     User,
