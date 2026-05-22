@@ -93,7 +93,7 @@ def request_otp(request):
   otp = user.update_otp()
   result = send_otp(user, otp)
   if result.status_code != 200:
-    raise Exception(f"Received status {result.status_code} when sending OTP.")
+    return InternalServerError(user.email)
   return Ok({ "action": "otp_sent" })
 
 @method("POST")
