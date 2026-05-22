@@ -21,11 +21,10 @@ const AIPolicy = async () => (
       </h3>
       <p>
         If you are certain that the music is AI, then you should report it to
-        Bandcamp via the
-        <strong>Report this album/track or account</strong> link on the
-        release's Bandcamp page. Outside of that, just leave it in the queue. If
-        the music was made by AI, the chances are that it will be so generic
-        that any review will be fairly negative anyway.
+        Bandcamp via the <strong>Report this album/track or account</strong>{" "}
+        link on the release's Bandcamp page. Outside of that, just leave it in
+        the queue. If the music was made by AI, the chances are that it will be
+        so generic that any review will be fairly negative anyway.
       </p>
       <h3>
         What should I do if I see a review or review request for an album that
@@ -38,7 +37,7 @@ const AIPolicy = async () => (
         </a>
         , you can report it via the <strong>#report-deleted-music</strong>{" "}
         channel. If not, either leave a comment on the review itself, or if it
-        just a request, leave it in the queue for someone else to catch.
+        is just a request, leave it in the queue for someone else to catch.
       </p>
       <h3>What should I do if I believe that a review was written by AI?</h3>
       <p>
