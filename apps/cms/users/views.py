@@ -1,5 +1,6 @@
 import jwt
-from datetime import timezone, timedelta
+from datetime import timezone
+from django.apps import apps
 from django.db import transaction
 from django.core.validators import validate_email
 from datetime import datetime, timezone
@@ -9,7 +10,7 @@ from app.http import Ok, NotFound, BadRequest, Unauthorized
 from app.utils import set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache
 from links.models import Link
 from .auth import issue_tokens, decode
-from .email import send_otp
+from .email import send_otp, send_article_notifications
 from .models import User
 from .validators import fundraiser_link_validator
 from .utils import get_otp
@@ -83,7 +84,6 @@ def request_otp(request):
   for field in ("username", "email"):
     try:
       kwargs = { field: username_or_email }
-      print(kwargs)
       user = User.objects.get(**kwargs)
     except User.DoesNotExist:
       pass
@@ -93,6 +93,7 @@ def request_otp(request):
   otp = user.update_otp()
   result = send_otp(user, otp)
   if result.status_code != 200:
+    print(result.__dict__)
     raise Exception(f"Received status {result.status_code} when sending OTP.")
   return Ok({ "action": "otp_sent" })
 
@@ -129,7 +130,8 @@ def register(request):
       last_login=datetime.now(timezone.utc)
     )
     otp = user.update_otp()
-    send_otp(user, otp)
+    response = send_otp(user, otp)
+    print(response.__dict__)
 
     return Ok()
 
@@ -189,3 +191,26 @@ def refresh_token(request):
   set_auth_cookie(response, "refresh-token", tokens["refresh"])
 
   return response
+
+@method("POST")
+@logged_out()
+@transaction.atomic()
+def email_consent(request):
+  data = request.json.get("nsigned.com", {})
+  granted = data.get("granted", [])
+  denied = data.get("denied", [])
+  granted_users = User.objects.filter(email__in=granted)
+  granted_users.update(can_email=True)
+
+  ReviewRequest = apps.get_model("music", "ReviewRequest")
+  review_requests = ReviewRequest.objects.filter(
+    created_by__in=granted_users,
+    notified=False,
+    notify_on_review=True
+  ).exclude(article=None)
+  send_article_notifications(review_requests)
+  review_requests.update(notified=True)
+
+  User.objects.filter(email__in=denied).update(can_email=False)
+
+  return Ok()

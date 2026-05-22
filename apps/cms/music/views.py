@@ -24,6 +24,7 @@ def request_review(request):
   data = request.json
   user = request.site_user
   url = data.get("url")
+  notify_on_review = data.get("notify", True)
   if not url:
     return BadRequest("URL is required")
   try:
@@ -56,6 +57,7 @@ def request_review(request):
 
   review_request = ReviewRequest.objects.create(
     release=release,
+    notify_on_review=notify_on_review,
     created_by=user,
   )
 
