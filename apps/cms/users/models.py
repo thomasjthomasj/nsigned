@@ -59,6 +59,7 @@ class User(AbstractBaseUser):
     related_name="fundraiser_owners",
   )
   password_expiry = models.DateTimeField(auto_now_add=True)
+  can_email = models.BooleanField(null=True, default=None, blank=True)
 
   USERNAME_FIELD = "username"
   REQUIRED_FIELDS = ["username", "email"]
@@ -76,6 +77,7 @@ class User(AbstractBaseUser):
       "display_name": self.display_name,
       "role": self.role,
       "fundraiser_link": self.fundraiser_link.url if self.fundraiser_link else None,
+      "can_email": self.can_email,
     }
 
   def update_otp(self):

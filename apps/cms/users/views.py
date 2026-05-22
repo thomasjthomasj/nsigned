@@ -1,15 +1,16 @@
 import jwt
-from datetime import timezone, timedelta
+from datetime import timezone
+from django.apps import apps
 from django.db import transaction
 from django.core.validators import validate_email
 from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out, cached
-from app.http import Ok, NotFound, BadRequest, Unauthorized
+from app.http import Ok, NotFound, BadRequest, Unauthorized, InternalServerError
 from app.utils import set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache
 from links.models import Link
 from .auth import issue_tokens, decode
-from .email import send_otp
+from .email import send_otp, send_article_notifications, send_consent_emails, EmailError
 from .models import User
 from .validators import fundraiser_link_validator
 from .utils import get_otp
@@ -83,7 +84,6 @@ def request_otp(request):
   for field in ("username", "email"):
     try:
       kwargs = { field: username_or_email }
-      print(kwargs)
       user = User.objects.get(**kwargs)
     except User.DoesNotExist:
       pass
@@ -95,7 +95,6 @@ def request_otp(request):
   if result.status_code != 200:
     raise Exception(f"Received status {result.status_code} when sending OTP.")
   return Ok({ "action": "otp_sent" })
-
 
 @method("POST")
 @logged_out()
@@ -119,19 +118,23 @@ def register(request):
   if username_exists:
     return BadRequest("This username is taken")
 
-  with transaction.atomic():
-    user = User.objects.create_user(
-      username=username,
-      email=email,
-      password=get_otp(),
-      password_expiry=datetime.now(timezone.utc),
-      display_name=display_name,
-      last_login=datetime.now(timezone.utc)
-    )
-    otp = user.update_otp()
-    send_otp(user, otp)
-
-    return Ok()
+  try:
+    with transaction.atomic():
+      user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=get_otp(),
+        password_expiry=datetime.now(timezone.utc),
+        display_name=display_name,
+        last_login=datetime.now(timezone.utc)
+      )
+      otp = user.update_otp()
+      response = send_otp(user, otp)
+      if not response.ok:
+        raise EmailError()
+  except EmailError:
+    return InternalServerError("Could not send OTP")
+  return Ok()
 
 @method("POST")
 @logged_out()
@@ -189,3 +192,33 @@ def refresh_token(request):
   set_auth_cookie(response, "refresh-token", tokens["refresh"])
 
   return response
+
+@method("POST")
+@logged_out()
+@transaction.atomic()
+def email_consent(request):
+  data = request.json.get("nsigned.com", {})
+  granted = data.get("granted", [])
+  denied = data.get("denied", [])
+  granted_users = User.objects.filter(email__in=granted)
+  granted_users.update(can_email=True)
+
+  ReviewRequest = apps.get_model("music", "ReviewRequest")
+  review_requests = ReviewRequest.objects.filter(
+    created_by__in=granted_users,
+    notified=False,
+    notify_on_review=True
+  ).exclude(article=None)
+  send_article_notifications(review_requests)
+  review_requests.update(notified=True)
+
+  User.objects.filter(email__in=denied).update(can_email=False)
+
+  return Ok()
+
+@method("POST")
+@logged_out()
+def send_email_consent(request):
+  email = request.json.get("email")
+  send_consent_emails(emails=[email])
+  return Ok()

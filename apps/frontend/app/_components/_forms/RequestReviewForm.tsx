@@ -22,6 +22,7 @@ export const RequestReviewForm = ({
   existingReviewRequests,
 }: RequestReviewFormProps) => {
   const [url, setUrl] = useState<string>("");
+  const [notify, setNotify] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isRetrieving, setIsRetrieving] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -30,6 +31,11 @@ export const RequestReviewForm = ({
   );
   const router = useRouter();
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    setNotify(user.can_email !== false);
+  }, [user]);
 
   const getReleaseDetails = useCallback(async () => {
     setIsRetrieving(true);
@@ -62,7 +68,7 @@ export const RequestReviewForm = ({
     const { data, ok } = await post<ReviewRequest>({
       endpoint: "music/request-review",
       withAuth: true,
-      data: { url },
+      data: { url, notify },
     });
     if (!ok) {
       setError(data.error);
@@ -122,6 +128,20 @@ export const RequestReviewForm = ({
             releaseType={releaseDetails.release_type}
             link={releaseDetails.link}
           />
+          {user.can_email !== false && (
+            <div className="flex">
+              <input
+                type="checkbox"
+                onChange={() => setNotify((prev) => !prev)}
+                checked={notify}
+                className="mr-[5px]"
+              />
+              <p>
+                Check this box to receive an email notification when the release
+                has been reviewed.
+              </p>
+            </div>
+          )}
           <div>
             <Button
               label="Submit for review"

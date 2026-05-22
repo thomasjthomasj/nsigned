@@ -6,6 +6,7 @@ export type User = {
   display_name: string;
   fundraiser_link: string | null;
   role: Role;
+  can_email: boolean | null;
 };
 
 export type LoggedInUser = User & {
