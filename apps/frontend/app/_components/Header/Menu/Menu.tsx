@@ -84,6 +84,11 @@ export const Menu = () => {
       primary: false,
     });
     items.push({
+      label: "AI Policy",
+      link: "/ai-policy",
+      primary: false,
+    });
+    items.push({
       label: "Terms and conditions",
       link: "/terms",
       primary: false,

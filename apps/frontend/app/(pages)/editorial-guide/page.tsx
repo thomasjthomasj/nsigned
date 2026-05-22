@@ -45,6 +45,11 @@ const EditorialGuide = async () => (
           okay.
         </li>
         <li>
+          <strong>Do not review tracks you believe are AI.</strong> Report it on
+          Bandcamp and leave it in the queue. See the{" "}
+          <a href="/ai-policy">AI Policy</a> for more information.
+        </li>
+        <li>
           <strong>Do not use slurs.</strong> The only context in which a slur
           may be acceptable is when directly quoting the lyrics of a song, in
           which case it <strong>must</strong> be censored entirely with

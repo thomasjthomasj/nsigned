@@ -40,9 +40,13 @@ const Terms = async () => (
           Force, is strictly prohibited.
         </li>
         <li>
-          Users must not post any content produced by generative AI, with the
-          sole exception of tools such as translators, spell-checkers, assisted
-          writing tools, etc.
+          Users must not submit any music for review that has been created using
+          AI tools like Suno.
+        </li>
+        <li>
+          Users must not post any reviews or comments produced by generative AI,
+          with the sole exception of tools such as translators, spell-checkers,
+          assisted writing tools, etc.
         </li>
         <li>Users must not post any pornographic content.</li>
         <li>
