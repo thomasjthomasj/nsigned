@@ -66,6 +66,11 @@ const Home = async () => {
             {albums.map((a) => (
               <ReleaseArticleLink article={a} key={a.id} />
             ))}
+            <p className="ml-[10px] mt-[3px]">
+              <a href="/archive" className=" text-[14px] !text-primary-300">
+                View all
+              </a>
+            </p>
           </div>
         )}
         {!!tracks.length && (
@@ -76,6 +81,11 @@ const Home = async () => {
             {tracks.map((a) => (
               <ReleaseArticleLink article={a} key={a.id} />
             ))}
+            <p className="ml-[10px] mt-[3px]">
+              <a href="/archive" className=" text-[14px] !text-primary-300">
+                View all
+              </a>
+            </p>
           </div>
         )}
       </div>
@@ -92,6 +102,11 @@ const Home = async () => {
               showReviewType
             />
           ))}
+          <p className="ml-[10px] mt-[3px]">
+            <a href="/archive" className=" text-[14px] !text-primary-300">
+              View all
+            </a>
+          </p>
         </div>
       )}
     </div>
