@@ -32,15 +32,17 @@ def send_otp(user, otp):
     }
   )
 
-def send_consent_emails(users):
+def send_consent_emails(users=[], emails=[]):
   url = "https://api.goodsender.com/v1/emails/consent"
-  emails = [{ "email": user.email, "name": user.display_name } for user in users]
+  send_to = [{ "email": user.email, "name": user.display_name } for user in users]
+  for email in emails:
+    send_to.append(email)
   return requests.post(
     url=url,
     headers=get_headers(),
     json={
       "domain": "nsigned.com",
-      "emails": emails,
+      "emails": send_to,
     }
   )
 
@@ -90,3 +92,6 @@ def send_article_notifications(review_requests):
       "emails": emails,
     }
   )
+
+class EmailError(Exception):
+  pass

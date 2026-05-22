@@ -15,4 +15,5 @@ urlpatterns = [
   path("refresh", views.refresh_token, name="refresh_token"),
   path("request-otp", views.request_otp, name="request_otp"),
   path("email-consent", views.email_consent, name="email_consent"),
+  path("send-email-consent", views.send_email_consent, name="send_email_consent"),
 ]

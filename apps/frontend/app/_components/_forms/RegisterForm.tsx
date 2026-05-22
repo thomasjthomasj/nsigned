@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -29,6 +30,8 @@ export const RegisterForm = () => {
   const [usernameExists, setUsernameExists] = useState<boolean | null>(null);
   const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
   const [hasRequestedOTP, setHasRequestedOTP] = useState<boolean>(false);
+  const [isOtpError, setIsOtpError] = useState<boolean>(false);
+  const [hasSentConsent, setHasSentConsent] = useState<boolean>(false);
 
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -93,6 +96,10 @@ export const RegisterForm = () => {
       withAuth: false,
     });
     if (!ok) {
+      if (data.error === "Could not send OTP") {
+        setIsOtpError(true);
+        return;
+      }
       setError(data.error || "There was an issue signing up.");
       return;
     } else {
@@ -108,7 +115,51 @@ export const RegisterForm = () => {
     setIsSubmitting(false);
   }, [isValid, handleRegister]);
 
+  const handleSendConsent = useCallback(async () => {
+    const { ok } = await post({
+      endpoint: "users/send-email-consent",
+      data: { email },
+    });
+    if (!ok) {
+      setError(
+        "There was an issue sending your consent email, please try again later.",
+      );
+      return;
+    }
+    setHasSentConsent(true);
+  }, [email]);
+
   if (user) return null;
+
+  if (isOtpError)
+    return (
+      <div className="flex flex-col w-full gap-[10px]">
+        <p>
+          Unfortunately, the email service we use could not send you a one-time
+          password until you consent to receiving emails. Please click the
+          button below to send a consent email. Once you have confirmed your
+          consent, <a href="/login">log in</a> with the username or email
+          provided.
+        </p>
+        <div className="flex gap-[10px]">
+          <Button
+            label="Send consent email"
+            onClick={handleSendConsent}
+            disabled={hasSentConsent}
+          />
+          {hasSentConsent && (
+            <Button
+              label="I have received the consent email and clicked 'Approve'"
+              onClick={() => {
+                setIsOtpError(false);
+                setHasSentConsent(false);
+                handleRegister();
+              }}
+            />
+          )}
+        </div>
+      </div>
+    );
 
   if (email && hasRequestedOTP) return <OTPForm usernameOrEmail={email} />;
 

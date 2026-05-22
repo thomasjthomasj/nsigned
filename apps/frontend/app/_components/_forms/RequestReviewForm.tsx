@@ -34,8 +34,8 @@ export const RequestReviewForm = ({
 
   useEffect(() => {
     if (!user) return;
-    setNotify(user.can_email !== false)
-  }, [user])
+    setNotify(user.can_email !== false);
+  }, [user]);
 
   const getReleaseDetails = useCallback(async () => {
     setIsRetrieving(true);
