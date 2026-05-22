@@ -1,7 +1,7 @@
 import { PageLayout } from "@/_components/PageLayout";
 
 const AIPolicy = async () => (
-  <PageLayout title="AI Policy">
+  <PageLayout title="AI policy">
     <div className="w-full space-y-[10px] page">
       <p>
         AI is one of the most annoying things to have happened to the internet,
@@ -61,8 +61,7 @@ const AIPolicy = async () => (
       <p>
         Ultimately, discussion about AI should not dominate the site, and I
         would rather give people the benefit of the doubt than incorrectly
-        accuse something of being AI. It's just a website, don't let it ruin
-        your day.
+        accuse something of being AI.
       </p>
     </div>
   </PageLayout>

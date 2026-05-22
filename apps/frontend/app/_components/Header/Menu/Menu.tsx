@@ -84,7 +84,7 @@ export const Menu = () => {
       primary: false,
     });
     items.push({
-      label: "AI Policy",
+      label: "AI policy",
       link: "/ai-policy",
       primary: false,
     });
