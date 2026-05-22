@@ -11,8 +11,9 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('articles', '0022_article_deleted_reason'),
+        ('users', '0015_user_can_email'),
     ]
 
     operations = [
-        migrations.RunPython(send_email_consent)
+        migrations.RunPython(send_email_consent, reverse_code=migrations.RunPython.noop)
     ]
