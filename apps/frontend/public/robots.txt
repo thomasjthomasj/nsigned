@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /review-requests
+Disallow: /write-review
+Disallow: /profile
+Disallow: /my-reviews

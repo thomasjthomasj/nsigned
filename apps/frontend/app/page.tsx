@@ -3,6 +3,7 @@ import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
+import { parseISOLocalTime } from "@/_utils/text";
 
 import type { Article, ErrorResponse } from "@/_types/api";
 
@@ -53,6 +54,8 @@ const Home = async () => {
   const reviews = [...albums, ...tracks].sort((a, b) =>
     b.published_at.localeCompare(a.published_at),
   );
+
+  const lastUpdated = reviews[0] ? reviews[0].created_at : null;
 
   return (
     <div className="w-full flex flex-col gap-[15px]">
@@ -106,6 +109,14 @@ const Home = async () => {
             <a href="/archive" className=" text-[14px] !text-primary-300">
               View all
             </a>
+          </p>
+        </div>
+      )}
+      {lastUpdated && (
+        <div className="flex justify-end">
+          <p className="text-foreground-500 text-[10px] ml-[10px]">
+            Last updated{" "}
+            <time dateTime={lastUpdated}>{parseISOLocalTime(lastUpdated)}</time>
           </p>
         </div>
       )}
