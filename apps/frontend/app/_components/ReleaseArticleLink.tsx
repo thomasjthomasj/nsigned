@@ -72,7 +72,7 @@ export const ReleaseArticleLink = ({
                 "!text-[0.7rem] leading-[10px]": size === "sm",
               })}
             >
-              by{" "}
+              review by{" "}
               <span className="text-tertiary-500">
                 {article.created_by.display_name}
               </span>
