@@ -71,8 +71,11 @@ export const ReviewRequestActions = ({
       )}
       {type === "claimed" && (
         <>
-          <a href={`/write-review/${reviewRequest.id}`}>
-            <Button label="Review" />
+          <a
+            href={`/write-review/${reviewRequest.id}`}
+            className="w-full block"
+          >
+            <Button label="Review" className="w-full" />
           </a>
           <Button
             label="Unclaim"

@@ -1,8 +1,10 @@
+import type { Images } from "@/_types/api";
+
 type ReleaseOverviewProps = {
   artistName?: string;
   title: string;
   label?: string;
-  imageURL: string;
+  images: Images;
   releaseType: "track" | "album";
   link: string;
   daysSince?: number;
@@ -13,7 +15,7 @@ export const ReleaseOverview = ({
   artistName,
   title,
   label,
-  imageURL,
+  images,
   releaseType,
   link,
   daysSince,
@@ -28,8 +30,15 @@ export const ReleaseOverview = ({
 
   return (
     <a href={link} target="_blank">
-      <div className="flex gap-[10px] w-full">
-        <img src={imageURL} className="border border-background-500" />
+      <div className="flex flex-col sm:flex-row gap-[10px] w-full">
+        <img
+          src={images.sm.url}
+          className="border border-background-500 hidden sm:block"
+        />
+        <img
+          src={images.md.url}
+          className="border border-background-500 block sm:hidden"
+        />
         <div className="flex-col gap-[5px]">
           {artistName && <p>{artistName}</p>}
           <p>{title}</p>

@@ -62,25 +62,31 @@ export const ReviewRequestListing = ({
           <div className="space-y-[7px]">{helpText}</div>
         </div>
         {reviewRequests.map((r, i) => (
-          <div
-            className={classNames("grid w-full p-[7px]", {
-              "grid-cols-[minmax(0,1fr)_auto] items-start": includeActions,
-              "grid-cols-1": !includeActions,
-              "bg-background-500": i % 2,
-            })}
-            key={r.id}
-          >
-            <ReleaseOverview
-              artistName={r.release.primary_artist?.name}
-              title={r.release.title}
-              imageURL={r.release.images.sm.url}
-              releaseType={r.release.release_type}
-              link={r.release.links[0].url}
-              daysSince={getDaysSince(r.created_at)}
-              claimed={!!(type === "mine" && r.claimed_by)}
-            />
+          <div key={r.id} className="flex flex-col">
+            <div
+              className={classNames("grid w-full p-[7px]", {
+                "grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] items-start":
+                  includeActions,
+                "bg-background-500": i % 2,
+              })}
+            >
+              <ReleaseOverview
+                artistName={r.release.primary_artist?.name}
+                title={r.release.title}
+                images={r.release.images}
+                releaseType={r.release.release_type}
+                link={r.release.links[0].url}
+                daysSince={getDaysSince(r.created_at)}
+                claimed={!!(type === "mine" && r.claimed_by)}
+              />
+              {includeActions && (
+                <div className="hidden sm:block">
+                  <ReviewRequestActions reviewRequest={r} type={type} />
+                </div>
+              )}
+            </div>
             {includeActions && (
-              <div>
+              <div className="block sm:hidden">
                 <ReviewRequestActions reviewRequest={r} type={type} />
               </div>
             )}

@@ -124,7 +124,7 @@ export const RequestReviewForm = ({
             artistName={releaseDetails.artist_name}
             title={releaseDetails.title}
             label={releaseDetails.label ?? undefined}
-            imageURL={releaseDetails.images.sm.url}
+            images={releaseDetails.images}
             releaseType={releaseDetails.release_type}
             link={releaseDetails.link}
           />
@@ -134,7 +134,7 @@ export const RequestReviewForm = ({
                 type="checkbox"
                 onChange={() => setNotify((prev) => !prev)}
                 checked={notify}
-                className="mr-[5px]"
+                className="mr-[10px]"
               />
               <p>
                 Check this box to receive an email notification when the release

@@ -58,7 +58,7 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
             artistName={release.primary_artist?.name}
             title={release.title}
             label={release.label?.name}
-            imageURL={release.images.sm.url}
+            images={release.images}
             releaseType={release.release_type}
             link={release.links[0].url}
             daysSince={daysSince}
