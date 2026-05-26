@@ -23,7 +23,7 @@ export const CommentForm = ({ article }: CommentFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [wordCount, setWordCount] = useState<number>(0);
   const [error, setError] = useState<string>("");
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   const refreshIdempotencyKey = useCallback(() => {
@@ -69,6 +69,8 @@ export const CommentForm = ({ article }: CommentFormProps) => {
       wordCount > MAX_WORDS,
     [user, idempotencyKey, content, wordCount, isSubmitting],
   );
+
+  if (loading) return null;
 
   if (!user)
     return (
