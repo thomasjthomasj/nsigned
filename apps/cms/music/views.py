@@ -119,7 +119,7 @@ def unclaim_review_request(request):
       return BadRequest("A review has already been written for this review request")
   except ReviewRequest.article.RelatedObjectDoesNotExist:
     pass
-  if review_request.claimed_by.id != user.id:
+  if review_request.claimed_by.id != user.id and review_request.created_by.id != user.id:
     return Forbidden()
   review_request.claimed_by = None
   review_request.save()

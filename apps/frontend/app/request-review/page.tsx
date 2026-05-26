@@ -22,7 +22,7 @@ const RequestReview = async () => {
         <RequestReviewForm existingReviewRequests={reviewRequests} />
         <ReviewRequestListing
           reviewRequests={reviewRequests}
-          includeActions={false}
+          includeActions={true}
           type="mine"
         />
       </div>

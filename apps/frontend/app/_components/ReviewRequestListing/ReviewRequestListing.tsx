@@ -77,6 +77,7 @@ export const ReviewRequestListing = ({
               releaseType={r.release.release_type}
               link={r.release.links[0].url}
               daysSince={getDaysSince(r.created_at)}
+              claimed={!!(type === "mine" && r.claimed_by)}
             />
             {includeActions && (
               <div>

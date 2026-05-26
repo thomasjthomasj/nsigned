@@ -6,6 +6,7 @@ type ReleaseOverviewProps = {
   releaseType: "track" | "album";
   link: string;
   daysSince?: number;
+  claimed?: boolean;
 };
 
 export const ReleaseOverview = ({
@@ -16,6 +17,7 @@ export const ReleaseOverview = ({
   releaseType,
   link,
   daysSince,
+  claimed,
 }: ReleaseOverviewProps) => {
   const daysAgo = (() => {
     if (daysSince === undefined) return null;
@@ -38,6 +40,11 @@ export const ReleaseOverview = ({
           {daysAgo && (
             <p>
               Requested <strong>{daysAgo}</strong>.
+            </p>
+          )}
+          {claimed && (
+            <p>
+              <strong>A user has claimed this for review.</strong>
             </p>
           )}
         </div>

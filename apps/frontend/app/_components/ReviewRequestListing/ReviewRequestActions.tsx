@@ -81,6 +81,13 @@ export const ReviewRequestActions = ({
           />
         </>
       )}
+      {type === "mine" && reviewRequest.claimed_by && (
+        <Button
+          label="Unassign reviewer"
+          onClick={handleUnclaim}
+          disabled={disableButton}
+        />
+      )}
       {isAdmin && (
         <Button
           disabled={disableButton}
