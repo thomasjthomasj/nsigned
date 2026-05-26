@@ -70,7 +70,16 @@ export const CommentForm = ({ article }: CommentFormProps) => {
     [user, idempotencyKey, content, wordCount, isSubmitting],
   );
 
-  if (!user) return null;
+  if (!user)
+    return (
+      <p>
+        You must be{" "}
+        <a href={`/login?redirect=/article/${article.id}/${article.slug}`}>
+          logged in
+        </a>{" "}
+        to leave a comment.
+      </p>
+    );
 
   return (
     <div className="w-full flex flex-col gap-[10px]">
