@@ -35,11 +35,22 @@ export const ReviewRequestListing = ({
   const helpText = (() => {
     switch (type) {
       case "pending":
-        return "Claiming a release for review attaches you to it and prevents others from reviewing before you. You can pick whichever release you want, but please try to prioritise releases that have been waiting a long time.";
+        return [
+          <p key={0}>
+            Claiming a release for review attaches you to it and prevents others
+            from reviewing before you.
+          </p>,
+          <p key={1}>
+            You can pick whichever release you want, but please try to
+            prioritise releases that have been waiting a long time.
+          </p>,
+        ];
       case "claimed":
-        return "These are releases that you have already claimed for review.";
+        return (
+          <p>These are releases that you have already claimed for review.</p>
+        );
       default:
-        return "These are your releases that have not yet been reviewed.";
+        return <p>These are your releases that have not yet been reviewed.</p>;
     }
   })();
 
@@ -48,7 +59,7 @@ export const ReviewRequestListing = ({
       <div className="flex flex-col w-full gap-[15px]">
         <div>
           <h3>{title}</h3>
-          <p>{helpText}</p>
+          <div className="space-y-[7px]">{helpText}</div>
         </div>
         {reviewRequests.map((r, i) => (
           <div
