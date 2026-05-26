@@ -4,6 +4,7 @@ import { CreateArticle } from "@/_components/_forms/CreateArticle";
 import { handleError } from "@/_fns/handle-error";
 import { get, getMe } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
+import { getDaysSince } from "@/_utils/date";
 
 import type { ReviewRequest } from "@/_types/api";
 
@@ -46,6 +47,8 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
   const { release } = reviewRequest;
   const title = `Reviewing "${release.title}"${release.primary_artist ? ` by ${release.primary_artist.name}` : ""}`;
 
+  const daysSince = getDaysSince(reviewRequest.created_at);
+
   return (
     <PageLayout title={title}>
       <div className="flex flex-col gap-[20px]">
@@ -58,6 +61,7 @@ const WriteReview = async ({ params }: WriteReviewProps) => {
             imageURL={release.images.sm.url}
             releaseType={release.release_type}
             link={release.links[0].url}
+            daysSince={daysSince}
           />
         </div>
         <div>

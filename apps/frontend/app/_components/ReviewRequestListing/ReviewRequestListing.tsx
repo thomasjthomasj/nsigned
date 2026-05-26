@@ -1,6 +1,7 @@
 import classNames from "classnames";
 
 import { ReleaseOverview } from "@/_components/ReleaseOverview";
+import { getDaysSince } from "@/_utils/date";
 
 import { ReviewRequestActions } from "./ReviewRequestActions";
 
@@ -34,7 +35,7 @@ export const ReviewRequestListing = ({
   const helpText = (() => {
     switch (type) {
       case "pending":
-        return "Claiming a release for review attaches you to it and prevents others from reviewing before you.";
+        return "Claiming a release for review attaches you to it and prevents others from reviewing before you. You can pick whichever release you want, but please try to prioritise releases that have been waiting a long time.";
       case "claimed":
         return "These are releases that you have already claimed for review.";
       default:
@@ -64,6 +65,7 @@ export const ReviewRequestListing = ({
               imageURL={r.release.images.sm.url}
               releaseType={r.release.release_type}
               link={r.release.links[0].url}
+              daysSince={getDaysSince(r.created_at)}
             />
             {includeActions && (
               <div>
