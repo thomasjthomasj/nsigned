@@ -21,8 +21,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "_nsigned",
-  description: "The DIY music magazine",
+  title: "_nsigned - The DIY music magazine",
+  description:
+    "A community music review site. Post a link to your Bandcamp and other people will review it, or give some stuff a listen and tell everyone what you think!",
   openGraph: {
     images: [
       {
