@@ -51,8 +51,9 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
     if (result.ok) {
       const { data: article } = result;
       router.push(`/article/${article.id}/${article.slug}`);
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, [title, content, reviewRequest]);
 
   const disableButton = useMemo(
