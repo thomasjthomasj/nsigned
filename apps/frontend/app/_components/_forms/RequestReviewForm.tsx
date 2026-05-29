@@ -104,7 +104,7 @@ export const RequestReviewForm = ({
     <div className="flex flex-col gap-[15px] my-[25px]">
       {error && <p className="text-primary-500">{error}</p>}
       <FormField
-        label="Bandcamp URL"
+        label="Bandcamp release URL"
         name="url"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
