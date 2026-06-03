@@ -232,7 +232,7 @@ def notifications(request):
   cache_key = get_cache_key("NOTIFICATIONS", id_val=user.id)
   cached_body = cache.get(cache_key)
   if cached_body:
-    return Ok(cached_body)
+    return Ok(json.loads(cached_body))
 
   notifications = Notification.objects.select_related("user").filter(
     user=user,
@@ -240,7 +240,7 @@ def notifications(request):
   ).order_by("-created_at")
 
   notification_data = [notification.serialized for notification in notifications]
-  cache.set(cache_key, json.loads(notification_data), timeout=3600)
+  cache.set(cache_key, json.dumps(notification_data), timeout=3600)
 
   return Ok([notification.serialized for notification in notifications])
 

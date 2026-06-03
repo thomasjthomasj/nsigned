@@ -68,6 +68,14 @@ a:hover {
   text-decoration: underline;
 }
 
+a.drop-down:hover {
+  text-decoration: none!important;
+}
+
+a.drop-down:hover p {
+  color: var(--secondary-500);
+}
+
 p a {
   color: var(--secondary-500);
   font-style: italic;

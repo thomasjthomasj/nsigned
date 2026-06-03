@@ -16,4 +16,6 @@ urlpatterns = [
   path("request-otp", views.request_otp, name="request_otp"),
   path("email-consent", views.email_consent, name="email_consent"),
   path("send-email-consent", views.send_email_consent, name="send_email_consent"),
+  path("notifications", views.notifications, name="notifications"),
+  path("notifications/mark-read", views.mark_notifications_read, name="mark_notifications_read"),
 ]

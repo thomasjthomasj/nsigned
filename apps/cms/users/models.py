@@ -103,3 +103,6 @@ class Notification(models.Model):
       "text": self.text,
       "link": self.link,
     }
+
+  def __str__(self):
+    return f"{self.user.username} - {self.text}"

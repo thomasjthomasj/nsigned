@@ -4,6 +4,7 @@ import { Button } from "@/_components/Button";
 
 import { Logo } from "./Logo";
 import { Menu } from "./Menu";
+import { Notifications } from "./Notifications";
 
 export const Header = () => (
   <div
@@ -23,6 +24,7 @@ export const Header = () => (
           <Button label="Write review" className="hidden sm:block" />
           <Button label="Write" className="sm:hidden" />
         </a>
+        <Notifications />
         <Menu />
       </div>
     </div>
