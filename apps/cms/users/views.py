@@ -1,17 +1,19 @@
 import jwt
+import json
 from datetime import timezone
 from django.apps import apps
 from django.db import transaction
+from django.core.cache import cache
 from django.core.validators import validate_email
 from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out, cached
 from app.http import Ok, NotFound, BadRequest, Unauthorized, InternalServerError
-from app.utils import set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache
+from app.utils import get_cache_key, set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache
 from links.models import Link
 from .auth import issue_tokens, decode
 from .email import send_otp, send_article_notifications, send_consent_emails, EmailError
-from .models import User
+from .models import User, Notification
 from .validators import fundraiser_link_validator
 from .utils import get_otp
 
@@ -221,4 +223,35 @@ def email_consent(request):
 def send_email_consent(request):
   email = request.json.get("email")
   send_consent_emails(emails=[email])
+  return Ok()
+
+@method("GET")
+@logged_in()
+def notifications(request):
+  user = request.site_user
+  cache_key = get_cache_key("NOTIFICATIONS", id_val=user.id)
+  cached_body = cache.get(cache_key)
+  if cached_body:
+    return Ok(cached_body)
+
+  notifications = Notification.objects.select_related("user").filter(
+    user=user,
+    read=False,
+  ).order_by("-created_at")
+
+  notification_data = [notification.serialized for notification in notifications]
+  cache.set(cache_key, json.loads(notification_data), timeout=3600)
+
+  return Ok([notification.serialized for notification in notifications])
+
+@method("POST")
+@logged_in()
+def mark_notifications_read(request):
+  user = request.site_user
+  data = request.json
+  notification_ids = data.get("notification_ids")
+  if not notification_ids:
+    return BadRequest()
+  Notification.objects.filter(user=user, id__in=notification_ids).update(read=True)
+  delete_cache("NOTIFICATIONS", id_val=user.id)
   return Ok()

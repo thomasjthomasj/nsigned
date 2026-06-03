@@ -91,4 +91,15 @@ class Notification(models.Model):
   user = models.ForeignKey(User, related_name="notifications", on_delete=models.CASCADE)
   read = models.BooleanField(default=False)
   created_at = models.DateTimeField(auto_now_add=True)
+  text = models.CharField(max_length=1000)
   link = models.CharField(max_length=1000, null=True, blank=True)
+
+  @cached_property
+  def serialized(self):
+    return {
+      "id": self.id,
+      "user_id": self.user.id,
+      "created_at": self.created_at.isoformat(),
+      "text": self.text,
+      "link": self.link,
+    }
