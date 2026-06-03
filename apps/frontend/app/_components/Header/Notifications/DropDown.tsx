@@ -66,17 +66,15 @@ export const DropDown = ({
               className="drop-down"
             >
               <div
-                className={classNames("py-[15px]", {
+                className={classNames("py-[15px] flex gap-[5px]", {
                   "border-b border-tertiary-500":
                     i < notifications.length - 1 && i % 2,
                   "border-b border-secondary-500":
                     i < notifications.length - 1 && !(i % 2),
                 })}
               >
-                <p>
-                  <span className="font-bold !text-primary-500">// </span>
-                  {n.text}
-                </p>
+                <p className="font-bold !text-primary-500">//</p>
+                <p>{n.text}</p>
               </div>
             </a>
           ))}

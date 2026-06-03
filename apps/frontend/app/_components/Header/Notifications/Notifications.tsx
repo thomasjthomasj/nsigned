@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { EnvelopeIcon } from "@/_components/_icons/EnvelopeIcon";
@@ -14,6 +15,7 @@ export const Notifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { user } = useAuth();
+  const pathname = usePathname();
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export const Notifications = () => {
 
   useEffect(() => {
     loadNotifications();
-  }, [loadNotifications]);
+  }, [loadNotifications, pathname]);
 
   if (notifications.length === 0) return null;
 

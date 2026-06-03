@@ -6,6 +6,7 @@ from app.decorators import logged_in, method, cached
 from app.http import Ok, BadRequest, NotFound, Forbidden
 from app.utils import delete_cache, delete_cache_prefix, has_permission
 from music.models import ReviewRequest
+from users.models import Notification
 from users.email import send_consent_emails, send_article_notifications
 from .models import Article, Comment, CommentContent
 
@@ -100,8 +101,13 @@ def create(request):
   delete_cache_prefix("ARTICLES")
   if review_request:
     delete_cache("REVIEW-REQUEST", id_val=review_request.id)
+    rr_user = review_request.created_by
+    Notification.objects.create_notification(
+      user=rr_user,
+      text=f"{created_by.display_name} reviewed {review_request.release.title}",
+      link=f"/article/{article.id}/{article.slug}",
+    )
     if review_request.notify_on_review:
-      rr_user = review_request.created_by
       if rr_user.can_email == None:
         r = send_consent_emails([rr_user])
       elif rr_user.can_email == True:
@@ -196,6 +202,19 @@ def comment(request, article_id):
     comment=comment,
     content=content,
   )
+
+  def notify(send_to):
+    Notification.objects.create_notification(
+      user=send_to,
+      text=f"{user.display_name} commented on \"{article.title}\"",
+      link=f"/article/{article.id}/{article.slug}#comment-{comment.id}",
+    )
+
+  if user.id is not article.created_by.id:
+    notify(article.created_by)
+
+  if article.review_request and user.id is not article.review_request.created_by.id:
+    notify(article.review_request.created_by)
 
   reloaded = Comment.objects.prefetched.get(id=comment.id)
   delete_cache("ARTICLE-COMMENTS", id_val=article_id)

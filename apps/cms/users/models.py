@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta, timezone
-from django.db import models
+from django.db import models, transaction
 from django.utils.functional import cached_property
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import PermissionDenied
+from app.utils import delete_cache
 from .utils import get_otp
 
 class UserManager(BaseUserManager):
@@ -87,12 +88,21 @@ class User(AbstractBaseUser):
     self.save()
     return otp
 
+class NotificationManager(models.Manager):
+  @transaction.atomic()
+  def create_notification(self, user, text, link):
+    notification = self.create(user=user, text=text, link=link)
+    delete_cache("NOTIFICATIONS", id_val=user.id)
+    return notification
+
 class Notification(models.Model):
   user = models.ForeignKey(User, related_name="notifications", on_delete=models.CASCADE)
   read = models.BooleanField(default=False)
   created_at = models.DateTimeField(auto_now_add=True)
   text = models.CharField(max_length=1000)
   link = models.CharField(max_length=1000, null=True, blank=True)
+
+  objects = NotificationManager()
 
   @cached_property
   def serialized(self):
