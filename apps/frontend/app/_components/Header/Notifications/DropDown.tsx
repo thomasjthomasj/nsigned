@@ -50,7 +50,7 @@ export const DropDown = ({
   }, [notifications, markAsRead, router]);
 
   return (
-    <div className="flex flex-col p-[15px] bg-background border-1 border-tertiary-500 absolute right-0 w-[300px]">
+    <div className="flex flex-col p-[15px] bg-background border-1 border-tertiary-500 absolute right-0 w-[250px] sm:w-[300px]">
       <h3 className="w-full pb-[5px] border-b border-primary-500">
         Notifications
       </h3>
