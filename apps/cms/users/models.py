@@ -86,3 +86,9 @@ class User(AbstractBaseUser):
     self.password_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
     self.save()
     return otp
+
+class Notification(models.Model):
+  user = models.ForeignKey(User, related_name="notifications", on_delete=models.CASCADE)
+  read = models.BooleanField(default=False)
+  created_at = models.DateTimeField(auto_now_add=True)
+  link = models.CharField(max_length=1000, null=True, blank=True)
