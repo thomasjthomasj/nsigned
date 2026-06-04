@@ -1,10 +1,11 @@
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.db import transaction
 from app.http import Ok, BadRequest, NotFound, Forbidden
 from app.decorators import logged_in, method, cached
 from app.utils import delete_cache, delete_cache_prefix
+from articles.models import Article
 from .bandcamp import get_release_details, BandcampError
-from .models import Release, ReviewRequest
+from .models import Artist, Release, ReviewRequest
 
 @cached("RELEASE-DETAILS", get_params=["url"])
 def release_details(request):
@@ -176,3 +177,18 @@ def user_review_request(request):
     .order_by("created_at")
 
   return Ok([r.serialized for r in review_requests])
+
+@method("GET")
+@cached("ARTISTS", timeout=86400)
+def artists(request):
+  articles = Article.cms.prefetched.exclude(review_request=None)
+  artist_ids = [
+    a.review_request.release.primary_artist.id
+    for a in articles if a.review_request and a.review_request.release.primary_artist
+  ]
+  artists = Artist.objects.filter(id__in=artist_ids).order_by("name")
+  return Ok([{
+    "id": a.id,
+    "name": a.name,
+    "slug": a.slug
+  } for a in artists])

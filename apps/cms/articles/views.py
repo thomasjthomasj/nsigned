@@ -100,6 +100,8 @@ def create(request):
   )
   delete_cache_prefix("ARTICLES")
   delete_cache_prefix("AUTHORS")
+  delete_cache_prefix("ARTISTS")
+
   if review_request:
     delete_cache("REVIEW-REQUEST", id_val=review_request.id)
     rr_user = review_request.created_by

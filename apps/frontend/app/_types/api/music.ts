@@ -25,6 +25,12 @@ export type ReleaseDetails = {
   link: string;
 };
 
+export type ArtistMeta = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 export type Artist = {
   id: number;
   name: string;
