@@ -22,6 +22,12 @@ const EditorialGuide = async () => (
       </p>
       <ol className="space-y-[7px]">
         <li>
+          <strong>Listen to the entire release.</strong> You cannot give
+          something a fair review if you haven't taken the time to listen to it
+          in its entirety. If you find the release unlistenable, then do not
+          review it and let someone else pick it up.
+        </li>
+        <li>
           <strong>Be honest.</strong> Reviews have no value if they are not the
           honest opinion of the author.
         </li>
