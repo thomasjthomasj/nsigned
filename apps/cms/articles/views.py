@@ -5,7 +5,8 @@ from slugify import slugify
 from app.decorators import logged_in, method, cached
 from app.http import Ok, BadRequest, NotFound, Forbidden
 from app.utils import delete_cache, delete_cache_prefix, has_permission
-from music.models import ReviewRequest
+from music.bandcamp import get_release_details
+from music.models import ReviewRequest, Release
 from users.models import Notification
 from users.email import send_consent_emails, send_article_notifications
 from .models import Article, Comment, CommentContent
@@ -242,3 +243,22 @@ def sitemap(request):
     "slug": a.slug,
     "published_at": a.published_at.isoformat(),
   } for a in articles])
+
+@method("POST")
+@logged_in("editor")
+def revalidate_images(request, article_id):
+  article = Article.objects.get(id=article_id)
+  if not article:
+    return NotFound()
+  if not article.review_request:
+    return BadRequest("Article does not have an associated review request")
+  release = article.review_request.release
+  link = release.links.all()[0]
+  release_details = get_release_details(link.url)
+  if not release_details["images"]:
+    return BadRequest("Release does not have images")
+  release.images = release_details["images"]
+  release.save()
+  delete_cache("ARTICLE", id_val=article_id)
+  delete_cache_prefix("ARTICLES")
+  return Ok()

@@ -33,6 +33,7 @@ export const Menu = () => {
       e.preventDefault();
       await post({ endpoint: "users/logout" });
       await getUser();
+      window.location.reload();
     },
     [getUser],
   );

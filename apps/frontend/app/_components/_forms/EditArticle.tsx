@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { PencilIcon } from "@/_components/_icons/PencilIcon";
+import { RefreshIcon } from "@/_components/_icons/RefreshIcon";
 import { TrashIcon } from "@/_components/_icons/TrashIcon";
 import { useAuth } from "@/_hooks";
 import { post } from "@/_utils/api.client";
@@ -19,6 +20,7 @@ type EditArticleProps = {
 export const EditArticle = ({ article, containerID }: EditArticleProps) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isRevalidating, setIsRevalidating] = useState<boolean>(false);
   const [content, setContent] = useState<string>(article.content?.raw ?? "");
   const [deleteReason, setDeleteReason] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +50,11 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
     return user.role === "admin";
   }, [user]);
 
+  const hasRevalidatePermission = useMemo(() => {
+    if (!user) return false;
+    return ["editor", "admin"].includes(user.role);
+  }, [user]);
+
   const handleUpdate = useCallback(async () => {
     const { ok } = await post({
       endpoint: `articles/${article.id}/update`,
@@ -74,6 +81,19 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
     window.location.reload();
   }, [deleteReason, article]);
 
+  const handleRevalidate = useCallback(async () => {
+    setIsRevalidating(true);
+    const { ok, data } = await post({
+      endpoint: `articles/${article.id}/revalidate`,
+    });
+    setIsRevalidating(false);
+    if (!ok) {
+      setError(data.error);
+      return;
+    }
+    window.location.reload();
+  }, [article]);
+
   if (!user) return false;
 
   if (!hasEditPermission) return null;
@@ -86,6 +106,14 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
           label={<PencilIcon />}
           onClick={() => setIsEditing(true)}
         />
+        {hasRevalidatePermission && (
+          <Button
+            className="px-[10px]"
+            label={<RefreshIcon />}
+            onClick={handleRevalidate}
+            disabled={isRevalidating}
+          />
+        )}
         {hasDeletePermission && (
           <Button
             className="px-[10px]"
