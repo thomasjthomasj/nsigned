@@ -73,6 +73,14 @@ export async function GET() {
     <loc>https://nsigned.com/terms</loc>
     <priority>0.5</priority>
   </url>
+  <url>
+    <loc>https://nsigned.com/writers</loc>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://nsigned.com/artists</loc>
+    <priority>0.2</priority>
+  </url>
   ${articles.map(
     (a) => `
     <url>

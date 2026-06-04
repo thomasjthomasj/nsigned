@@ -1,33 +1,41 @@
 export const Footer = () => (
   <footer className="max-w-[900px] w-full overflow-auto border-t border-t-secondary-500 pt-[20px] pb-[40px] px-[15px] text-[12px]">
     <div className="flex flex-col sm:flex-row justify-between gap-[15px] mb-[10px]">
-      <div className="flex flex-col">
-        <h4 className="mb-[0.5rem]">Recommended sites</h4>
-        <ul>
-          <li>
-            <a href="https://www.untidydownloads.com/" target="_blank">
-              Untidy Music
-            </a>
-          </li>
-          <li>
-            <a href="https://ihrtn.net/" target="_blank">
-              I Heart Noise
-            </a>
-          </li>
-          <li>
-            <a href="https://www.etherdiver.com/" target="_blank">
-              Ether Diver
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.soundclick.com/forum/default.cfm"
-              target="_blank"
-            >
-              SoundClick Forum
-            </a>
-          </li>
-        </ul>
+      <div className="flex flex-col gap-[15px]">
+        <div>
+          <h4 className="mb-[0.5rem]">Listings</h4>
+          <ul>
+            <li>
+              <a href="/archive">Reviews</a>
+            </li>
+            <li>
+              <a href="/artists">Artists</a>
+            </li>
+            <li>
+              <a href="/writers">Writers</a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="mb-[0.5rem]">Community</h4>
+          <ul>
+            <li>
+              <a href="https://discord.gg/A4hRDQmUYk" target="_blank">
+                Discord
+              </a>
+            </li>
+            <li>
+              <a href="https://godribbon.bsky.social" target="_blank">
+                Bluesky
+              </a>
+            </li>
+            <li>
+              <a href="https://ko-fi.com/godribbon" target="_blank">
+                Donate
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="flex flex-col gap-[15px]">
         <div>
@@ -46,21 +54,29 @@ export const Footer = () => (
           </ul>
         </div>
         <div>
-          <h4 className="mb-[0.5rem]">Support</h4>
+          <h4 className="mb-[0.5rem]">Recommended sites</h4>
           <ul>
             <li>
-              <a href="https://discord.gg/A4hRDQmUYk" target="_blank">
-                Discord
+              <a href="https://www.untidydownloads.com/" target="_blank">
+                Untidy Music
               </a>
             </li>
             <li>
-              <a href="https://godribbon.bsky.social" target="_blank">
-                Bluesky
+              <a href="https://ihrtn.net/" target="_blank">
+                I Heart Noise
               </a>
             </li>
             <li>
-              <a href="https://ko-fi.com/godribbon" target="_blank">
-                Donate
+              <a href="https://www.etherdiver.com/" target="_blank">
+                Ether Diver
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.soundclick.com/forum/default.cfm"
+                target="_blank"
+              >
+                SoundClick Forum
               </a>
             </li>
           </ul>
