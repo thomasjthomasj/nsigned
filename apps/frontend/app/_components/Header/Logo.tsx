@@ -11,7 +11,7 @@ export const Logo = () => {
     (e: React.MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault();
       if (pathname === "/") {
-        router.refresh();
+        window.location.reload();
       } else {
         router.push("/");
       }
