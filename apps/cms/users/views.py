@@ -4,6 +4,7 @@ from datetime import timezone
 from django.apps import apps
 from django.db import transaction
 from django.db.models import Count, Q
+from django.db.models.functions import Lower
 from django.core.cache import cache
 from django.core.validators import validate_email
 from datetime import datetime, timezone
@@ -272,7 +273,7 @@ def sitemap(request):
 def authors(request):
   users = User.objects.annotate(
     article_count=Count("article", filter=Q(article__deleted=False))
-  ).filter(article_count__gt=0).order_by("display_name")
+  ).filter(article_count__gt=0).order_by(Lower("display_name"))
   return Ok([{
     "id": u.id,
     "username": u.username,

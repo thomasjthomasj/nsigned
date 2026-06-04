@@ -1,5 +1,6 @@
 from django.db.models import Q, Count
 from django.db import transaction
+from django.db.models.functions import Lower
 from app.http import Ok, BadRequest, NotFound, Forbidden
 from app.decorators import logged_in, method, cached
 from app.utils import delete_cache, delete_cache_prefix
@@ -186,7 +187,7 @@ def artists(request):
     a.review_request.release.primary_artist.id
     for a in articles if a.review_request and a.review_request.release.primary_artist
   ]
-  artists = Artist.objects.filter(id__in=artist_ids).order_by("name")
+  artists = Artist.objects.filter(id__in=artist_ids).order_by(Lower("name"))
   return Ok([{
     "id": a.id,
     "name": a.name,
