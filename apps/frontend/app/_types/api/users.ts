@@ -18,7 +18,7 @@ export type Author = {
   id: number;
   username: string;
   display_name: string;
-}
+};
 
 export type LoggedInUser = User & {
   bio: string;
