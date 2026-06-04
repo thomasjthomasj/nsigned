@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out, cached
 from app.http import Ok, NotFound, BadRequest, Unauthorized, InternalServerError
-from app.utils import get_cache_key, set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache
+from app.utils import get_cache_key, set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache, delete_cache_prefix
 from links.models import Link
 from .auth import issue_tokens, decode
 from .email import send_otp, send_article_notifications, send_consent_emails, EmailError
@@ -130,6 +130,7 @@ def register(request):
         display_name=display_name,
         last_login=datetime.now(timezone.utc)
       )
+      delete_cache_prefix("USERS")
       otp = user.update_otp()
       response = send_otp(user, otp)
       if not response.ok:
@@ -255,3 +256,12 @@ def mark_notifications_read(request):
   Notification.objects.filter(user=user, id__in=notification_ids).update(read=True)
   delete_cache("NOTIFICATIONS", id_val=user.id)
   return Ok()
+
+@method("GET")
+@cached("USERS:SITEMAP", timeout=86400)
+def sitemap(request):
+  users = User.objects.all().order_by("-last_login")[:500]
+  return Ok([{
+    "id": u.id,
+    "username": u.username,
+  } for u in users])

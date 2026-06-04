@@ -229,3 +229,13 @@ def get_comments(request, article_id):
   ).order_by("created_at")
 
   return Ok([comment.serialized for comment in comments])
+
+@method("GET")
+@cached("ARTICLES:SITEMAP", timeout=86400)
+def sitemap(request):
+  articles = Article.objects.filter(deleted=False).order_by("-published_at")[:500]
+  return Ok([{
+    "id": a.id,
+    "slug": a.slug,
+    "published_at": a.published_at.isoformat(),
+  } for a in articles])

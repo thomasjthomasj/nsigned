@@ -18,4 +18,5 @@ urlpatterns = [
   path("send-email-consent", views.send_email_consent, name="send_email_consent"),
   path("notifications", views.notifications, name="notifications"),
   path("notifications/mark-read", views.mark_notifications_read, name="mark_notifications_read"),
+  path("sitemap", views.sitemap, name="sitemap"),
 ]

@@ -12,4 +12,5 @@ urlpatterns = [
   path("<int:article_id>/comment", views.comment, name="comment"),
   path("<int:article_id>/comments", views.get_comments, name="get_comments"),
   path("create", views.create, name="create"),
+  path("sitemap", views.sitemap, name="sitemap"),
 ]
