@@ -14,6 +14,12 @@ export type User = {
   can_email: boolean | null;
 };
 
+export type Author = {
+  id: number;
+  username: string;
+  display_name: string;
+}
+
 export type LoggedInUser = User & {
   bio: string;
   email: string;

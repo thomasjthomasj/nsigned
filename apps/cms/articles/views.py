@@ -99,6 +99,7 @@ def create(request):
     review_request=review_request,
   )
   delete_cache_prefix("ARTICLES")
+  delete_cache_prefix("AUTHORS")
   if review_request:
     delete_cache("REVIEW-REQUEST", id_val=review_request.id)
     rr_user = review_request.created_by

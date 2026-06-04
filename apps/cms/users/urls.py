@@ -19,4 +19,5 @@ urlpatterns = [
   path("notifications", views.notifications, name="notifications"),
   path("notifications/mark-read", views.mark_notifications_read, name="mark_notifications_read"),
   path("sitemap", views.sitemap, name="sitemap"),
+  path("authors", views.authors, name="authors"),
 ]
