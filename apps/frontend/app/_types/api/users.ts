@@ -1,5 +1,10 @@
 export type Role = "contributor" | "editor" | "admin";
 
+export type UserMeta = {
+  id: number;
+  username: string;
+};
+
 export type User = {
   id: number;
   username: string;

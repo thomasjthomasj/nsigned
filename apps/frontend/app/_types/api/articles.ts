@@ -1,6 +1,12 @@
 import { Release } from "./music";
 import { User } from "./users";
 
+export type ArticleMeta = {
+  id: number;
+  slug: string;
+  published_at: string;
+};
+
 export type Article = {
   id: number;
   title: string;
