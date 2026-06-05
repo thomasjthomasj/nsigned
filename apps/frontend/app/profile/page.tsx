@@ -25,6 +25,7 @@ const EditProfile = async () => {
             bio: user.bio,
             fundraiserLink: user.fundraiser_link,
             username: user.username,
+            pronouns: user.pronouns,
           }}
         />
       </div>

@@ -63,6 +63,7 @@ def update(request):
   display_name = data.get("display_name")
   bio = data.get("bio")
   fundraiser_link = data.get("fundraiser_link")
+  pronouns = data.get("pronouns")
   if fundraiser_link:
     try:
       fundraiser_link_validator(fundraiser_link)
@@ -71,8 +72,10 @@ def update(request):
     user.fundraiser_link = Link.objects.get_or_create(url=fundraiser_link)[0]
   if display_name:
     user.display_name = display_name
-  if bio:
+  if bio is not None:
     user.bio = bio
+  if pronouns is not None:
+    user.pronouns = pronouns
   user.save()
   delete_cache("USER", id_val=user.username)
   return Ok(user.serialized)

@@ -12,6 +12,7 @@ export type User = {
   fundraiser_link: string | null;
   role: Role;
   can_email: boolean | null;
+  pronouns: string | null;
 };
 
 export type Author = {

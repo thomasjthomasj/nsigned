@@ -61,6 +61,13 @@ const Profile = async ({ params }: ProfileProps) => {
   return (
     <PageLayout title={profile.display_name}>
       <div className="flex flex-col w-full gap-[10px]">
+        {profile.pronouns && (
+          <div>
+            <p className="text-[12px] text-tertiary-500">
+              ({profile.pronouns})
+            </p>
+          </div>
+        )}
         {profile.fundraiser_link && (
           <div>
             <p>

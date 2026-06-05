@@ -12,6 +12,7 @@ type ProfileFormProps = {
   profile: {
     displayName: string;
     bio: string | null;
+    pronouns: string | null;
     fundraiserLink: string | null;
     username: string;
   };
@@ -22,6 +23,7 @@ const MAX_BIO_WORDS = 250;
 export const ProfileForm = ({ profile }: ProfileFormProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [displayName, setDisplayName] = useState<string>(profile.displayName);
+  const [pronouns, setPronouns] = useState<string>(profile.pronouns ?? "");
   const [bio, setBio] = useState<string | null>(profile.bio);
   const [fundraiserLink, setFundraiserLink] = useState<string | null>(
     profile.fundraiserLink,
@@ -38,11 +40,12 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
         display_name: displayName,
         bio,
         fundraiser_link: fundraiserLink,
+        pronouns,
       },
     });
     if (response.ok) router.refresh();
     setLoading(false);
-  }, [displayName, bio, fundraiserLink]);
+  }, [displayName, bio, fundraiserLink, pronouns]);
 
   const buttonDisabled = useMemo(
     () => loading || bioWordCount > MAX_BIO_WORDS,
@@ -57,6 +60,12 @@ export const ProfileForm = ({ profile }: ProfileFormProps) => {
           name="displayName"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
+        />
+        <label htmlFor="pronouns">Pronouns</label>
+        <FormField
+          name="pronouns"
+          value={pronouns}
+          onChange={(e) => setPronouns(e.target.value)}
         />
         <label htmlFor="bio">Bio</label>
         <div className="flex flex-col">
