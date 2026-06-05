@@ -80,6 +80,7 @@ class User(AbstractBaseUser):
       "role": self.role,
       "fundraiser_link": self.fundraiser_link.url if self.fundraiser_link else None,
       "can_email": self.can_email,
+      "pronouns": self.pronouns,
     }
 
   def update_otp(self):
