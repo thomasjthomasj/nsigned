@@ -108,7 +108,7 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
       text: `${article.title} by ${article.created_by.display_name}\n\nRead it on _nsigned!`,
       link: `https://nsigned.com/article/${article.id}`,
       hashtags: ["#diymusic", "#bandcamp"],
-      imgFallback: article?.release?.images?.md?.url,
+      img: article?.release?.images?.md?.url,
     });
     setIsPostingToBsky(false);
   }, [article]);
