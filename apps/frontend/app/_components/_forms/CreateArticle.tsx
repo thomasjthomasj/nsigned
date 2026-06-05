@@ -60,6 +60,7 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
         text: `New post!\n\n${title} by ${user.display_name}`,
         link: `https://nsigned.com/article/${article.id}`,
         hashtags: ["#diymusic", "#bandcamp"],
+        imgFallback: article?.release?.images?.md?.url,
       });
       router.push(`/article/${article.id}/${article.slug}`);
     } else {

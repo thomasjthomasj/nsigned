@@ -9,9 +9,15 @@ type PostToBskyArgs = {
   text: string;
   hashtags?: string[];
   link?: string;
+  imgFallback?: string;
 };
 
-export const postToBsky = async ({ text, hashtags, link }: PostToBskyArgs) => {
+export const postToBsky = async ({
+  text,
+  hashtags,
+  link,
+  imgFallback,
+}: PostToBskyArgs) => {
   if (!BSKY_PASSWORD || !BSKY_USERNAME)
     throw new Error("Bluesky credentials are missing");
 
@@ -22,7 +28,7 @@ export const postToBsky = async ({ text, hashtags, link }: PostToBskyArgs) => {
     password: BSKY_PASSWORD,
   });
 
-  const fullText = `${text}\n${hashtags ? `\n${hashtags.join(" ")}` : ""}${link ? `\n${link}` : ""}`;
+  const fullText = `${text}\n${hashtags ? `\n${hashtags.join(" ")}\n` : ""}${link ? `\n${link}` : ""}`;
 
   const facets: any[] = [];
 
@@ -74,6 +80,22 @@ export const postToBsky = async ({ text, hashtags, link }: PostToBskyArgs) => {
       const imgURL = meta("og:image");
       if (!imgURL) return undefined;
       try {
+        const buffer = await (async () => {
+          try {
+            const imgResponse = await fetch(imgURL);
+            const arrayBuffer = await imgResponse.arrayBuffer();
+            if (arrayBuffer.byteLength > 1000000)
+              throw new Error("Upload too large, use fallback instead.");
+            return arrayBuffer;
+          } catch {
+            if (!imgFallback) return undefined;
+            const imgResponse = await fetch(imgFallback);
+            const arrayBuffer = await imgResponse.arrayBuffer();
+            if (arrayBuffer.byteLength > 1000000) return undefined;
+            return arrayBuffer;
+          }
+        })();
+
         const imgResponse = await fetch(imgURL);
         const arrayBuffer = await imgResponse.arrayBuffer();
         if (arrayBuffer.byteLength > 1000000) return undefined;
