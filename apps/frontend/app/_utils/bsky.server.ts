@@ -9,14 +9,11 @@ type PostToBskyArgs = {
   text: string;
   hashtag?: string;
   link?: string;
-}
+};
 
-export const postToBsky = async ({
-  text,
-  hashtag,
-  link
-}: PostToBskyArgs) => {
-  if (!BSKY_PASSWORD || !BSKY_USERNAME) throw new Error("Bluesky credentials are missing");
+export const postToBsky = async ({ text, hashtag, link }: PostToBskyArgs) => {
+  if (!BSKY_PASSWORD || !BSKY_USERNAME)
+    throw new Error("Bluesky credentials are missing");
 
   const agent = new AtpAgent({ service: "https://bsky.social" });
 
@@ -40,8 +37,8 @@ export const postToBsky = async ({
         {
           $type: "app.bsky.richtext.facet#tag",
           tag: hashtag.replace("#", ""),
-        }
-      ]
+        },
+      ],
     });
   }
 
@@ -64,14 +61,14 @@ export const postToBsky = async ({
     const meta = (property: string) => {
       const pattern = new RegExp(
         `<meta[^>]+property=["']${property}["'][^>]+content=["']([^"']+)["']`,
-        "i"
-      )
+        "i",
+      );
       const match = html.match(pattern);
       return match?.[1] ? decode(match[1]) : undefined;
-    }
+    };
 
     const thumb = await (async () => {
-      const imgURL = meta("og:image")
+      const imgURL = meta("og:image");
       if (!imgURL) return undefined;
       const imgResponse = await fetch(imgURL);
       const arrayBuffer = await imgResponse.arrayBuffer();
@@ -79,7 +76,7 @@ export const postToBsky = async ({
         encoding: imgResponse.headers.get("content-type") || "image/jpeg",
       });
       return upload.data.blob;
-    })()
+    })();
 
     embed = {
       $type: "app.bsky.embed.external",
@@ -88,8 +85,8 @@ export const postToBsky = async ({
         title: meta("og:title"),
         description: meta("og:description"),
         thumb,
-      }
-    }
+      },
+    };
   }
 
   await agent.post({
@@ -97,4 +94,4 @@ export const postToBsky = async ({
     facets,
     embed,
   });
-}
+};

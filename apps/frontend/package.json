@@ -12,6 +12,7 @@
   "dependencies": {
     "@atproto/api": "^0.19.6",
     "@fortawesome/fontawesome-svg-core": "*",
+    "@fortawesome/free-brands-svg-icons": "*",
     "@fortawesome/free-solid-svg-icons": "*",
     "@fortawesome/react-fontawesome": "*",
     "@vercel/analytics": "^2.0.1",

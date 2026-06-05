@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useAuth } from "@/_hooks";
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { WordCount } from "@/_components/WordCount";
+import { useAuth } from "@/_hooks";
 import { post } from "@/_utils/api.client";
 import { postToBsky } from "@/_utils/bsky.server";
 
@@ -59,7 +59,7 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
       postToBsky({
         text: `New post!\n\n${title} by ${user.display_name}`,
         link: `https://nsigned.com/article/${article.id}`,
-      })
+      });
       router.push(`/article/${article.id}/${article.slug}`);
     } else {
       setIsLoading(false);

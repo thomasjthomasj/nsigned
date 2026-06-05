@@ -25,7 +25,7 @@ export const Footer = () => (
               </a>
             </li>
             <li>
-              <a href="https://godribbon.bsky.social" target="_blank">
+              <a href="https://bsky.app/profile/nsigned.com" target="_blank">
                 Bluesky
               </a>
             </li>

@@ -4,11 +4,13 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
+import { BlueskyIcon } from "@/_components/_icons/BlueskyIcon";
 import { PencilIcon } from "@/_components/_icons/PencilIcon";
 import { RefreshIcon } from "@/_components/_icons/RefreshIcon";
 import { TrashIcon } from "@/_components/_icons/TrashIcon";
 import { useAuth } from "@/_hooks";
 import { post } from "@/_utils/api.client";
+import { postToBsky } from "@/_utils/bsky.server";
 
 import type { ArticleFull } from "@/_types/api";
 
@@ -21,6 +23,7 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isRevalidating, setIsRevalidating] = useState<boolean>(false);
+  const [isPostingToBsky, setIsPostingToBsky] = useState<boolean>(false);
   const [content, setContent] = useState<string>(article.content?.raw ?? "");
   const [deleteReason, setDeleteReason] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +56,11 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
   const hasRevalidatePermission = useMemo(() => {
     if (!user) return false;
     return ["editor", "admin"].includes(user.role);
+  }, [user]);
+
+  const hasBskyPermission = useMemo(() => {
+    if (!user) return false;
+    return user.role === "admin";
   }, [user]);
 
   const handleUpdate = useCallback(async () => {
@@ -94,6 +102,15 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
     window.location.reload();
   }, [article]);
 
+  const handlePostToBsky = useCallback(async () => {
+    setIsPostingToBsky(true);
+    await postToBsky({
+      text: `${article.title} by ${article.created_by.display_name}\n\nRead it on _nsigned!`,
+      link: `https://nsigned.com/article/${article.id}`,
+    });
+    setIsPostingToBsky(false);
+  }, [article]);
+
   if (!user) return false;
 
   if (!hasEditPermission) return null;
@@ -112,6 +129,14 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
             label={<RefreshIcon />}
             onClick={handleRevalidate}
             disabled={isRevalidating}
+          />
+        )}
+        {hasBskyPermission && (
+          <Button
+            className="px-[10px]"
+            label={<BlueskyIcon />}
+            onClick={handlePostToBsky}
+            disabled={isPostingToBsky}
           />
         )}
         {hasDeletePermission && (
