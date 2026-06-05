@@ -1,13 +1,14 @@
 import { PageLayout } from "@/_components/PageLayout";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
+import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 
 import type { Author } from "@/_types/api";
 
 const Writers = async () => {
   const authorResponse = await get<Author[]>({
     endpoint: "users/authors",
-    cacheKey: "AUTHORS",
+    cacheKey: getCacheKey({ key: CACHE_KEY.AUTHORS }),
     withAuth: false,
   });
 

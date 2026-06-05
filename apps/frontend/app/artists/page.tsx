@@ -1,13 +1,14 @@
 import { PageLayout } from "@/_components/PageLayout";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
+import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 
 import type { ArtistMeta } from "@/_types/api";
 
 const Artists = async () => {
   const artistsResponse = await get<ArtistMeta[]>({
     endpoint: "music/artists",
-    cacheKey: "ARTISTS",
+    cacheKey: getCacheKey({ key: CACHE_KEY.ARTISTS }),
     withAuth: false,
   });
 
