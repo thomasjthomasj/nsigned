@@ -59,6 +59,7 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
       postToBsky({
         text: `New post!\n\n${title} by ${user.display_name}`,
         link: `https://nsigned.com/article/${article.id}`,
+        hashtags: ["#diymusic", "#bandcamp"],
       });
       router.push(`/article/${article.id}/${article.slug}`);
     } else {

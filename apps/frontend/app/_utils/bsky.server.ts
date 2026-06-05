@@ -7,11 +7,11 @@ const { BSKY_PASSWORD, BSKY_USERNAME } = process.env;
 
 type PostToBskyArgs = {
   text: string;
-  hashtag?: string;
+  hashtags?: string[];
   link?: string;
 };
 
-export const postToBsky = async ({ text, hashtag, link }: PostToBskyArgs) => {
+export const postToBsky = async ({ text, hashtags, link }: PostToBskyArgs) => {
   if (!BSKY_PASSWORD || !BSKY_USERNAME)
     throw new Error("Bluesky credentials are missing");
 
@@ -22,24 +22,27 @@ export const postToBsky = async ({ text, hashtag, link }: PostToBskyArgs) => {
     password: BSKY_PASSWORD,
   });
 
-  const fullText = `${text}\n${hashtag ? `\n${hashtag}` : ""}${link ? `\n${link}` : ""}`;
+  const fullText = `${text}\n${hashtags ? `\n${hashtags.join(" ")}` : ""}${link ? `\n${link}` : ""}`;
+
   const facets: any[] = [];
 
   let embed: any;
 
-  if (hashtag) {
-    facets.push({
-      index: {
-        byteStart: fullText.indexOf(hashtag),
-        byteEnd: fullText.indexOf(hashtag) + hashtag.length,
-      },
-      features: [
-        {
-          $type: "app.bsky.richtext.facet#tag",
-          tag: hashtag.replace("#", ""),
+  if (hashtags) {
+    for (const hashtag of hashtags) {
+      facets.push({
+        index: {
+          byteStart: fullText.indexOf(hashtag),
+          byteEnd: fullText.indexOf(hashtag) + hashtag.length,
         },
-      ],
-    });
+        features: [
+          {
+            $type: "app.bsky.richtext.facet#tag",
+            tag: hashtag.replace("#", ""),
+          },
+        ],
+      });
+    }
   }
 
   if (link) {
@@ -70,12 +73,19 @@ export const postToBsky = async ({ text, hashtag, link }: PostToBskyArgs) => {
     const thumb = await (async () => {
       const imgURL = meta("og:image");
       if (!imgURL) return undefined;
-      const imgResponse = await fetch(imgURL);
-      const arrayBuffer = await imgResponse.arrayBuffer();
-      const upload = await agent.uploadBlob(new Uint8Array(arrayBuffer), {
-        encoding: imgResponse.headers.get("content-type") || "image/jpeg",
-      });
-      return upload.data.blob;
+      try {
+        const imgResponse = await fetch(imgURL);
+        const arrayBuffer = await imgResponse.arrayBuffer();
+        if (arrayBuffer.byteLength > 1000000) return undefined;
+
+        const upload = await agent.uploadBlob(new Uint8Array(arrayBuffer), {
+          encoding: imgResponse.headers.get("content-type") || "image/jpeg",
+        });
+
+        return upload.data.blob;
+      } catch {
+        return undefined;
+      }
     })();
 
     embed = {
