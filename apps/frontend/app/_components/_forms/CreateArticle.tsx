@@ -3,10 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAuth } from "@/_hooks";
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { WordCount } from "@/_components/WordCount";
 import { post } from "@/_utils/api.client";
+import { postToBsky } from "@/_utils/bsky.server";
 
 import type { Article, ReviewRequest } from "@/_types/api";
 
@@ -26,6 +28,8 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
 
   const release = useMemo(() => reviewRequest?.release, [reviewRequest]);
 
+  const { user } = useAuth();
+
   useEffect(() => {
     if (release) {
       setTitle(
@@ -35,6 +39,7 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
   }, [release]);
 
   const handleSave = useCallback(async () => {
+    if (!user) return;
     setIsLoading(true);
     const result = await post<Article>({
       endpoint: "articles/create",
@@ -50,15 +55,20 @@ export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
     });
     if (result.ok) {
       const { data: article } = result;
+
+      postToBsky({
+        text: `New post!\n\n${title} by ${user.display_name}`,
+        link: `https://nsigned.com/article/${article.id}`,
+      })
       router.push(`/article/${article.id}/${article.slug}`);
     } else {
       setIsLoading(false);
     }
-  }, [title, content, reviewRequest]);
+  }, [user, title, content, reviewRequest]);
 
   const disableButton = useMemo(
-    () => isLoading || wordCount < MIN_WORDS || wordCount > MAX_WORDS,
-    [isLoading, wordCount],
+    () => !user || isLoading || wordCount < MIN_WORDS || wordCount > MAX_WORDS,
+    [user, isLoading, wordCount],
   );
 
   return (
