@@ -61,6 +61,7 @@ class User(AbstractBaseUser):
   )
   password_expiry = models.DateTimeField(auto_now_add=True)
   can_email = models.BooleanField(null=True, default=None, blank=True)
+  pronouns = models.CharField(max_length=50, null=True, blank=True)
 
   USERNAME_FIELD = "username"
   REQUIRED_FIELDS = ["username", "email"]
