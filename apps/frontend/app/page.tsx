@@ -1,4 +1,5 @@
 import { Blog } from "@/_components/Blog";
+import { RandomReviews } from "@/_components/RandomReviews";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
 import { ReviewGrid } from "@/_components/ReviewGrid";
 import { handleError } from "@/_fns/handle-error";
@@ -41,19 +42,7 @@ const Home = async () => {
   const { data: blog } = blogResponse;
   const { data: reviews } = reviewResponse;
 
-  const randomExclude = [12, ...reviews.map((r) => r.id)].join(",");
-  const randomResponse = await get<Article[]>({
-    endpoint: "articles/random",
-    data: { exclude: randomExclude },
-    withAuth: false,
-    cacheKey: getCacheKey({
-      key: CACHE_KEY.ARTICLES_RANDOM,
-      getData: { exclude: randomExclude },
-    }),
-  });
-
-  if (!randomResponse.ok) return handleArticlesError(randomResponse);
-  const { data: randomArticles } = randomResponse;
+  const randomExclude = [12, ...reviews.map((r) => r.id)];
 
   const lastUpdated = reviews[0] ? reviews[0].created_at : null;
 
@@ -94,26 +83,14 @@ const Home = async () => {
               </p>
             </div>
           )}
-          {!!randomArticles.length && (
-            <div className="flex flex-col">
-              <h2>
-                <a href="/archive">From the archive</a>
-              </h2>
-              <ReviewGrid articles={randomArticles} />
-            </div>
-          )}
-        </div>
-      </div>
-      {!!randomArticles.length && (
-        <div className="flex flex-col lg:hidden">
-          <h2>
-            <a href="/archive">From the archive</a>
-          </h2>
-          <div className="px-[10px]">
-            <ReviewGrid articles={randomArticles} />
+          <div className="flex flex-col">
+            <RandomReviews exclude={randomExclude} />
           </div>
         </div>
-      )}
+      </div>
+      <div className="flex flex-col lg:hidden">
+        <RandomReviews exclude={randomExclude} />
+      </div>
       {lastUpdated && (
         <div className="flex justify-end">
           <p className="text-foreground-500 text-[10px] ml-[10px]">
