@@ -30,7 +30,7 @@ const Blog = async () => {
 
   return (
     <PageLayout title="Blog">
-      <BlogListing articles={articles} />
+      <BlogListing articles={articles} showAuthor />
     </PageLayout>
   );
 };

@@ -4,6 +4,7 @@ const CACHE_PREFIX = "NSIGNED";
 export enum CACHE_KEY {
   ARTICLE = "ARTICLE",
   ARTICLES = "ARTICLES",
+  ARTICLES_RANDOM = "ARTICLES:RANDOM",
   ARTICLE_COMMENTS = "ARTICLE-COMMENTS",
   ARTISTS = "ARTISTS",
   AUTHORS = "AUTHORS",
@@ -24,6 +25,7 @@ const CACHE_PARAMS: Record<CACHE_KEY, string[]> = {
     "type",
     "exclude",
   ],
+  [CACHE_KEY.ARTICLES_RANDOM]: ["exclude"],
   [CACHE_KEY.AUTHORS]: [],
   [CACHE_KEY.ARTISTS]: [],
   [CACHE_KEY.ARTICLE_COMMENTS]: [],

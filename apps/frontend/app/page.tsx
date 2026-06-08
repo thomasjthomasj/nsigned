@@ -1,5 +1,6 @@
 import { Blog } from "@/_components/Blog";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
+import { ReviewGrid } from "@/_components/ReviewGrid";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
@@ -40,6 +41,20 @@ const Home = async () => {
   const { data: blog } = blogResponse;
   const { data: reviews } = reviewResponse;
 
+  const randomExclude = reviews.map((r) => r.id).join(",");
+  const randomResponse = await get<Article[]>({
+    endpoint: "articles/random",
+    data: { exclude: randomExclude },
+    withAuth: false,
+    cacheKey: getCacheKey({
+      key: CACHE_KEY.ARTICLES_RANDOM,
+      getData: { exclude: randomExclude },
+    }),
+  });
+
+  if (!randomResponse.ok) return handleArticlesError(randomResponse);
+  const { data: randomArticles } = randomResponse;
+
   const lastUpdated = reviews[0] ? reviews[0].created_at : null;
 
   return (
@@ -68,17 +83,37 @@ const Home = async () => {
             </p>
           </div>
         )}
-        {!!blog.length && (
-          <div className="flex flex-col hidden lg:block">
-            <Blog articles={blog} />
-            <p className="mt-[10px]">
-              <a href="/blog" className=" text-[14px] !text-primary-300">
-                View all
-              </a>
-            </p>
-          </div>
-        )}
+        <div className="flex-col gap-[20px] hidden lg:flex">
+          {!!blog.length && (
+            <div className="flex flex-col">
+              <Blog articles={blog} />
+              <p className="mt-[10px]">
+                <a href="/blog" className=" text-[14px] !text-primary-300">
+                  View all
+                </a>
+              </p>
+            </div>
+          )}
+          {!!randomArticles.length && (
+            <div className="flex flex-col">
+              <h2>
+                <a href="/archive">From the archive</a>
+              </h2>
+              <ReviewGrid articles={randomArticles} />
+            </div>
+          )}
+        </div>
       </div>
+      {!!randomArticles.length && (
+        <div className="flex flex-col lg:hidden">
+          <h2>
+            <a href="/archive">From the archive</a>
+          </h2>
+          <div className="px-[10px]">
+            <ReviewGrid articles={randomArticles} />
+          </div>
+        </div>
+      )}
       {lastUpdated && (
         <div className="flex justify-end">
           <p className="text-foreground-500 text-[10px] ml-[10px]">
