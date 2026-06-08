@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 
 import { ReviewGrid } from "@/_components/ReviewGrid";
 import { get } from "@/_utils/api.client";
-import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 
 import type { Article } from "@/_types/api";
 

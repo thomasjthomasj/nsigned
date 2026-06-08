@@ -1,7 +1,6 @@
 import { Blog } from "@/_components/Blog";
 import { RandomReviews } from "@/_components/RandomReviews";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
-import { ReviewGrid } from "@/_components/ReviewGrid";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
