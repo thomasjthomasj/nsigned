@@ -57,7 +57,7 @@ const Home = async () => {
       </div>
       <div className="grid grid-cols-3 gap-[20px]">
         {!!reviews.length && (
-          <div className="flex flex-col col-span-2">
+          <div className="flex flex-col col-span-3 lg:col-span-2">
             <h2>
               <a href="/archive">Reviews</a>
             </h2>
