@@ -21,7 +21,7 @@ const Home = async () => {
     }),
     get<Article[]>({
       endpoint: "articles",
-      data: { type: "album" },
+      data: { type: "review" },
       withAuth: false,
       cacheKey: getCacheKey({
         key: CACHE_KEY.ARTICLES,
