@@ -14,7 +14,7 @@ export const ReviewGrid = ({ articles }: ReviewGridProps) => (
           <div className="flex flex-col">
             <img src={imgURL} alt={a.release.title} />
           </div>
-          <h5 className="text-[12px]">{a.release.title}</h5>
+          <h5 className="text-[12px] text-ellipsis">{a.release.title}</h5>
         </a>
       );
     })}
