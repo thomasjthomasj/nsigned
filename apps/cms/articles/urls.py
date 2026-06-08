@@ -6,6 +6,7 @@ app_name = "articles"
 
 urlpatterns = [
   path("", views.list, name="list"),
+  path("random", views.random, name="random"),
   path("<int:article_id>", views.article, name="article"),
   path("<int:article_id>/update", views.update, name="update"),
   path("<int:article_id>/delete", views.delete, name="delete"),

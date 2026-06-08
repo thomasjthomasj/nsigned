@@ -62,6 +62,14 @@ def list(request):
   )
 
 @method("GET")
+@cached("ARTICLES:RANDOM", get_params=["exclude"], timeout=600)
+def random(request):
+  exclude = [int(i) for i in request.GET.get("exclude", []).split(",")]
+  articles = Article.cms.prefetched.exclude(id__in=exclude).exclude(review_request=None).order_by("?")[:12]
+
+  return Ok([article.serialized_lite for article in articles])
+
+@method("GET")
 @cached("ARTICLE", id_kwarg="article_id")
 def article(request, article_id):
   article = Article.cms.prefetched_w_deleted.get(pk=article_id)
