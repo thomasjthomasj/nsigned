@@ -41,7 +41,7 @@ const Home = async () => {
   const { data: blog } = blogResponse;
   const { data: reviews } = reviewResponse;
 
-  const randomExclude = reviews.map((r) => r.id).join(",");
+  const randomExclude = [12, ...reviews.map((r) => r.id)].join(",");
   const randomResponse = await get<Article[]>({
     endpoint: "articles/random",
     data: { exclude: randomExclude },
