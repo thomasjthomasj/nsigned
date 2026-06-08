@@ -153,7 +153,7 @@ const Article = async ({ params }: ArticleProps) => {
       <div className="flex flex-col w-full gap-[15px]">
         <div className="mb-[10px] flex justify-between">
           <AuthorCard user={author} />
-          <p className="text-foreground-500 text-[12px] italic w-fullflex justify-end gap-1 text-nowrap">
+          <p className="text-foreground-500 text-[12px] italic w-full flex justify-end gap-1 text-nowrap">
             <span>Published</span>{" "}
             <time dateTime={article.published_at}>
               {parseISODate(article.published_at)}

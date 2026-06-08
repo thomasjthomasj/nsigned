@@ -8,7 +8,7 @@ import { parseISOLocalTime } from "@/_utils/text";
 import type { Article, ErrorResponse } from "@/_types/api";
 
 const Home = async () => {
-  const [blogResponse, albumResponse, trackResponse] = await Promise.all([
+  const [blogResponse, reviewResponse] = await Promise.all([
     get<Article[]>({
       endpoint: "articles",
       data: { type: "blog", page_size: 4 },
@@ -24,16 +24,7 @@ const Home = async () => {
       withAuth: false,
       cacheKey: getCacheKey({
         key: CACHE_KEY.ARTICLES,
-        getData: { type: "album" },
-      }),
-    }),
-    get<Article[]>({
-      endpoint: "articles",
-      data: { type: "track" },
-      withAuth: false,
-      cacheKey: getCacheKey({
-        key: CACHE_KEY.ARTICLES,
-        getData: { type: "track" },
+        getData: { type: "review" },
       }),
     }),
   ]);
@@ -44,30 +35,31 @@ const Home = async () => {
       message: "The articles didn't load properly, please check back later",
     });
   if (!blogResponse.ok) return handleArticlesError(blogResponse);
-  if (!albumResponse.ok) return handleArticlesError(albumResponse);
-  if (!trackResponse.ok) return handleArticlesError(trackResponse);
+  if (!reviewResponse.ok) return handleArticlesError(reviewResponse);
 
   const { data: blog } = blogResponse;
-  const { data: albums } = albumResponse;
-  const { data: tracks } = trackResponse;
-
-  const reviews = [...albums, ...tracks].sort((a, b) =>
-    b.published_at.localeCompare(a.published_at),
-  );
+  const { data: reviews } = reviewResponse;
 
   const lastUpdated = reviews[0] ? reviews[0].created_at : null;
 
   return (
     <div className="w-full flex flex-col gap-[15px]">
-      <Blog articles={blog} />
-      <div className="hidden md:grid grid-cols-3 gap-[20px]">
-        {!!albums.length && (
+      <div className="block lg:hidden">
+        <Blog title="Announcements" articles={blog.slice(0, 2)} />
+        <p className="ml-[10px] mt-[3px]">
+          <a href="/blog" className=" text-[14px] !text-primary-300">
+            View all
+          </a>
+        </p>
+      </div>
+      <div className="grid grid-cols-3 gap-[20px]">
+        {!!reviews.length && (
           <div className="flex flex-col col-span-2">
             <h2>
-              <a href="/archive">Album reviews</a>
+              <a href="/archive">Reviews</a>
             </h2>
-            {albums.map((a) => (
-              <ReleaseArticleLink article={a} key={a.id} />
+            {reviews.map((a) => (
+              <ReleaseArticleLink article={a} key={a.id} showReviewType />
             ))}
             <p className="ml-[10px] mt-[3px]">
               <a href="/archive" className=" text-[14px] !text-primary-300">
@@ -76,42 +68,17 @@ const Home = async () => {
             </p>
           </div>
         )}
-        {!!tracks.length && (
-          <div className="flex flex-col">
-            <h2>
-              <a href="/archive">Track reviews</a>
-            </h2>
-            {tracks.map((a) => (
-              <ReleaseArticleLink article={a} key={a.id} />
-            ))}
-            <p className="ml-[10px] mt-[3px]">
-              <a href="/archive" className=" text-[14px] !text-primary-300">
+        {!!blog.length && (
+          <div className="flex flex-col hidden lg:block">
+            <Blog articles={blog} />
+            <p className="mt-[10px]">
+              <a href="/blog" className=" text-[14px] !text-primary-300">
                 View all
               </a>
             </p>
           </div>
         )}
       </div>
-      {!!reviews.length && (
-        <div className="flex flex-col block md:hidden">
-          <h2>
-            <a href="/archive">Reviews</a>
-          </h2>
-          {reviews.map((a) => (
-            <ReleaseArticleLink
-              article={a}
-              key={a.id}
-              size="sm"
-              showReviewType
-            />
-          ))}
-          <p className="ml-[10px] mt-[3px]">
-            <a href="/archive" className=" text-[14px] !text-primary-300">
-              View all
-            </a>
-          </p>
-        </div>
-      )}
       {lastUpdated && (
         <div className="flex justify-end">
           <p className="text-foreground-500 text-[10px] ml-[10px]">

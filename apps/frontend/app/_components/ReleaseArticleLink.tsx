@@ -21,7 +21,7 @@ export const ReleaseArticleLink = ({
   const { release } = article;
   if (!release) return null;
 
-  const size = (rest.size ?? release.release_type === "album") ? "lg" : "sm";
+  const size = rest.size ?? "lg";
 
   const { sm: smImage, md: lgImage } = release.images;
 
