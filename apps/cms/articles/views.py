@@ -65,7 +65,7 @@ def list(request):
 @method("GET")
 @cached("ARTICLES:RANDOM", get_params=["exclude"], timeout=600)
 def random(request):
-  max_articles = 16
+  max_articles = 12
   exclude = [int(i) for i in request.GET.get("exclude", []).split(",")]
   article_query = Article.cms.prefetched.exclude(id__in=exclude).exclude(review_request=None).order_by("id")
   article_count = article_query.count()
