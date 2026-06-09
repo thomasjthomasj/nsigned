@@ -1,12 +1,14 @@
 "use client";
 
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 import { useCallback, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
 import { Button } from "@/_components/Button";
 
-const COOKIE_NAME = "nsigned-cookie-consent";
+const COOKIE_NAME = "nsigned-cookie-consent-v2";
+const { GA_TAG } = process.env;
 
 export const CookieNotice = () => {
   const [cookies, setCookie] = useCookies([COOKIE_NAME]);
@@ -28,7 +30,13 @@ export const CookieNotice = () => {
     setShowNotice(false);
   }, []);
 
-  if (canTrack) return <Analytics />;
+  if (canTrack)
+    return (
+      <>
+        <Analytics />
+        {GA_TAG && <GoogleAnalytics gaId={GA_TAG} />}
+      </>
+    );
 
   if (!showNotice) return null;
 
@@ -40,7 +48,8 @@ export const CookieNotice = () => {
           <a href="https://vercel.com/docs/analytics" target="_blank">
             Vercel analytics
           </a>{" "}
-          to track page views, as well as basic information such as how you got
+          and <a href="https://analytics.google.com">Google Analytics</a> to
+          track page views, as well as basic information such as how you got
           here, what browser you are using, and whether or not you are on
           mobile. No personal information is collected or sold.
         </p>
