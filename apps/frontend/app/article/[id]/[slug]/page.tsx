@@ -5,6 +5,7 @@ import { AuthorCard } from "@/_components/AuthorCard";
 import { Comments } from "@/_components/Comments";
 import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
+import { ShareIcons } from "@/_components/ShareIcons";
 import { EditArticle } from "@/_components/_forms/EditArticle";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
@@ -198,6 +199,7 @@ const Article = async ({ params }: ArticleProps) => {
             </p>
           )}
         </div>
+        <ShareIcons article={article} />
         {release && <Comments article={article} comments={comments} />}
         {release?.primary_artist && !!moreArticles.length && (
           <div className="">
