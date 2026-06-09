@@ -107,7 +107,7 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
     await postToBsky({
       text: `${article.title} by ${article.created_by.display_name}\n\nRead it on _nsigned!`,
       link: `https://nsigned.com/article/${article.id}`,
-      hashtags: ["#diymusic", "#bandcamp"],
+      hashtags: ["#diymusic", "#bandcamp", "#musicsky"],
       img: article?.release?.images?.md?.url,
     });
     setIsPostingToBsky(false);
