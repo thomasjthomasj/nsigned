@@ -8,7 +8,7 @@ import { useCookies } from "react-cookie";
 import { Button } from "@/_components/Button";
 
 const COOKIE_NAME = "nsigned-cookie-consent-v2";
-const { GA_TAG } = process.env;
+const GA_TAG = process.env.NEXT_PUBLIC_GA_TAG;
 
 export const CookieNotice = () => {
   const [cookies, setCookie] = useCookies([COOKIE_NAME]);
@@ -30,14 +30,14 @@ export const CookieNotice = () => {
     setShowNotice(false);
   }, []);
 
-  if (canTrack)
+  if (canTrack) {
     return (
       <>
         <Analytics />
         {GA_TAG && <GoogleAnalytics gaId={GA_TAG} />}
       </>
     );
-
+  }
   if (!showNotice) return null;
 
   return (
