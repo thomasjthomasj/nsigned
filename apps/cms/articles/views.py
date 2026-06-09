@@ -1,3 +1,4 @@
+from random import sample
 from datetime import datetime, timedelta
 from django.db.models import Q
 from django.db import transaction
@@ -64,8 +65,16 @@ def list(request):
 @method("GET")
 @cached("ARTICLES:RANDOM", get_params=["exclude"], timeout=600)
 def random(request):
+  max_articles = 24
   exclude = [int(i) for i in request.GET.get("exclude", []).split(",")]
-  articles = Article.cms.prefetched.exclude(id__in=exclude).exclude(review_request=None).order_by("?")[:12]
+  article_query = Article.cms.prefetched.exclude(id__in=exclude).exclude(review_request=None).order_by("id")
+  article_count = article_query.count()
+
+  keys = sample(range(article_query.count()), max_articles if article_count > max_articles else article_count)
+  articles = []
+  for key in keys:
+    article = article_query[key]
+    articles.append(article)
 
   return Ok([article.serialized_lite for article in articles])
 
