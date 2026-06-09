@@ -48,8 +48,14 @@ export const CookieNotice = () => {
           <a href="https://vercel.com/docs/analytics" target="_blank">
             Vercel analytics
           </a>{" "}
-          and <a href="https://analytics.google.com">Google Analytics</a> to
-          track page views, as well as basic information such as how you got
+          and{" "}
+          <a
+            href="https://support.google.com/analytics/topic/14089939"
+            target="_blank"
+          >
+            Google Analytics
+          </a>{" "}
+          to track page views, as well as basic information such as how you got
           here, what browser you are using, and whether or not you are on
           mobile. No personal information is collected or sold.
         </p>
