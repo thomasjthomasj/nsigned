@@ -49,7 +49,7 @@ export const generateMetadata = async ({ params }: ArticleProps) => {
   })();
   const openGraph = (() => {
     if (!ok || !data.release) return undefined;
-    return { images: [data.release.images.lg] };
+    return { images: [data.release.images.md] };
   })();
 
   return { title, description, openGraph };
