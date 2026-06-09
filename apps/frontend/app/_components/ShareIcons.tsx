@@ -20,7 +20,7 @@ export const ShareIcons = ({ article }: ShareIconsProps) => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const url = useMemo(
-    () => `https://nsigned.com/${article.id}/${article.slug}`,
+    () => `https://nsigned.com/article/${article.id}/${article.slug}`,
     [article],
   );
 
