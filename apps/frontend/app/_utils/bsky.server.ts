@@ -26,7 +26,7 @@ const byteIndex = (text: string, search: string) => {
         break;
       }
     }
-    if (match) return 1;
+    if (match) return i;
   }
 
   return -1;
