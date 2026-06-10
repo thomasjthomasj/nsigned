@@ -25,7 +25,7 @@ export const ShareIcons = ({ article }: ShareIconsProps) => {
   );
 
   const shareText = useMemo(
-    () => `Check out this review posted on _nsigned!
+    () => `Take a look at this review posted on _nsigned!
 
 ${article.title}
 
@@ -82,13 +82,13 @@ ${url}
 
   return (
     <div className="flex items-center gap-[8px]">
-      <p className="text-tertiary-500 font-bold text-[20px]">Share</p>
+      <p className="text-primary-500 font-bold text-[20px]">Share:</p>
       <div className="flex gap-[5px] text-[22px] -mb-[5px]">
         <a
           href={bskyURL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-primary-500 hover:text-primary-300"
+          className="text-tertiary-500 hover:text-primary-300"
         >
           <BlueskyIcon />
         </a>
@@ -96,7 +96,7 @@ ${url}
           href={redditURL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-primary-500 hover:text-primary-300"
+          className="text-tertiary-500 hover:text-primary-300"
         >
           <RedditIcon />
         </a>
@@ -104,7 +104,7 @@ ${url}
           href={facebookURL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-primary-500 hover:text-primary-300"
+          className="text-tertiary-500 hover:text-primary-300"
         >
           <FacebookIcon />
         </a>
@@ -112,7 +112,7 @@ ${url}
           href={whatsappURL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-primary-500 hover:text-primary-300"
+          className="text-tertiary-500 hover:text-primary-300"
         >
           <WhatsappIcon />
         </a>
@@ -123,7 +123,7 @@ ${url}
         ) : (
           <a
             href="#"
-            className="text-primary-500 hover:text-primary-300"
+            className="text-tertiary-500 hover:text-primary-300"
             onClick={handleCopy}
           >
             <CopyIcon />
