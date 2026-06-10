@@ -11,7 +11,7 @@ import type { ReviewRequest } from "@/_types/api";
 type ReviewRequestListingProps = {
   reviewRequests: ReviewRequest[];
   includeActions: boolean;
-  type: ListingType;
+  type?: ListingType;
 };
 
 export const ReviewRequestListing = ({
@@ -27,8 +27,10 @@ export const ReviewRequestListing = ({
         return "Unclaimed";
       case "claimed":
         return "Awaiting your review";
-      default:
+      case "mine":
         return "Pending review requests";
+      default:
+        return null;
     }
   })();
 
@@ -49,18 +51,22 @@ export const ReviewRequestListing = ({
         return (
           <p>These are releases that you have already claimed for review.</p>
         );
-      default:
+      case "mine":
         return <p>These are your releases that have not yet been reviewed.</p>;
+      default:
+        return null;
     }
   })();
 
   return (
     <div className="flex-1">
       <div className="flex flex-col w-full gap-[15px]">
-        <div>
-          <h3>{title}</h3>
-          <div className="space-y-[7px]">{helpText}</div>
-        </div>
+        {type !== null && (
+          <div>
+            <h3>{title}</h3>
+            <div className="space-y-[7px]">{helpText}</div>
+          </div>
+        )}
         <div className="flex flex-col gap-[25px]">
           {reviewRequests.map((r, i) => (
             <div key={r.id} className="flex flex-col">
@@ -82,7 +88,10 @@ export const ReviewRequestListing = ({
                 />
                 {includeActions && (
                   <div className="hidden sm:block">
-                    <ReviewRequestActions reviewRequest={r} type={type} />
+                    <ReviewRequestActions
+                      reviewRequest={r}
+                      type={type ?? "pending"}
+                    />
                   </div>
                 )}
               </div>
@@ -92,7 +101,10 @@ export const ReviewRequestListing = ({
                     "bg-background-500": i % 2,
                   })}
                 >
-                  <ReviewRequestActions reviewRequest={r} type={type} />
+                  <ReviewRequestActions
+                    reviewRequest={r}
+                    type={type ?? "pending"}
+                  />
                 </div>
               )}
             </div>

@@ -19,7 +19,6 @@ const RequestReview = async () => {
   return (
     <PageLayout title="Request review">
       <div className="flex flex-col gap-[15px]">
-        <p>It may take a few weeks for your review to be published.</p>
         <RequestReviewForm existingReviewRequests={reviewRequests} />
         <ReviewRequestListing
           reviewRequests={reviewRequests}

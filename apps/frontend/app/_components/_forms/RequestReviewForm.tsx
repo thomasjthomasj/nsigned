@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { ReleaseOverview } from "@/_components/ReleaseOverview";
+import { ReviewRequestConfirmation } from "@/_components/ReviewRequestConfirmation";
 import { useAuth, useDebounce } from "@/_hooks";
 import { get, post } from "@/_utils/api.client";
 
@@ -29,6 +30,8 @@ export const RequestReviewForm = ({
   const [releaseDetails, setReleaseDetails] = useState<ReleaseDetails | null>(
     null,
   );
+  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
+
   const router = useRouter();
   const { user } = useAuth();
 
@@ -74,7 +77,7 @@ export const RequestReviewForm = ({
       setError(data.error);
     } else {
       setUrl("");
-      router.refresh();
+      setHasSubmitted(true);
     }
     setIsSubmitting(false);
   }, [router, url, isRetrieving, isSubmitting]);
@@ -90,6 +93,7 @@ export const RequestReviewForm = ({
   }, [user, existingReviewRequests]);
 
   if (!user) return null;
+  if (hasSubmitted) return <ReviewRequestConfirmation />;
   if (!canRequestReview)
     return (
       <p>
@@ -101,56 +105,59 @@ export const RequestReviewForm = ({
     );
 
   return (
-    <div className="flex flex-col gap-[15px] my-[25px]">
-      {error && <p className="text-primary-500">{error}</p>}
-      <FormField
-        label="Bandcamp release URL"
-        name="url"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-      />
-      {releaseDetails && (
-        <div className="flex flex-col gap-[20px] w-full">
-          {releaseDetails.artist_name && (
-            <div className="w-full bg-background-500 p-[15px]">
-              <p>
-                Submitting a release for review will tie{" "}
-                <strong>{releaseDetails.artist_name}</strong> to your account,
-                preventing others from requesting reviews for them.
-              </p>
-            </div>
-          )}
-          <ReleaseOverview
-            artistName={releaseDetails.artist_name}
-            title={releaseDetails.title}
-            label={releaseDetails.label ?? undefined}
-            images={releaseDetails.images}
-            releaseType={releaseDetails.release_type}
-            link={releaseDetails.link}
-          />
-          {user.can_email !== false && (
-            <div className="flex">
-              <input
-                type="checkbox"
-                onChange={() => setNotify((prev) => !prev)}
-                checked={notify}
-                className="mr-[10px]"
-              />
-              <p>
-                Check this box to receive an email notification when the release
-                has been reviewed.
-              </p>
-            </div>
-          )}
-          <div>
-            <Button
-              label="Submit for review"
-              onClick={handleSubmit}
-              disabled={buttonDisabled}
+    <div>
+      <p>Please allow a few weeks for your review to be published.</p>
+      <div className="flex flex-col gap-[15px] my-[25px]">
+        {error && <p className="text-primary-500">{error}</p>}
+        <FormField
+          label="Bandcamp release URL"
+          name="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+        {releaseDetails && (
+          <div className="flex flex-col gap-[20px] w-full">
+            {releaseDetails.artist_name && (
+              <div className="w-full bg-background-500 p-[15px]">
+                <p>
+                  Submitting a release for review will tie{" "}
+                  <strong>{releaseDetails.artist_name}</strong> to your account,
+                  preventing others from requesting reviews for them.
+                </p>
+              </div>
+            )}
+            <ReleaseOverview
+              artistName={releaseDetails.artist_name}
+              title={releaseDetails.title}
+              label={releaseDetails.label ?? undefined}
+              images={releaseDetails.images}
+              releaseType={releaseDetails.release_type}
+              link={releaseDetails.link}
             />
+            {user.can_email !== false && (
+              <div className="flex">
+                <input
+                  type="checkbox"
+                  onChange={() => setNotify((prev) => !prev)}
+                  checked={notify}
+                  className="mr-[10px]"
+                />
+                <p>
+                  Check this box to receive an email notification when the
+                  release has been reviewed.
+                </p>
+              </div>
+            )}
+            <div>
+              <Button
+                label="Submit for review"
+                onClick={handleSubmit}
+                disabled={buttonDisabled}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
