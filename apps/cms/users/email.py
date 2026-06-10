@@ -53,7 +53,7 @@ Hello {user.display_name}!
 
 {article.created_by.display_name} has published a review of {release.title}!
 
-Check it out via the link below
+Take a look via the link below, and feel free to leave a comment for the reviewer!
 
 {article_url}
 """
@@ -62,7 +62,7 @@ Check it out via the link below
 
 <p>{article.created_by.display_name} has published a review of {release.title}!</p>
 
-<p>Check it out <a href="{article_url}">here</a>!</p>
+<p>Take a look <a href="{article_url}">here</a>, and feel free to leave a comment for the reviewer!</p>
 """
   return { "text": text, "html": html }
 
