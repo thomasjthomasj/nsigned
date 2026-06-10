@@ -11,6 +11,10 @@
     {
       "path": "/cron/bsky-review-cta",
       "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/cron/bsky-review-cta",
+      "schedule": "30 0 * * *"
     }
   ]
 }
