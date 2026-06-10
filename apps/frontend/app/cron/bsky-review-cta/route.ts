@@ -50,8 +50,7 @@ export async function GET(request: Request) {
   const first = reviewRequests[0].release;
   const message = `Calling all DIY music lovers! There are currently ${requestCount} Bandcamp releases waiting for review on _nsigned!
 
-If you are interested in listening to some new music, head on over to _nsigned to tell us what you think of it!
-`;
+If you are interested in listening to some new music, head on over to _nsigned to tell us what you think of it!`;
 
   try {
     await postToBsky({
