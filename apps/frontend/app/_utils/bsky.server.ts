@@ -12,6 +12,26 @@ type PostToBskyArgs = {
   img?: string;
 };
 
+const encoder = new TextEncoder();
+
+const byteIndex = (text: string, search: string) => {
+  const bytes = encoder.encode(text);
+  const searchBytes = encoder.encode(search);
+
+  for (let i = 0; i <= bytes.length - searchBytes.length; i++) {
+    let match = true;
+    for (let j = 0; j < searchBytes.length; j++) {
+      if (bytes[i + j] !== searchBytes[j]) {
+        match = false;
+        break;
+      }
+    }
+    if (match) return 1;
+  }
+
+  return -1;
+};
+
 export const postToBsky = async ({
   text,
   hashtags,
@@ -36,10 +56,14 @@ export const postToBsky = async ({
 
   if (hashtags) {
     for (const hashtag of hashtags) {
+      const hashtagStart = byteIndex(fullText, hashtag);
+      if (hashtagStart === -1) continue;
+      const hashtagEnd = hashtagStart + encoder.encode(hashtag).length;
+
       facets.push({
         index: {
-          byteStart: fullText.indexOf(hashtag),
-          byteEnd: fullText.indexOf(hashtag) + hashtag.length,
+          byteStart: hashtagStart,
+          byteEnd: hashtagEnd,
         },
         features: [
           {
@@ -52,18 +76,22 @@ export const postToBsky = async ({
   }
 
   if (link) {
-    facets.push({
-      index: {
-        byteStart: fullText.indexOf(link),
-        byteEnd: fullText.indexOf(link) + link.length,
-      },
-      features: [
-        {
-          $type: "app.bsky.richtext.facet#link",
-          uri: link,
+    const linkStart = byteIndex(fullText, link);
+    if (linkStart !== -1) {
+      const linkEnd = linkStart + encoder.encode(link).length;
+      facets.push({
+        index: {
+          byteStart: linkStart,
+          byteEnd: linkEnd,
         },
-      ],
-    });
+        features: [
+          {
+            $type: "app.bsky.richtext.facet#link",
+            uri: link,
+          },
+        ],
+      });
+    }
 
     const response = await fetch(link);
     const html = await response.text();
