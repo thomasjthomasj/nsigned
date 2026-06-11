@@ -75,15 +75,6 @@ const FAQ = async () => (
         like that, and it must not have been made by AI.
       </p>
 
-      <h3>Is it possible to filter reviews by genre?</h3>
-      <p>
-        No, and hopefully it never will be. While genres are a useful way to
-        talk about and categorise music, it is also extremely limiting both in
-        peoples' taste and in terms of discovery. Someone who loves rock music
-        and only ever looks for rock music might love jazz if they just listened
-        to it.
-      </p>
-
       <h3>Do writers get paid?</h3>
       <p>The short answer is no.</p>
       <p>
