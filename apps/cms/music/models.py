@@ -49,7 +49,7 @@ class Label(Creatable):
 
 class ReleaseBandcampManager(models.Manager):
   @transaction.atomic
-  def get_from_url(self, url):
+  def get_from_url(self, url, genre):
     base_url = strip_url_query(url)
     pattern = r"^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/"
     match = re.match(pattern, base_url)
@@ -92,6 +92,7 @@ class ReleaseBandcampManager(models.Manager):
       label=label,
       images=bc_data["images"],
       release_type=release_type,
+      genre=genre,
     )
 
     ReleaseLink.objects.create(release=release, link=link)

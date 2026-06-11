@@ -22,6 +22,7 @@ def list(request):
   artist_slug = request.GET.get("artist")
   article_type = request.GET.get("type")
   exclude_id = request.GET.get("exclude")
+  genre = request.GET.get("genre")
 
   if page_size > 100:
     return BadRequest("Cannot request more than 100 articles.")
@@ -56,6 +57,9 @@ def list(request):
 
   if exclude_id:
     articles = articles.exclude(id=int(exclude_id))
+
+  if genre:
+    articles = articles.filter(review_request__release__genre=genre)
 
   return Ok([
     article.serialized_lite
@@ -97,6 +101,7 @@ def create(request):
   content = data.get("content", "").strip()
   title = data.get("title", "").strip()
   review_request_id = data.get("review_request")
+  genre = data.get("genre")
   if not content or not title:
     return BadRequest("`content` and `title` are required")
 
@@ -121,13 +126,20 @@ def create(request):
   delete_cache_prefix("ARTISTS")
 
   if review_request:
-    delete_cache("REVIEW-REQUEST", id_val=review_request.id)
+    release = review_request.release
     rr_user = review_request.created_by
+
+    if genre and release.genre != genre:
+      release.genre = genre
+      release.save()
+
+    delete_cache("REVIEW-REQUEST", id_val=review_request.id)
     Notification.objects.create_notification(
       user=rr_user,
       text=f"{created_by.display_name} reviewed {review_request.release.title}",
       link=f"/article/{article.id}/{article.slug}",
     )
+
     if review_request.notify_on_review:
       if rr_user.can_email == None:
         r = send_consent_emails([rr_user])
@@ -135,6 +147,7 @@ def create(request):
         # reload review request
         review_request = ReviewRequest.objects.get(id=review_request.id)
         r = send_article_notifications([review_request])
+
   return Ok(article.serialized)
 
 @method("POST")

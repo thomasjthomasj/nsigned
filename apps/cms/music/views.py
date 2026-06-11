@@ -27,10 +27,11 @@ def request_review(request):
   user = request.site_user
   url = data.get("url")
   notify_on_review = data.get("notify", True)
+  genre = data.get("genre")
   if not url:
     return BadRequest("URL is required")
   try:
-    release = Release.bandcamp.get_from_url(url)
+    release = Release.bandcamp.get_from_url(url, genre)
   except ValueError:
     return BadRequest("Could not get release from URL")
 
