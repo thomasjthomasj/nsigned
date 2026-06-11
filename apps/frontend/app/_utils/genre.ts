@@ -5,6 +5,6 @@ export const genres: Record<Genre, string> = {
   "hiphop-funk-rnb": "Hip Hop//Funk//R&B",
   "electronic-dance-ambient": "Electronic//Dance//Ambient",
   "experimental-weird": "Experimental//Weird",
-  jazz: "Jazz",
+  jazz: "Jazz//Latin",
   "classical-orchestral-world": "Classical//World",
 };
