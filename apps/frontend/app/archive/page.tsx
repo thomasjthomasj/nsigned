@@ -59,6 +59,7 @@ const Reviews = async ({ searchParams }: ReviewsProps) => {
             type,
             author,
             artistUser,
+            genre,
           }}
         />
       </div>
