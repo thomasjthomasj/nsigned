@@ -3,8 +3,9 @@ import { ReviewArchive } from "@/_components/ReviewArchive";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
+import { genres } from "@/_utils/genre";
 
-import type { Article } from "@/_types/api";
+import type { Article, Genre } from "@/_types/api";
 
 type ReviewsProps = {
   searchParams: Promise<{
@@ -12,14 +13,21 @@ type ReviewsProps = {
     type?: "track" | "album";
     author?: string;
     artistUser?: string;
+    genre?: Genre;
   }>;
 };
 
 const Reviews = async ({ searchParams }: ReviewsProps) => {
-  const { artist, type = "review", author, artistUser } = await searchParams;
+  const {
+    artist,
+    type = "review",
+    author,
+    artistUser,
+    genre,
+  } = await searchParams;
   const cacheKey = getCacheKey({
     key: CACHE_KEY.ARTICLES,
-    getData: { artist, type, author, artist_user: artistUser },
+    getData: { artist, type, author, artist_user: artistUser, genre },
   });
   const reviewsResponse = await get<Article[]>({
     endpoint: "articles",
@@ -28,6 +36,7 @@ const Reviews = async ({ searchParams }: ReviewsProps) => {
       type,
       author,
       artist_user: artistUser,
+      genre,
     },
     cacheKey,
   });
@@ -41,7 +50,7 @@ const Reviews = async ({ searchParams }: ReviewsProps) => {
   const { data: articles } = reviewsResponse;
 
   return (
-    <PageLayout title="Archive">
+    <PageLayout title={genre ? genres[genre] : "Archive"}>
       <div className="w-full">
         <ReviewArchive
           articles={articles}

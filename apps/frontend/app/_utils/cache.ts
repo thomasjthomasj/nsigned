@@ -24,6 +24,7 @@ const CACHE_PARAMS: Record<CACHE_KEY, string[]> = {
     "artist",
     "type",
     "exclude",
+    "genre",
   ],
   [CACHE_KEY.ARTICLES_RANDOM]: ["exclude"],
   [CACHE_KEY.AUTHORS]: [],

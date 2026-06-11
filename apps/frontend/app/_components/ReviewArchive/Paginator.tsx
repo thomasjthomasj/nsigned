@@ -34,6 +34,7 @@ export const Paginator = ({ queryParams = {} }: PaginatorProps) => {
         type: queryParams.type,
         author: queryParams.author,
         artist_user: queryParams.artistUser,
+        genre: queryParams.genre,
       },
     });
     if (articlesResponse.ok) {

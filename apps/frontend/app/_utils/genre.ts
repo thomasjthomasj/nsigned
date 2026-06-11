@@ -6,5 +6,5 @@ export const genres: Record<Genre, string> = {
   "electronic-dance-ambient": "Electronic//Dance//Ambient",
   "experimental-weird": "Experimental//Weird",
   jazz: "Jazz",
-  "classical-orchestral-world": "Classical//Orchestral//World",
+  "classical-orchestral-world": "Classical//World",
 };

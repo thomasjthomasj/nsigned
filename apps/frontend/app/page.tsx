@@ -41,7 +41,7 @@ const Home = async () => {
   const { data: blog } = blogResponse;
   const { data: reviews } = reviewResponse;
 
-  const randomExclude = [12, ...reviews.map((r) => r.id)];
+  const randomExclude = reviews.map((r) => r.id);
 
   const lastUpdated = reviews[0] ? reviews[0].created_at : null;
 
