@@ -125,6 +125,19 @@ class Release(Creatable):
       ("track", "Track"),
     )
   )
+  genre = models.CharField(
+    max_length=50,
+    choices=(
+      ("rock-acoustic-metal", "Rock//Acoustic//Metal"),
+      ("hiphop-funk-rnb", "Hip Hop//Funk//R&B"),
+      ("electronic-dance-ambient", "Electronic//Dance//Ambient"),
+      ("experimental-weird", "Experimental//Weird"),
+      ("jazz", "Jazz"),
+      ("classical-orchestral-world", "Classical//Orchestral//World"),
+    ),
+    null=True,
+    blank=True,
+  )
 
   objects = models.Manager()
   bandcamp = ReleaseBandcampManager()
@@ -145,6 +158,7 @@ class Release(Creatable):
       "links": [l.serialized for l in self.links.all()],
       "images": self.images,
       "release_type": self.release_type,
+      "genre": self.genre,
     }
 
 class ReleaseLink(models.Model):
