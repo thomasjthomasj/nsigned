@@ -47,13 +47,22 @@ export const Header = () => (
           >
             {name.split("//").map((n, i) => (
               <Fragment key={n}>
-                {n}
-                {i + 1 !== name.split("//").length && (
-                  <>
-                    //
-                    <br />
-                  </>
-                )}
+                <span
+                  key={n}
+                  className={classNames({
+                    "max-[390px]:hidden inline": i > 0,
+                  })}
+                >
+                  {n}
+                </span>
+                <span className="max-[390px]:hidden inline">
+                  {i + 1 !== name.split("//").length && (
+                    <>
+                      //
+                      <br />
+                    </>
+                  )}
+                </span>
               </Fragment>
             ))}
           </a>

@@ -23,7 +23,7 @@ export const Logo = () => {
     <div>
       <h1>
         <a href="/" onClick={handleClick}>
-          _n<span className="hidden sm:inline">signed</span>
+          _n<span className="max-[360px]:hidden inline">signed</span>
         </a>
       </h1>
     </div>
