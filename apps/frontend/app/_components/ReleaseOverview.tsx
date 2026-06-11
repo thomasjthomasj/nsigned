@@ -27,9 +27,16 @@ export const ReleaseOverview = ({
 }: ReleaseOverviewProps) => {
   const daysAgo = (() => {
     if (daysSince === undefined) return null;
-    if (daysSince === 0) return "today";
-    if (daysSince === 1) return "yesterday";
-    return `${daysSince} days ago`;
+    if (daysSince === 0)
+      return <span className="font-bold text-foreground">today</span>;
+    if (daysSince === 1)
+      return <span className="font-bold text-foreground">yesterday</span>;
+    return (
+      <>
+        <span className="font-bold text-tertiary-500">{daysSince}</span>{" "}
+        <span className="font-bold text-foreground">days ago</span>
+      </>
+    );
   })();
 
   return (
@@ -54,10 +61,7 @@ export const ReleaseOverview = ({
             Release type: <span className="capitalize">{releaseType}</span>
           </p>
           {daysAgo && (
-            <p className="text-foreground-500">
-              Requested{" "}
-              <span className="font-bold text-foreground">{daysAgo}</span>.
-            </p>
+            <p className="text-foreground-500">Requested {daysAgo}.</p>
           )}
           {claimed && (
             <p className="text-foreground-500">
