@@ -1,10 +1,13 @@
-import type { Images } from "@/_types/api";
+import { genres } from "@/_utils/genre";
+
+import type { Genre, Images } from "@/_types/api";
 
 type ReleaseOverviewProps = {
   artistName?: string;
   title: string;
   label?: string;
   images: Images;
+  genre?: Genre | null;
   releaseType: "track" | "album";
   link: string;
   daysSince?: number;
@@ -16,6 +19,7 @@ export const ReleaseOverview = ({
   title,
   label,
   images,
+  genre,
   releaseType,
   link,
   daysSince,
@@ -40,6 +44,9 @@ export const ReleaseOverview = ({
           className="border border-background-500 block sm:hidden"
         />
         <div className="flex-col gap-[5px]">
+          {genre && (
+            <p className="font-bold text-primary-300">{genres[genre]}</p>
+          )}
           {artistName && <p>{artistName}</p>}
           <p>{title}</p>
           {label && <p>{label}</p>}

@@ -81,6 +81,7 @@ export const ReviewRequestListing = ({
                   artistName={r.release.primary_artist?.name}
                   title={r.release.title}
                   images={r.release.images}
+                  genre={r.release.genre}
                   releaseType={r.release.release_type}
                   link={r.release.links[0].url}
                   daysSince={getDaysSince(r.created_at)}

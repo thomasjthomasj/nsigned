@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -9,8 +10,9 @@ import { ReleaseOverview } from "@/_components/ReleaseOverview";
 import { ReviewRequestConfirmation } from "@/_components/ReviewRequestConfirmation";
 import { useAuth, useDebounce } from "@/_hooks";
 import { get, post } from "@/_utils/api.client";
+import { genres } from "@/_utils/genre";
 
-import type { ReleaseDetails, ReviewRequest } from "@/_types/api";
+import type { Genre, ReleaseDetails, ReviewRequest } from "@/_types/api";
 
 const BANDCAMP_REGEX =
   /^https:\/\/[a-zA-Z0-9-]+\.bandcamp\.com\/(album|track)\/[a-z0-9-]+/;
@@ -23,6 +25,7 @@ export const RequestReviewForm = ({
   existingReviewRequests,
 }: RequestReviewFormProps) => {
   const [url, setUrl] = useState<string>("");
+  const [genre, setGenre] = useState<Genre | null>(null);
   const [notify, setNotify] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isRetrieving, setIsRetrieving] = useState<boolean>(false);
@@ -66,12 +69,12 @@ export const RequestReviewForm = ({
   }, [url]);
 
   const handleSubmit = useCallback(async () => {
-    if (!url || isRetrieving || isSubmitting) return;
+    if (!url || !genre || isRetrieving || isSubmitting) return;
     setIsSubmitting(true);
     const { data, ok } = await post<ReviewRequest>({
       endpoint: "music/request-review",
       withAuth: true,
-      data: { url, notify },
+      data: { url, notify, genre },
     });
     if (!ok) {
       setError(data.error);
@@ -80,11 +83,11 @@ export const RequestReviewForm = ({
       setHasSubmitted(true);
     }
     setIsSubmitting(false);
-  }, [router, url, isRetrieving, isSubmitting]);
+  }, [router, url, notify, genre, isRetrieving, isSubmitting]);
 
   const buttonDisabled = useMemo(() => {
-    return isRetrieving || isSubmitting || !releaseDetails;
-  }, [isRetrieving, isSubmitting, releaseDetails]);
+    return isRetrieving || isSubmitting || !releaseDetails || !genre;
+  }, [isRetrieving, isSubmitting, releaseDetails, genre]);
 
   const canRequestReview = useMemo(() => {
     if (!user) return false;
@@ -134,6 +137,32 @@ export const RequestReviewForm = ({
               releaseType={releaseDetails.release_type}
               link={releaseDetails.link}
             />
+            <div className="flex flex-col gap-[5px]">
+              <label className="font-bold" htmlFor="genre">
+                Which of these most closely describes your music?
+              </label>
+              <div>
+                <select
+                  className={classNames("bg-background-500 p-[8px]", {
+                    "border border-1 border-primary-500": !genre,
+                    "border border-1 border-background-500": genre,
+                  })}
+                  name="genre"
+                  id="genre"
+                  value={genre ?? ""}
+                  onChange={(e) => setGenre(e.target.value as Genre)}
+                >
+                  <option value="" disabled>
+                    Select...
+                  </option>
+                  {Object.entries(genres).map(([key, name]) => (
+                    <option key={key} value={key}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
             {user.can_email !== false && (
               <div className="flex">
                 <input

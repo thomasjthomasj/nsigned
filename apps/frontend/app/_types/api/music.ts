@@ -44,6 +44,14 @@ export type Label = {
   slug: string;
 };
 
+export type Genre =
+  | "rock-acoustic-metal"
+  | "hiphop-funk-rnb"
+  | "electronic-dance-ambient"
+  | "experimental-weird"
+  | "jazz"
+  | "classical-orchestral-world";
+
 export type Release = {
   id: number;
   title: string;
@@ -53,6 +61,7 @@ export type Release = {
   links: Link[];
   images: Images;
   release_type: ReleaseType;
+  genre: Genre | null;
 };
 
 export type ReviewRequest = {
