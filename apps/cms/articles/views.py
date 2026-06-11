@@ -13,7 +13,16 @@ from users.email import send_consent_emails, send_article_notifications
 from .models import Article, Comment, CommentContent
 
 @method("GET")
-@cached("ARTICLES", get_params=["page", "page_size", "author", "artist_user", "artist", "type", "exclude"])
+@cached("ARTICLES", get_params=[
+  "page",
+  "page_size",
+  "author",
+  "artist_user",
+  "artist",
+  "type",
+  "exclude",
+  "genre"
+])
 def list(request):
   page = int(request.GET.get("page", 1))
   page_size = int(request.GET.get("page_size", 20))

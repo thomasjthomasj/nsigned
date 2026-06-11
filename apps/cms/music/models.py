@@ -107,13 +107,15 @@ class Release(Creatable):
     Artist,
     null=True,
     on_delete=models.SET_NULL,
-    related_name="releases"
+    related_name="releases",
+    blank=True,
   )
   label = models.ForeignKey(
     Label,
     null=True,
     on_delete=models.SET_NULL,
-    related_name="releases"
+    related_name="releases",
+    blank=True,
   )
   title = models.CharField(max_length=1000)
   slug = models.CharField(max_length=255, unique=True)
