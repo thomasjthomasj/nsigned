@@ -150,7 +150,7 @@ def set_genres(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('music', '0020_release_genre'),
+        ('music', '0021_set_genres'),
     ]
 
     operations = [
