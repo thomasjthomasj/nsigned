@@ -13,7 +13,7 @@ export const Header = () => (
     <div
       className={classNames(
         "flex items-between justify-between w-full m-[10px] pb-[10px]",
-        "border-b border-secondary-500 ",
+        "border-b border-secondary-500 pt-[10px]",
       )}
     >
       <Logo />
