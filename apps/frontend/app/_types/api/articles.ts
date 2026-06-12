@@ -12,6 +12,7 @@ export type Article = {
   title: string;
   slug: string;
   release: Release | null;
+  requested_by: User | null;
   published_at: string;
   created_by: User;
   created_at: string;

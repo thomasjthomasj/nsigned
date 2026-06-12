@@ -5,10 +5,11 @@ import { AuthorCard } from "@/_components/AuthorCard";
 import { Comments } from "@/_components/Comments";
 import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
+import { ReviewCTA } from "@/_components/ReviewCTA";
 import { ShareIcons } from "@/_components/ShareIcons";
 import { EditArticle } from "@/_components/_forms/EditArticle";
 import { handleError } from "@/_fns/handle-error";
-import { get } from "@/_utils/api.server";
+import { get, getMe } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 import { parseISODate, sanitizeHtml } from "@/_utils/text";
 
@@ -16,6 +17,7 @@ import type {
   Article as ArticleType,
   ArticleFull,
   Comment,
+  ReviewRequest,
 } from "@/_types/api";
 
 type ArticleProps = {
@@ -66,7 +68,7 @@ const Article = async ({ params }: ArticleProps) => {
     key: CACHE_KEY.ARTICLE_COMMENTS,
     idVal: id,
   });
-  const [articleResponse, commentsResponse] = await Promise.all([
+  const [articleResponse, commentsResponse, userResponse] = await Promise.all([
     get<ArticleFull>({
       endpoint: `articles/${id}`,
       withAuth: false,
@@ -77,13 +79,17 @@ const Article = async ({ params }: ArticleProps) => {
       withAuth: false,
       cacheKey: commentsCacheKey,
     }),
+    getMe(),
   ]);
   if (!articleResponse.ok)
     return handleError({
       errorResponse: articleResponse,
     });
 
+  const user = userResponse.ok ? userResponse.data : null;
+
   const article = articleResponse.data;
+
   if (!article.content)
     return handleError({ message: "Article has no content" });
 
@@ -91,6 +97,20 @@ const Article = async ({ params }: ArticleProps) => {
   const { title, created_by: author, release } = article;
 
   const comments = commentsResponse.ok ? commentsResponse.data : [];
+  const myReview =
+    user && article.requested_by && user.id === article.requested_by.id;
+  const pendingRequests = await (async () => {
+    if (!myReview) return null;
+    const reviewRequestsResponse = await get<ReviewRequest[]>({
+      endpoint: "music/review-request/pending",
+      cacheKey: getCacheKey({ key: CACHE_KEY.REVIEW_REQUESTS }),
+    });
+    if (!reviewRequestsResponse.ok) return null;
+    const { data: reviewRequests } = reviewRequestsResponse;
+    return reviewRequests
+      .filter((rr) => rr.created_by.id !== user.id)
+      .slice(0, 4);
+  })();
 
   const moreArticles = await (async () => {
     if (!release?.primary_artist) return [];
@@ -167,6 +187,7 @@ const Article = async ({ params }: ArticleProps) => {
               <div className="pr-[20px] pb-[10px] sm:float-left">
                 <a href={link?.url ?? images.lg.url} target="_blank">
                   <img
+                    className="w-full sm:w-auto"
                     src={images.md.url}
                     height={images.md.height}
                     width={images.md.width}
@@ -200,6 +221,9 @@ const Article = async ({ params }: ArticleProps) => {
           )}
         </div>
         <ShareIcons article={article} />
+        {!!pendingRequests?.length && (
+          <ReviewCTA reviewRequests={pendingRequests} />
+        )}
         {release && <Comments article={article} comments={comments} />}
         {release?.primary_artist && !!moreArticles.length && (
           <div className="">
