@@ -64,6 +64,7 @@ class Article(Creatable):
       "title": self.title,
       "slug": self.slug,
       "release": self.review_request.release.serialized if self.review_request else None,
+      "requested_by": self.review_request.created_by.serialized if self.review_request else None,
       "published_at": self.published_at.isoformat() if self.published_at else None,
       "created_by": self.created_by.serialized,
       "created_at": self.created_at.isoformat(),
