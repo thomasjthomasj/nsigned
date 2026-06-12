@@ -165,17 +165,28 @@ def create(request):
 def update(request, article_id):
   data = request.json
   user = request.site_user
+
   try:
     article = Article.objects.get(id=article_id)
   except Article.NotFound:
     return NotFound()
+
   content = data.get("content")
+  genre = data.get("genre")
   if not content:
     return BadRequest()
+
   has_right = has_permission(user, "editor") or article.created_by.id == user.id
   if not has_right:
     return Forbidden()
   article.update_content(content, user)
+
+  if genre and hasattr(article, "review_request") and article.review_request.release.genre != genre:
+    release = article.review_request.release
+    release.genre = genre
+    release.save()
+    delete_cache_prefix("ARTICLES")
+
   delete_cache("ARTICLE", id_val=article_id)
   return Ok(article.serialized)
 

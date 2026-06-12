@@ -11,8 +11,9 @@ import { TrashIcon } from "@/_components/_icons/TrashIcon";
 import { useAuth } from "@/_hooks";
 import { post } from "@/_utils/api.client";
 import { postToBsky } from "@/_utils/bsky.server";
+import { genres } from "@/_utils/genre";
 
-import type { ArticleFull } from "@/_types/api";
+import type { ArticleFull, Genre } from "@/_types/api";
 
 type EditArticleProps = {
   article: ArticleFull;
@@ -25,6 +26,9 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
   const [isRevalidating, setIsRevalidating] = useState<boolean>(false);
   const [isPostingToBsky, setIsPostingToBsky] = useState<boolean>(false);
   const [content, setContent] = useState<string>(article.content?.raw ?? "");
+  const [genre, setGenre] = useState<Genre | null>(
+    article.release?.genre ?? null,
+  );
   const [deleteReason, setDeleteReason] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +70,7 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
   const handleUpdate = useCallback(async () => {
     const { ok } = await post({
       endpoint: `articles/${article.id}/update`,
-      data: { content },
+      data: { content, genre },
     });
     if (!ok) {
       setError("Could not update post.");
@@ -74,7 +78,7 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
     }
     setIsEditing(false);
     window.location.reload();
-  }, [content, article]);
+  }, [content, genre, article]);
 
   const handleDelete = useCallback(async () => {
     const { data, ok } = await post({
@@ -184,6 +188,29 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
         name="content"
         type="textarea"
       />
+      {article.release && (
+        <div className="flex flex-col mb-[15px]">
+          <label className="font-bold" htmlFor="genre">
+            Which of these most closely describes the music?
+          </label>
+          <select
+            className={"bg-background-500 p-[8px]"}
+            name="genre"
+            id="genre"
+            value={genre ?? ""}
+            onChange={(e) => setGenre(e.target.value as Genre)}
+          >
+            <option value="" disabled>
+              Select...
+            </option>
+            {Object.entries(genres).map(([key, name]) => (
+              <option key={key} value={key}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="flex gap-[10px] justify-between">
         <Button
           label="Cancel"
