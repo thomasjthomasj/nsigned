@@ -33,40 +33,45 @@ export const Header = () => (
       </div>
     </div>
     <div className="justify-between m-[10px] pb-[10px] mb-[30px] w-full flex">
-      {Object.entries(genres).map(([slug, name]) => (
-        <div key={slug}>
-          <a
-            href={`/archive?genre=${slug}`}
-            className="text-nowrap text-secondary-300 hover:text-primary-300 text-[12px] hidden lg:block"
-          >
-            {name}
-          </a>
-          <a
-            href={`/archive?genre=${slug}`}
-            className="text-nowrap text-secondary-300 hover:text-primary-300 text-[12px] block lg:hidden text-center"
-          >
-            {name.split("//").map((n, i) => (
-              <Fragment key={n}>
-                <span
-                  key={n}
-                  className={classNames({
-                    "max-[390px]:hidden inline": i > 0,
-                  })}
-                >
-                  {n}
-                </span>
-                <span className="max-[390px]:hidden inline">
-                  {i + 1 !== name.split("//").length && (
-                    <>
-                      //
-                      <br />
-                    </>
-                  )}
-                </span>
-              </Fragment>
-            ))}
-          </a>
-        </div>
+      {Object.entries(genres).map(([slug, name], i) => (
+        <Fragment key={slug}>
+          <div key={slug}>
+            <a
+              href={`/archive?genre=${slug}`}
+              className="text-nowrap text-secondary-300 hover:text-primary-300 text-[12px] hidden lg:block"
+            >
+              {name}
+            </a>
+            <a
+              href={`/archive?genre=${slug}`}
+              className="text-nowrap text-secondary-300 hover:text-primary-300 text-[12px] block lg:hidden text-center"
+            >
+              {name.split("//").map((n, i) => (
+                <Fragment key={n}>
+                  <span
+                    key={n}
+                    className={classNames({
+                      "max-[430px]:hidden inline": i > 0,
+                    })}
+                  >
+                    {n}
+                  </span>
+                  <span className="max-[430px]:hidden inline">
+                    {i + 1 !== name.split("//").length && (
+                      <>
+                        //
+                        <br />
+                      </>
+                    )}
+                  </span>
+                </Fragment>
+              ))}
+            </a>
+          </div>
+          {i !== Object.keys(genres).length - 1 && (
+            <div className="self-stretch border-l-1 border-background-500" />
+          )}
+        </Fragment>
       ))}
     </div>
   </>
