@@ -1,13 +1,13 @@
 import jwt
 import json
-from datetime import timezone
+import math
+from datetime import datetime, timezone
 from django.apps import apps
 from django.db import transaction
 from django.db.models import Count, Q
 from django.db.models.functions import Lower
 from django.core.cache import cache
 from django.core.validators import validate_email
-from datetime import datetime, timezone
 from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out, cached
 from app.http import Ok, NotFound, BadRequest, Unauthorized, InternalServerError
@@ -282,3 +282,27 @@ def authors(request):
     "username": u.username,
     "display_name": u.display_name,
   } for u in users])
+
+@method("GET")
+@cached("FEATURED_AUTHOR", timeout=3600)
+def featured_author(request):
+  authors = User.objects\
+    .annotate(
+      article_count=Count("article", filter=Q(article__deleted=False))
+    )\
+    .filter(article_count__gt=0)\
+    .exclude(username="thomas")\
+    .order_by("id")
+
+  author_count = authors.count()
+  day_idx = math.floor(datetime.now(timezone.utc).timestamp() / 86400)
+  author = authors[day_idx % author_count]
+
+  if not author:
+    return NotFound()
+
+  return Ok({
+    "id": author.id,
+    "username": author.username,
+    "display_name": author.display_name,
+  })
