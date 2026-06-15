@@ -12,13 +12,12 @@ export const FeaturedAuthor = ({ author, articles }: FeaturedAuthorProps) => {
   return (
     <div className="flex flex-col">
       <h2>
-        Featured writer
-        <br />
-        <a
-          className="font-bold italic text-secondary-500"
-          href={`/profile/${author.username}`}
-        >
-          {author.display_name}
+        <a href={`/profile/${author.username}`}>
+          Featured writer
+          <br />
+          <span className="font-bold italic text-secondary-500">
+            {author.display_name}
+          </span>
         </a>
       </h2>
       <div className="px-[10px]">
