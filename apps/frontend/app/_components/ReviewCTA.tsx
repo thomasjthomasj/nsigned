@@ -1,7 +1,6 @@
 "use client";
 
 import classNames from "classnames";
-
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
@@ -52,9 +51,12 @@ export const ReviewCTA = ({ reviewRequests }: ReviewCTAProps) => {
         {reviewRequests.map((rr, i) => {
           const { release } = rr;
           return (
-            <div key={rr.id} className={classNames("flex flex-col h-full gap-[10px]", {
-              "hidden sm:flex": i > 1
-            })}>
+            <div
+              key={rr.id}
+              className={classNames("flex flex-col h-full gap-[10px]", {
+                "hidden sm:flex": i > 1,
+              })}
+            >
               <a href={release.links[0].url} target="_blank">
                 <div className="flex flex-col p-[5px]">
                   <img

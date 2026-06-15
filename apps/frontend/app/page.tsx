@@ -1,4 +1,5 @@
 import { Blog } from "@/_components/Blog";
+import { FeaturedAuthor } from "@/_components/FeaturedAuthor";
 import { RandomReviews } from "@/_components/RandomReviews";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
 import { handleError } from "@/_fns/handle-error";
@@ -6,29 +7,37 @@ import { get } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
 import { parseISOLocalTime } from "@/_utils/text";
 
-import type { Article, ErrorResponse } from "@/_types/api";
+import type { Article, Author, ErrorResponse } from "@/_types/api";
 
 const Home = async () => {
-  const [blogResponse, reviewResponse] = await Promise.all([
-    get<Article[]>({
-      endpoint: "articles",
-      data: { type: "blog", page_size: 4 },
-      withAuth: false,
-      cacheKey: getCacheKey({
-        key: CACHE_KEY.ARTICLES,
-        getData: { type: "blog", page_size: 4 },
+  const [blogResponse, reviewResponse, featuredAuthorResponse] =
+    await Promise.all([
+      get<Article[]>({
+        endpoint: "articles",
+        data: { type: "blog", page_size: 4 },
+        withAuth: false,
+        cacheKey: getCacheKey({
+          key: CACHE_KEY.ARTICLES,
+          getData: { type: "blog", page_size: 4 },
+        }),
       }),
-    }),
-    get<Article[]>({
-      endpoint: "articles",
-      data: { type: "review" },
-      withAuth: false,
-      cacheKey: getCacheKey({
-        key: CACHE_KEY.ARTICLES,
-        getData: { type: "review" },
+      get<Article[]>({
+        endpoint: "articles",
+        data: { type: "review" },
+        withAuth: false,
+        cacheKey: getCacheKey({
+          key: CACHE_KEY.ARTICLES,
+          getData: { type: "review" },
+        }),
       }),
-    }),
-  ]);
+      get<Author>({
+        endpoint: "users/featured-author",
+        withAuth: false,
+        cacheKey: getCacheKey({
+          key: CACHE_KEY.FEATURED_AUTHOR,
+        }),
+      }),
+    ]);
 
   const handleArticlesError = (r: ErrorResponse) =>
     handleError({
@@ -40,6 +49,29 @@ const Home = async () => {
 
   const { data: blog } = blogResponse;
   const { data: reviews } = reviewResponse;
+
+  const featuredAuthor = featuredAuthorResponse.ok
+    ? featuredAuthorResponse.data
+    : null;
+
+  const featuredAuthorReviews = await (async () => {
+    if (!featuredAuthor) return [];
+    const featuredAuthorReviewsResponse = await get<Article[]>({
+      endpoint: "articles",
+      data: { author: featuredAuthor.username, page_size: 4, type: "review" },
+      cacheKey: getCacheKey({
+        key: CACHE_KEY.ARTICLES,
+        getData: {
+          author: featuredAuthor.username,
+          page_size: 4,
+          type: "review",
+        },
+      }),
+    });
+    return featuredAuthorReviewsResponse.ok
+      ? featuredAuthorReviewsResponse.data
+      : [];
+  })();
 
   const randomExclude = reviews.map((r) => r.id);
 
@@ -82,11 +114,27 @@ const Home = async () => {
               </p>
             </div>
           )}
+          {featuredAuthor && (
+            <div className="flex flex-col">
+              <FeaturedAuthor
+                author={featuredAuthor}
+                articles={featuredAuthorReviews}
+              />
+            </div>
+          )}
           <div className="flex flex-col">
             <RandomReviews exclude={randomExclude} />
           </div>
         </div>
       </div>
+      {featuredAuthor && (
+        <div className="flex flex-col lg:hidden">
+          <FeaturedAuthor
+            author={featuredAuthor}
+            articles={featuredAuthorReviews}
+          />
+        </div>
+      )}
       <div className="flex flex-col lg:hidden">
         <RandomReviews exclude={randomExclude} />
       </div>

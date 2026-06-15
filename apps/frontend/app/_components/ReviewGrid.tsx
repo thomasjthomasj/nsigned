@@ -5,7 +5,7 @@ type ReviewGridProps = {
 };
 
 export const ReviewGrid = ({ articles }: ReviewGridProps) => (
-  <div className="w-full grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 gap-[10px]">
+  <div className="w-full grid grid-cols-4 lg:grid-cols-2 gap-[10px]">
     {articles.map((a) => {
       if (!a.release) return null;
       const imgURL = a.release.images.md.url;
