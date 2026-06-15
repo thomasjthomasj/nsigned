@@ -17,7 +17,7 @@ type CreateArticleProps = {
   reviewRequest?: ReviewRequest;
 };
 
-const MIN_WORDS = 200;
+const MIN_WORDS = 170;
 const MAX_WORDS = 1500;
 
 export const CreateArticle = ({ reviewRequest }: CreateArticleProps) => {
