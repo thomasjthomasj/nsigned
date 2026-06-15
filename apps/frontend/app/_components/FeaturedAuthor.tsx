@@ -1,3 +1,5 @@
+import classNames from "classnames";
+
 import { ReviewGrid } from "@/_components/ReviewGrid";
 
 import type { Author, Article } from "@/_types/api";
@@ -10,7 +12,13 @@ type FeaturedAuthorProps = {
 export const FeaturedAuthor = ({ author, articles }: FeaturedAuthorProps) => {
   if (!articles.length) return null;
   return (
-    <div className="flex flex-col">
+    <div
+      className={classNames(
+        "relative flex flex-col my-[10px]",
+        // Grey background
+        "isolate before:content-[''] before:absolute before:-inset-[10px] before:bg-background-500 before:-z-10",
+      )}
+    >
       <h2>
         <a href={`/profile/${author.username}`}>
           Featured writer
