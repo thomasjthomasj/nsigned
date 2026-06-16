@@ -31,7 +31,7 @@ export const Footer = () => (
             </li>
             <li>
               <a href="https://ko-fi.com/godribbon" target="_blank">
-                Donate
+                Buy me a pizza
               </a>
             </li>
           </ul>

@@ -140,12 +140,16 @@ export const Menu = () => {
               </a>
             ))}
           {user && (
-            <a
-              className="text-secondary-300 hover:underline hover:text-primary-300 cursor-pointer"
-              onClick={handleLogOut}
-            >
-              Log out
-            </a>
+            <>
+              <div className="w-full h-0 border-b-1 border-primary-500 my-[10px]" />
+
+              <a
+                className="text-secondary-300 hover:underline hover:text-primary-300 cursor-pointer"
+                onClick={handleLogOut}
+              >
+                Log out
+              </a>
+            </>
           )}
         </div>
       )}
