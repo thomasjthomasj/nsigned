@@ -1,4 +1,5 @@
 import { Blog } from "@/_components/Blog";
+import { CTABox } from "@/_components/CTABox";
 import { FeaturedAuthor } from "@/_components/FeaturedAuthor";
 import { RandomReviews } from "@/_components/RandomReviews";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
@@ -79,8 +80,9 @@ const Home = async () => {
 
   return (
     <div className="w-full flex flex-col gap-[15px]">
+      <CTABox />
       <div className="block lg:hidden">
-        <Blog title="Announcements" articles={blog.slice(0, 2)} />
+        <Blog title="Announcements" articles={blog.slice(0, 1)} />
         <p className="ml-[10px] mt-[3px]">
           <a href="/blog" className=" text-[14px] !text-primary-300">
             View all
