@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { get } from "@/_utils/api.client";
 
 import { DiscordCTA, DonateCTA, ReviewCTA } from "./_slides";
 
 const RR_THRESHOLD = 15;
-const SLIDE_INTERVAL = 15 * 1000;
+const SLIDE_INTERVAL = 12 * 1000;
 
 export const CTACarousel = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isActive, setIsActive] = useState<boolean>(true);
   const [reviewRequestCount, setReviewRequestCount] = useState<number | null>(
     0,
   );
@@ -38,26 +39,48 @@ export const CTACarousel = () => {
   const slides = useMemo(
     () =>
       [
-        <DiscordCTA key="discord-cta" />,
+        (next: () => void) => <DiscordCTA key="discord-cta" next={next} />,
         ...(reviewRequestCount && reviewRequestCount >= RR_THRESHOLD
-          ? [<ReviewCTA key="review-cta" count={reviewRequestCount} />]
+          ? [
+              (next: () => void) => (
+                <ReviewCTA
+                  key="review-cta"
+                  count={reviewRequestCount}
+                  next={next}
+                />
+              ),
+            ]
           : []),
-        <DonateCTA key="donate-cta" />,
+        (next: () => void) => <DonateCTA key="donate-cta" next={next} />,
       ] as const,
     [reviewRequestCount],
   );
 
+  const next = useCallback(() => {
+    setSlide((prev) => {
+      const length = slides.length;
+      return length ? (prev + 1) % length : 0;
+    });
+  }, [slides]);
+
+  const handleNext = useCallback(() => {
+    setIsActive(false);
+    next();
+  }, [next]);
+
   useEffect(() => {
     if (isLoading) return;
     const id = setInterval(() => {
-      setSlide((prev) => {
-        const length = slides.length;
-        return length ? (prev + 1) % length : 0;
-      });
+      if (!isActive) return;
+      next();
     }, SLIDE_INTERVAL);
 
     return () => clearInterval(id);
-  }, [slides]);
+  }, [isLoading, next, isActive]);
 
-  return <div className="flex flex-col p-[20px] flex-1">{slides[slide]}</div>;
+  return (
+    <div className="flex flex-col p-[20px] flex-1">
+      {slides[slide](handleNext)}
+    </div>
+  );
 };
