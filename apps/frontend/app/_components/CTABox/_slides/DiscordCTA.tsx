@@ -10,6 +10,7 @@ export const DiscordCTA = () => (
           <a href="https://discord.gg/A4hRDQmUYk" target="_blank">
             Discord server
           </a>
+          .
         </p>
         <p>Why not come and join us?</p>
       </div>
