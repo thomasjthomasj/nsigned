@@ -4,7 +4,7 @@ export const ReviewCTA = ({
   count,
   next,
 }: {
-  count: number;
+  count?: number;
   next: () => void;
 }) => (
   <div className="flex flex-col gap-[10px] h-full flex-1">
@@ -16,8 +16,8 @@ export const ReviewCTA = ({
       <div className="flex flex-col gap-[10px]">
         <p>
           There are currently{" "}
-          <span className="font-bold text-tertiary-500">{count}</span> releases
-          awaiting review.
+          <span className="font-bold text-tertiary-500">{count ?? ""}</span>{" "}
+          releases awaiting review.
         </p>
         <p>
           This site relies on people both receiving <strong>and</strong>{" "}
