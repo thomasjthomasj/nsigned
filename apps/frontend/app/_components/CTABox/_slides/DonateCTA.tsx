@@ -10,7 +10,8 @@ export const DonateCTA = () => (
       </p>
       <div className="flex flex-col gap-[10px]">
         <p>
-          If you have been enjoying the site, please considering{" "}
+          If you have been enjoying the site and can afford to do so, please
+          consider{" "}
           <a
             href="https://ko-fi.com/godribbon"
             target="_blank"
