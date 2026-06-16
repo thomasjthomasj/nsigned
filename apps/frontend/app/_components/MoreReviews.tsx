@@ -47,5 +47,10 @@ export const MoreReviews = ({
           );
         })}
       </div>
+      <p>
+        <a href={archiveLink} className=" text-[14px] !text-primary-300">
+          View all
+        </a>
+      </p>
     </div>
   );
