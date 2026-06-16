@@ -12,7 +12,7 @@ export const DiscordCTA = () => (
           </a>
           .
         </p>
-        <p>Why not come and join us?</p>
+        <p className="font-bold">Why not come and join us?</p>
       </div>
     </div>
     <div className="mt-auto flex justify-end w-full">
