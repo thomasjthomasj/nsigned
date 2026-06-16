@@ -45,10 +45,10 @@ export const CTACarousel = () => {
   const slides = useMemo(
     () =>
       [
+        <DiscordCTA key="discord-cta" />,
         ...(reviewRequestCount && reviewRequestCount >= RR_THRESHOLD
           ? [<ReviewCTA key="review-cta" count={reviewRequestCount} />]
           : []),
-        <DiscordCTA key="discord-cta" />,
         <DonateCTA key="donate-cta" />,
       ] as const,
     [reviewRequestCount],
@@ -65,8 +65,6 @@ export const CTACarousel = () => {
 
     return () => clearInterval(id);
   }, [slides]);
-
-  if (isLoading || !reviewRequestCount) return null;
 
   return <div className="flex flex-col p-[20px] h-full">{slides[slide]}</div>;
 };
