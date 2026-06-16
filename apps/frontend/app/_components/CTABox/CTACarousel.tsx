@@ -1,20 +1,13 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { get } from "@/_utils/api.client";
 
 import { DiscordCTA, DonateCTA, ReviewCTA } from "./_slides";
 
 const RR_THRESHOLD = 15;
-const SLIDE_INTERVAL = 10 * 1000;
+const SLIDE_INTERVAL = 15 * 1000;
 
 export const CTACarousel = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -66,5 +59,5 @@ export const CTACarousel = () => {
     return () => clearInterval(id);
   }, [slides]);
 
-  return <div className="flex flex-col p-[20px] h-full">{slides[slide]}</div>;
+  return <div className="flex flex-col p-[20px] flex-1">{slides[slide]}</div>;
 };
