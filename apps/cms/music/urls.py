@@ -14,5 +14,6 @@ urlpatterns = [
   path("review-request/reject", views.reject_review_request, name="reject_review_request"),
   path("review-request/pending", views.pending_review_requests, name="pending_review_requests"),
   path("review-request/current", views.user_review_request, name="user_view_request"),
+  path("review-requests/count", views.count_review_requests, name="count_review_requests"),
   path("artists", views.artists, name="artists"),
 ]

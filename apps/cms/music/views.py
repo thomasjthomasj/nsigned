@@ -101,6 +101,7 @@ def claim_review_request(request):
   review_request.save()
   delete_cache("REVIEW-REQUESTS")
   delete_cache("REVIEW-REQUEST", id_val=review_request_id)
+  delete_cache("REVIEW-REQUEST-COUNT")
 
   return Ok(review_request.serialized)
 
@@ -128,6 +129,7 @@ def unclaim_review_request(request):
   review_request.save()
   delete_cache("REVIEW-REQUESTS")
   delete_cache("REVIEW-REQUEST", id_val=review_request_id)
+  delete_cache("REVIEW-REQUEST-COUNT")
 
   return Ok(review_request.serialized)
 
@@ -145,6 +147,7 @@ def reject_review_request(request):
   review_request.save()
   delete_cache("REVIEW-REQUESTS")
   delete_cache("REVIEW-REQUEST", id_val=review_request_id)
+  delete_cache("REVIEW-REQUEST-COUNT")
 
   return Ok(review_request.serialized)
 
@@ -161,6 +164,17 @@ def pending_review_requests(request):
     .order_by("created_at")
 
   return Ok([r.serialized for r in review_requests])
+
+@method("GET")
+@cached("REVIEW-REQUEST-COUNT")
+def count_review_requests(request):
+  return Ok(ReviewRequest.objects \
+    .filter(
+      article__isnull=True,
+      claimed_by=None,
+      rejected_by=None,
+    ) \
+    .count())
 
 @method("GET")
 @logged_in()
