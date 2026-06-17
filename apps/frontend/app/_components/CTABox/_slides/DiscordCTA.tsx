@@ -17,7 +17,7 @@ export const DiscordCTA = ({ next }: { next: () => void }) => (
     </div>
     <div className="mt-auto flex justify-between w-full">
       <a href="https://discord.gg/A4hRDQmUYk" target="_blank">
-        <Button label="Join" />
+        <Button label="Join the conversation" />
       </a>
       <Button
         className="!bg-background-500 border border-primary-300"

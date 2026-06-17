@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAuth } from "@/_hooks";
 import { get } from "@/_utils/api.client";
 
-import { DiscordCTA, DonateCTA, ReviewCTA } from "./_slides";
+import { DiscordCTA, DonateCTA, ReviewCTA, SubmitCTA } from "./_slides";
 
 const RR_THRESHOLD = 15;
 const SLIDE_INTERVAL = 12 * 1000;
@@ -16,6 +17,7 @@ export const CTACarousel = () => {
     0,
   );
   const [slide, setSlide] = useState<number>(0);
+  const { user, loading: userLoading } = useAuth();
 
   useEffect(() => {
     const loadReviewRequestCount = async () => {
@@ -39,6 +41,14 @@ export const CTACarousel = () => {
   const slides = useMemo(
     () =>
       [
+        (next: () => void) => (
+          <SubmitCTA
+            key="submit-cta"
+            next={next}
+            user={user}
+            userLoading={userLoading}
+          />
+        ),
         ...(reviewRequestCount && reviewRequestCount >= RR_THRESHOLD
           ? [
               (next: () => void) => (
@@ -51,9 +61,11 @@ export const CTACarousel = () => {
             ]
           : []),
         (next: () => void) => <DiscordCTA key="discord-cta" next={next} />,
-        (next: () => void) => <DonateCTA key="donate-cta" next={next} />,
+        ...(user
+          ? [(next: () => void) => <DonateCTA key="donate-cta" next={next} />]
+          : []),
       ] as const,
-    [reviewRequestCount],
+    [reviewRequestCount, user, userLoading],
   );
 
   const next = useCallback(() => {
@@ -81,7 +93,12 @@ export const CTACarousel = () => {
   if (isLoading)
     return (
       <div className="flex flex-col p-[20px] flex-1">
-        <ReviewCTA key="review-cta" next={next} />
+        <SubmitCTA
+          key="submit-cta"
+          next={next}
+          user={user}
+          userLoading={userLoading}
+        />
       </div>
     );
 
