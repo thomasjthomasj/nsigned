@@ -139,3 +139,18 @@ class CommentContent(Creatable):
   )
   content = models.TextField()
   active = models.BooleanField(default=True)
+
+class Bookmark(Creatable):
+  article = models.ForeignKey(
+    Article,
+    on_delete=models.CASCADE,
+    related_name="bookmarks",
+  )
+
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(
+        fields=["created_by", "article"],
+        name="unique_bookmark_per_user_article",
+      )
+    ]

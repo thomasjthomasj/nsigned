@@ -1,16 +1,18 @@
+import json
 from random import sample
 from datetime import datetime, timedelta
+from django.core.cache import cache
 from django.db.models import Q
 from django.db import transaction
 from slugify import slugify
 from app.decorators import logged_in, method, cached
 from app.http import Ok, BadRequest, NotFound, Forbidden
-from app.utils import delete_cache, delete_cache_prefix, has_permission
+from app.utils import delete_cache, delete_cache_prefix, has_permission, get_cache_key
 from music.bandcamp import get_release_details
-from music.models import ReviewRequest, Release
+from music.models import ReviewRequest
 from users.models import Notification
 from users.email import send_consent_emails, send_article_notifications
-from .models import Article, Comment, CommentContent
+from .models import Article, Comment, CommentContent, Bookmark
 
 @method("GET")
 @cached("ARTICLES", get_params=[
@@ -74,6 +76,70 @@ def list(request):
     article.serialized_lite
     for article in articles.all()[start:end]]
   )
+
+@method("GET")
+@logged_in()
+def bookmarks(request):
+  user = request.site_user
+  cache_key_bookmarks = get_cache_key("BOOKMARKS", id_val=user.id)
+  cache_key_bookmark_ids = get_cache_key("BOOKMARK_IDS", id_val=user.id)
+  cached_body = cache.get(cache_key_bookmarks)
+  if cached_body:
+    return Ok(json.loads(cached_body))
+
+  articles = user.bookmark_set \
+    .order_by("-created_at") \
+    .values_list("article", flat=True)
+
+  article_data = [article.serialized for article in articles]
+  article_ids = [article.id for article in articles]
+  cache.set(cache_key_bookmarks, json.dumps(article_data), timeout=86400)
+  cache.set(cache_key_bookmark_ids, json.dumps(article_ids), timeout=86400)
+
+  return Ok(article_data)
+
+@method("GET")
+@logged_in()
+def bookmarked_ids(request):
+  user = request.site_user
+  cache_key = get_cache_key("BOOKMARK_IDS", id_val=user.id)
+  cached_body = cache.get(cache_key)
+  if cached_body:
+    return Ok(json.loads(cached_body))
+  article_ids = user.bookmark_set.values_list("article_id", flat=True)
+  cache.set(cache_key, json.dumps(article_ids), timeout=86400)
+  return Ok(article_ids)
+
+@method("POST")
+@transaction.atomic()
+@logged_in()
+def bookmark(request, article_id):
+  user = request.site_user
+  exists = user.bookmark_set.exists(article__id=article_id)
+  if exists:
+    return Ok({ "bookmark_already_exists": True })
+  article = Article.objects.get(id=article_id)
+  Bookmark.objects.create(created_by=user, article=article)
+  delete_cache("BOOKMARKS", id_val=user.id)
+  delete_cache("BOOKMARK_IDS", id_val=user.id)
+
+  return Ok({ "bookmark_already_exists": False })
+
+@method("POST")
+@transaction.atomic()
+@logged_in()
+def delete_bookmark(request, article_id):
+  user = request.site_user
+  try:
+    bookmark = user.bookmark_set.get(article_id=article_id)
+  except Bookmark.ValueError:
+    return NotFound()
+  bookmark.delete()
+  delete_cache("BOOKMARKS", id_val=user.id)
+  delete_cache("BOOKMARK_IDS", id_val=user.id)
+
+  return Ok()
+
 
 @method("GET")
 @cached("ARTICLES:RANDOM", get_params=["exclude"], timeout=600)
