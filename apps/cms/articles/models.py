@@ -154,3 +154,6 @@ class Bookmark(Creatable):
         name="unique_bookmark_per_user_article",
       )
     ]
+
+  def __str__(self):
+    return f"{self.created_by.username} - {self.article.title}"

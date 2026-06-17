@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Article, ArticleContent
+from .models import Article, ArticleContent, Bookmark
 
 class ArticleContentInline(admin.StackedInline):
   model = ArticleContent
@@ -11,4 +11,8 @@ class ArticleAdmin(admin.ModelAdmin):
     ArticleContentInline,
   ]
 
+class BookmarkAdmin(admin.ModelAdmin):
+  model = Bookmark
+
 admin.site.register(Article, ArticleAdmin)
+admin.site.register(Bookmark, BookmarkAdmin)

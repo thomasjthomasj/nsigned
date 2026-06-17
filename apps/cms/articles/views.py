@@ -106,8 +106,13 @@ def bookmarked_ids(request):
   cached_body = cache.get(cache_key)
   if cached_body:
     return Ok(json.loads(cached_body))
-  article_ids = user.bookmark_set.values_list("article_id", flat=True)
+  article_ids = [
+    article_id
+    for article_id
+    in user.bookmark_set.values_list("article_id", flat=True)
+  ]
   cache.set(cache_key, json.dumps(article_ids), timeout=86400)
+
   return Ok(article_ids)
 
 @method("POST")
@@ -115,7 +120,7 @@ def bookmarked_ids(request):
 @logged_in()
 def bookmark(request, article_id):
   user = request.site_user
-  exists = user.bookmark_set.exists(article__id=article_id)
+  exists = user.bookmark_set.filter(article_id=article_id).exists()
   if exists:
     return Ok({ "bookmark_already_exists": True })
   article = Article.objects.get(id=article_id)
@@ -132,7 +137,7 @@ def delete_bookmark(request, article_id):
   user = request.site_user
   try:
     bookmark = user.bookmark_set.get(article_id=article_id)
-  except Bookmark.ValueError:
+  except Bookmark.DoesNotExist:
     return NotFound()
   bookmark.delete()
   delete_cache("BOOKMARKS", id_val=user.id)
