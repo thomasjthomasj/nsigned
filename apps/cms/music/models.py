@@ -204,6 +204,7 @@ class ReviewRequest(Creatable):
   rejected_by = models.ForeignKey(
     User,
     null=True,
+    blank=True,
     on_delete=models.SET_NULL,
     related_name="rejected_review_requests",
   )
