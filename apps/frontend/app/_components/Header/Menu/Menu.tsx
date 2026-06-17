@@ -68,6 +68,11 @@ export const Menu = () => {
         link: "/my-reviews",
         primary: true,
       });
+      items.push({
+        label: "Bookmarks",
+        link: "/bookmarks",
+        primary: true,
+      });
     }
     items.push({
       label: "About _nsigned",
@@ -117,14 +122,19 @@ export const Menu = () => {
         <div className="flex flex-col p-[15px] bg-background border-1 border-tertiary-500 absolute right-0 text-nowrap">
           {menuItems
             .filter((i) => i.primary)
-            .map((i) => (
-              <a
-                key={i.label}
-                className="text-foreground font-bold hover:underline hover:text-primary-300"
-                href={i.link}
-              >
-                {i.label}
-              </a>
+            .map((i, k) => (
+              <>
+                <a
+                  key={i.label}
+                  className="text-foreground font-bold hover:underline hover:text-primary-300"
+                  href={i.link}
+                >
+                  {i.label}
+                </a>
+                {k === 0 && (
+                  <div className="w-full h-0 border-b-1 border-primary-500 my-[10px]" />
+                )}
+              </>
             ))}
           <div className="w-full h-0 border-b-1 border-primary-500 my-[10px]" />
           {menuItems

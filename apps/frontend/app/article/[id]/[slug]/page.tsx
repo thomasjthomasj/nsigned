@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Fragment } from "react";
 
 import { AuthorCard } from "@/_components/AuthorCard";
+import { BookmarkButton } from "@/_components/BookmarkButton";
 import { Comments } from "@/_components/Comments";
 import { MoreReviews } from "@/_components/MoreReviews";
 import { PageLayout } from "@/_components/PageLayout";
@@ -220,7 +221,12 @@ const Article = async ({ params }: ArticleProps) => {
             </p>
           )}
         </div>
-        <ShareIcons article={article} />
+        <div className="flex max-[390px]:flex-col max-[390px]:gap-[10px] justify-between">
+          <div>
+            <BookmarkButton article={article} />
+          </div>
+          <ShareIcons article={article} />
+        </div>
         {!!pendingRequests?.length && (
           <ReviewCTA reviewRequests={pendingRequests} />
         )}
