@@ -87,12 +87,18 @@ def bookmarks(request):
   if cached_body:
     return Ok(json.loads(cached_body))
 
-  articles = user.bookmark_set \
+  bookmarks = user.bookmark_set \
+    .select_related("article") \
     .order_by("-created_at") \
-    .values_list("article", flat=True)
 
-  article_data = [article.serialized for article in articles]
-  article_ids = [article.id for article in articles]
+  article_data = []
+  article_ids = []
+
+  for bookmark in bookmarks:
+    article = bookmark.article
+    article_data.append(article.serialized)
+    article_ids.append(article.id)
+
   cache.set(cache_key_bookmarks, json.dumps(article_data), timeout=86400)
   cache.set(cache_key_bookmark_ids, json.dumps(article_ids), timeout=86400)
 
