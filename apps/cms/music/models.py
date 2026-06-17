@@ -12,12 +12,13 @@ from .validators import images_validator
 class Artist(Creatable):
   name = models.CharField(max_length=255)
   slug = models.CharField(max_length=255, unique=True)
-  links = models.ManyToManyField(Link)
+  links = models.ManyToManyField(Link, blank=True)
   user = models.ForeignKey(
     User,
     related_name="artists",
     on_delete=models.SET_NULL,
     null=True,
+    blank=True,
   )
 
   def __str__(self):
