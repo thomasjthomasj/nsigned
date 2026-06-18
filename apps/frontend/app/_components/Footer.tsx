@@ -73,6 +73,14 @@ export const Footer = () => (
             </li>
             <li>
               <a
+                href="https://github.com/bshurikan/Beni-BandcampPlayer"
+                target="_blank"
+              >
+                Benny's Bandcamp Player
+              </a>
+            </li>
+            <li>
+              <a
                 href="https://www.soundclick.com/forum/default.cfm"
                 target="_blank"
               >

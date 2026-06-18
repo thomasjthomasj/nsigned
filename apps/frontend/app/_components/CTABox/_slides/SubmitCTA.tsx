@@ -15,7 +15,11 @@ export const SubmitCTA = ({ next, user, userLoading }: SubmitCTAProps) => (
       <div className="flex flex-col gap-[10px]">
         <p>The DIY music blog where anyone can get reviewed by anyone!</p>
         <p>
-          Read all about it <a className="font-bold" href="/about">here</a>.
+          Read all about it{" "}
+          <a className="font-bold" href="/about">
+            here
+          </a>
+          .
         </p>
       </div>
     </div>
