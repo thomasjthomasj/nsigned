@@ -49,6 +49,18 @@ export const ReviewRequestActions = ({
     }
   }, [reviewRequest, user]);
 
+  const handleCancel = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
+    const { ok } = await post({
+      endpoint: "music/review-request/cancel",
+      data: { id: reviewRequest.id },
+    });
+    if (ok) {
+      window.location.reload();
+    }
+  }, [reviewRequest, user]);
+
   const handleReject = useCallback(async () => {
     if (!user) return;
     setIsLoading(true);
@@ -88,6 +100,13 @@ export const ReviewRequestActions = ({
         <Button
           label="Unassign reviewer"
           onClick={handleUnclaim}
+          disabled={disableButton}
+        />
+      )}
+      {type === "mine" && !reviewRequest.claimed_by && (
+        <Button
+          label="Cancel request"
+          onClick={handleCancel}
           disabled={disableButton}
         />
       )}
