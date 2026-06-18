@@ -12,6 +12,7 @@ urlpatterns = [
   path("review-request/claim", views.claim_review_request, name="claim_review_request"),
   path("review-request/unclaim", views.unclaim_review_request, name="unclaim_review_request"),
   path("review-request/reject", views.reject_review_request, name="reject_review_request"),
+  path("review-request/cancel", views.cancel_review_request, name="cancel_review_request"),
   path("review-request/pending", views.pending_review_requests, name="pending_review_requests"),
   path("review-request/current", views.user_review_request, name="user_view_request"),
   path("review-requests/count", views.count_review_requests, name="count_review_requests"),

@@ -140,8 +140,9 @@ def reject_review_request(request):
   review_request_id = data.get("id")
   if not review_request_id:
     return BadRequest("No review request claimed")
-  review_request = ReviewRequest.objects.get(id=review_request_id)
-  if not review_request:
+  try:
+    review_request = ReviewRequest.objects.get(id=review_request_id)
+  except ReviewRequest.DoesNotExist:
     return NotFound()
   review_request.rejected_by = request.site_user
   review_request.save()
@@ -150,6 +151,34 @@ def reject_review_request(request):
   delete_cache("REVIEW-REQUEST-COUNT")
 
   return Ok(review_request.serialized)
+
+@method("POST")
+@logged_in()
+def cancel_review_request(request):
+  user = request.site_user
+  data = request.json
+  review_request_id = data.get("id")
+  if not review_request_id:
+    return BadRequest("No review request ID")
+  try:
+    review_request = ReviewRequest.objects.get(id=review_request_id)
+  except ReviewRequest.DoesNotExist:
+    return NotFound()
+  if review_request.created_by.id != user.id:
+    return Forbidden()
+  if review_request.claimed_by:
+    return Forbidden("This review request has already been claimed")
+  try:
+    if review_request.article:
+      return BadRequest("A review has already been written for this review request")
+  except ReviewRequest.article.RelatedObjectDoesNotExist:
+    pass
+  review_request.delete()
+  delete_cache("REVIEW-REQUESTS")
+  delete_cache("REVIEW-REQUEST", id_val=review_request_id)
+  delete_cache("REVIEW-REQUEST-COUNT")
+
+  return Ok()
 
 @method("GET")
 @cached("REVIEW-REQUESTS")
