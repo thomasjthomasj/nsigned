@@ -7,7 +7,11 @@ export const DiscordCTA = ({ next }: { next: () => void }) => (
       <div className="flex flex-col gap-[10px]">
         <p>
           We are building a community of music lovers over on our{" "}
-          <a href="https://discord.gg/A4hRDQmUYk" target="_blank">
+          <a
+            href="https://discord.gg/A4hRDQmUYk"
+            target="_blank"
+            className="font-bold"
+          >
             Discord server
           </a>
           .
