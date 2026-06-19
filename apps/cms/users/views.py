@@ -286,9 +286,16 @@ def authors(request):
 @method("GET")
 @cached("FEATURED_AUTHOR", timeout=3600)
 def featured_author(request):
+  today = datetime.now().date()
   authors = User.objects\
     .annotate(
-      article_count=Count("article", filter=Q(article__deleted=False))
+      article_count=Count(
+        "article",
+        filter=Q(
+          article__deleted=False,
+          article__created_at__lt=today,
+        )
+      )
     )\
     .filter(article_count__gt=0)\
     .exclude(username="thomas")\
