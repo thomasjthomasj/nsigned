@@ -35,7 +35,7 @@ def method(method):
     return wrapped
   return decorator
 
-def cached(key, id_kwarg=None, get_params=[], timeout=3600):
+def cached(key, id_kwarg=None, get_params=[], include_user=False, timeout=3600):
   def decorator(view):
     def wrapped(request, *args, **kwargs):
       try:
@@ -43,11 +43,13 @@ def cached(key, id_kwarg=None, get_params=[], timeout=3600):
           id_val = kwargs[id_kwarg] if id_kwarg else None
         except KeyError:
           return view(request, *args, **kwargs)
+        user = request.site_user if include_user else None
         cache_key = get_cache_key(
           key,
           id_val=id_val,
           get_params=get_params,
-          get_data=request.GET
+          get_data=request.GET,
+          user=user,
         )
         cached_body = cache.get(cache_key)
         try:

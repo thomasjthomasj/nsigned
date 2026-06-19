@@ -79,45 +79,27 @@ def list(request):
 
 @method("GET")
 @logged_in()
+@cached("BOOKMARKS", include_user=True, timeout=86400)
 def bookmarks(request):
   user = request.site_user
-  cache_key_bookmarks = get_cache_key("BOOKMARKS", id_val=user.id)
-  cache_key_bookmark_ids = get_cache_key("BOOKMARK_IDS", id_val=user.id)
-  cached_body = cache.get(cache_key_bookmarks)
-  if cached_body:
-    return Ok(json.loads(cached_body))
-
   bookmarks = user.bookmark_set \
     .select_related("article") \
     .order_by("-created_at") \
 
-  article_data = []
-  article_ids = []
-
-  for bookmark in bookmarks:
-    article = bookmark.article
-    article_data.append(article.serialized)
-    article_ids.append(article.id)
-
-  cache.set(cache_key_bookmarks, json.dumps(article_data), timeout=86400)
-  cache.set(cache_key_bookmark_ids, json.dumps(article_ids), timeout=86400)
+  article_data = [bookmark.article.serialized for bookmark in bookmarks]
 
   return Ok(article_data)
 
 @method("GET")
 @logged_in()
+@cached("BOOKMARK_IDS", include_user=True, timeout=86400)
 def bookmarked_ids(request):
   user = request.site_user
-  cache_key = get_cache_key("BOOKMARK_IDS", id_val=user.id)
-  cached_body = cache.get(cache_key)
-  if cached_body:
-    return Ok(json.loads(cached_body))
   article_ids = [
     article_id
     for article_id
     in user.bookmark_set.values_list("article_id", flat=True)
   ]
-  cache.set(cache_key, json.dumps(article_ids), timeout=86400)
 
   return Ok(article_ids)
 
@@ -131,8 +113,8 @@ def bookmark(request, article_id):
     return Ok({ "bookmark_already_exists": True })
   article = Article.objects.get(id=article_id)
   Bookmark.objects.create(created_by=user, article=article)
-  delete_cache("BOOKMARKS", id_val=user.id)
-  delete_cache("BOOKMARK_IDS", id_val=user.id)
+  delete_cache("BOOKMARKS", user=user)
+  delete_cache("BOOKMARK_IDS", user=user)
 
   return Ok({ "bookmark_already_exists": False })
 
@@ -146,8 +128,8 @@ def delete_bookmark(request, article_id):
   except Bookmark.DoesNotExist:
     return NotFound()
   bookmark.delete()
-  delete_cache("BOOKMARKS", id_val=user.id)
-  delete_cache("BOOKMARK_IDS", id_val=user.id)
+  delete_cache("BOOKMARKS", user=user)
+  delete_cache("BOOKMARK_IDS", user=user)
 
   return Ok()
 

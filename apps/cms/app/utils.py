@@ -48,8 +48,8 @@ def has_permission(user, role):
     raise Exception("Invalid role")
   return user.role in allowed_roles
 
-def get_cache_key(key, id_val=None, get_params=[], get_data={}):
-  cache_key = f"NSIGNED:{key}{f":{id_val}" if id_val else ""}"
+def get_cache_key(key, id_val=None, get_params=[], get_data={}, user=None):
+  cache_key = f"NSIGNED:{key}{f":{id_val}" if id_val else ""}{f":USER-{user.id}" if user else ""}"
 
   get_params.sort(key=str)
   for param in get_params:
@@ -59,8 +59,8 @@ def get_cache_key(key, id_val=None, get_params=[], get_data={}):
 
   return cache_key
 
-def delete_cache(key, id_val=None, get_params=[], get_data={}):
-  cache.delete(get_cache_key(key, id_val=id_val, get_params=get_params, get_data=get_data))
+def delete_cache(key, id_val=None, get_params=[], get_data={}, user=None):
+  cache.delete(get_cache_key(key, id_val=id_val, get_params=get_params, get_data=get_data, user=user))
 
 def delete_cache_prefix(prefix):
   cache.delete_pattern(f"{get_cache_key(prefix)}:*")
