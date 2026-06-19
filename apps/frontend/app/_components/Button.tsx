@@ -1,6 +1,9 @@
 import classNames from "classnames";
 
+import { nodeToString } from "@/_utils/text";
+
 type ButtonProps = {
+  ariaLabel?: string;
   className?: string;
   disabled?: boolean;
   label: React.ReactNode;
@@ -9,6 +12,7 @@ type ButtonProps = {
 };
 
 export const Button = ({
+  ariaLabel,
   className,
   disabled,
   label,
@@ -26,6 +30,7 @@ export const Button = ({
       },
       className,
     )}
+    aria-label={ariaLabel ?? nodeToString(label)}
     type={type}
     onClick={onClick}
     disabled={disabled}

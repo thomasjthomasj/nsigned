@@ -128,6 +128,7 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
           className="px-[10px]"
           label={<PencilIcon />}
           onClick={() => setIsEditing(true)}
+          ariaLabel="Edit"
         />
         {hasRevalidatePermission && (
           <Button
@@ -135,6 +136,7 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
             label={<RefreshIcon />}
             onClick={handleRevalidate}
             disabled={isRevalidating}
+            ariaLabel="Revalidate image"
           />
         )}
         {hasBskyPermission && (
@@ -143,6 +145,7 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
             label={<BlueskyIcon />}
             onClick={handlePostToBsky}
             disabled={isPostingToBsky}
+            ariaLabel="Post to Bluesky"
           />
         )}
         {hasDeletePermission && (
@@ -150,6 +153,7 @@ export const EditArticle = ({ article, containerID }: EditArticleProps) => {
             className="px-[10px]"
             label={<TrashIcon />}
             onClick={() => setIsDeleting(true)}
+            ariaLabel="Delete"
           />
         )}
       </div>

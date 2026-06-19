@@ -12,7 +12,7 @@ export const ReviewGrid = ({ articles }: ReviewGridProps) => (
       return (
         <a key={a.id} href={`/article/${a.id}/${a.slug}`}>
           <div className="flex flex-col">
-            <img src={imgURL} alt={a.release.title} />
+            <img src={imgURL} alt={`"${a.release.title}" cover art`} />
           </div>
           <h5 className="text-[12px] overflow-hidden text-ellipsis line-clamp-2">
             {a.release.title}

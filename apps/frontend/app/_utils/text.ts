@@ -1,4 +1,5 @@
 import DOMPurify from "isomorphic-dompurify";
+import React from "react";
 
 export const sanitizeHtml = (html: string) =>
   DOMPurify.sanitize(html, {
@@ -54,3 +55,12 @@ export const parseISOLocalTime = (isoDate: string) => {
 
 export const getWordCount = (text: string) =>
   text.trim().split(/\s+/).filter(Boolean).length;
+
+export const nodeToString = (node: React.ReactNode): string => {
+  if (node === null || node === false) return "";
+  if (typeof node === "string" || typeof node === "number") return `${node}`;
+  if (Array.isArray(node)) return node.map(nodeToString).join(" ");
+  if (React.isValidElement<{ children?: React.ReactNode }>(node))
+    return nodeToString(node.props.children);
+  return "";
+};

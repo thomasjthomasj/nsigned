@@ -36,6 +36,7 @@ export const Header = () => (
             <Button
               className="bg-secondary-500 h-[34px]"
               label={<KofiIcon />}
+              ariaLabel="Donate via KoFi"
             />
           </a>
           <Notifications />

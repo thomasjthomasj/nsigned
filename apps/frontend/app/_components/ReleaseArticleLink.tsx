@@ -35,7 +35,7 @@ export const ReleaseArticleLink = ({
               "hidden sm:block": size === "lg",
             })}
             src={lgImage.url}
-            alt={`${release.title} cover art`}
+            alt={`"${release.title}" cover art`}
             height={IMG_SIZE_LG}
             width={IMG_SIZE_LG}
           />
@@ -44,7 +44,7 @@ export const ReleaseArticleLink = ({
               "block sm:hidden": size === "lg",
             })}
             src={smImage.url}
-            alt={`${release.title} cover art`}
+            alt={`"${release.title}" cover art`}
             height={IMG_SIZE_SM}
             width={IMG_SIZE_SM}
           />
