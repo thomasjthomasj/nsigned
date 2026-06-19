@@ -13,10 +13,10 @@ const Bookmarks = async () => {
   const bookmarksResponse = await get<Article[]>({
     endpoint: "articles/bookmarks",
     withAuth: true,
-    // cacheKey: getCacheKey({
-    //   key: CACHE_KEY.BOOKMARKS,
-    //   idVal: userResponse.data.id,
-    // })
+    cacheKey: getCacheKey({
+      key: CACHE_KEY.BOOKMARKS,
+      userID: userResponse.data.id,
+    }),
   });
   if (!bookmarksResponse.ok)
     return handleError({ errorResponse: bookmarksResponse });

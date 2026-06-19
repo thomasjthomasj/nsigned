@@ -48,13 +48,15 @@ type GetCacheKeyParams = {
   key: CACHE_KEY;
   idVal?: string | number;
   getData?: Record<string, string | number | null | undefined>;
+  userID?: number;
 };
 export const getCacheKey = ({
   key,
   idVal,
   getData = {},
+  userID,
 }: GetCacheKeyParams) => {
-  let cacheKey = `:${CACHE_VERSION}:${CACHE_PREFIX}:${key}${idVal ? `:${idVal}` : ""}`;
+  let cacheKey = `:${CACHE_VERSION}:${CACHE_PREFIX}:${key}${idVal ? `:${idVal}` : ""}${userID ? `:USER-${userID}` : ""}`;
   const getParams = CACHE_PARAMS[key];
   getParams.sort((a, b) =>
     String(a).localeCompare(String(b), undefined, {
