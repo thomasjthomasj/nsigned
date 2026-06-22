@@ -1,6 +1,7 @@
 import jwt
 import json
 import math
+import random
 from datetime import datetime, timezone
 from django.apps import apps
 from django.db import transaction
@@ -15,7 +16,7 @@ from app.utils import get_cache_key, set_auth_cookie, parse_markdown, delete_aut
 from links.models import Link
 from .auth import issue_tokens, decode
 from .email import send_otp, send_article_notifications, send_consent_emails, EmailError
-from .models import User, Notification
+from .models import User, Notification, FeaturedAuthor
 from .validators import fundraiser_link_validator
 from .utils import get_otp
 
@@ -285,8 +286,20 @@ def authors(request):
 
 @method("GET")
 @cached("FEATURED_AUTHOR", timeout=3600)
+@transaction.atomic()
 def featured_author(request):
   today = datetime.now().date()
+  try:
+    current = FeaturedAuthor.objects.select_related("user").get(date=today)
+    return Ok({
+      "id": current.user.id,
+      "username": current.user.username,
+      "display_name": current.user.display_name,
+    })
+  except FeaturedAuthor.DoesNotExist:
+    pass
+  already_featured = FeaturedAuthor.objects.all().values_list("user_id", flat=True)
+
   authors = User.objects\
     .annotate(
       article_count=Count(
@@ -298,15 +311,29 @@ def featured_author(request):
       )
     )\
     .filter(article_count__gt=0)\
-    .exclude(username="thomas")\
-    .order_by("id")
+    .exclude(id__in=already_featured)
+
+  if authors.count() == 0:
+    FeaturedAuthor.objects.all().delete()
+    authors = User.objects\
+      .annotate(
+        article_count=Count(
+          "article",
+          filter=Q(
+            article__deleted=False,
+            article__created_at__lt=today,
+          )
+        )
+      )\
+      .filter(article_count__gt=0)
 
   author_count = authors.count()
-  day_idx = math.floor(datetime.now(timezone.utc).timestamp() / 86400)
-  author = authors[day_idx % author_count]
-
+  idx = random.randrange(author_count)
+  author = authors[idx]
   if not author:
     return NotFound()
+
+  FeaturedAuthor.objects.create(date=today, user=author)
 
   return Ok({
     "id": author.id,
