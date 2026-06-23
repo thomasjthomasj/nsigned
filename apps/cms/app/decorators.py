@@ -35,7 +35,7 @@ def method(method):
     return wrapped
   return decorator
 
-def cached(key, id_kwarg=None, get_params=[], include_user=False, timeout=3600):
+def cached(key, id_kwarg=None, get_params=[], include_user=False, timeout=3600*6):
   def decorator(view):
     def wrapped(request, *args, **kwargs):
       try:

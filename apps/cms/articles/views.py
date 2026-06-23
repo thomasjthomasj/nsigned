@@ -135,7 +135,7 @@ def delete_bookmark(request, article_id):
 
 
 @method("GET")
-@cached("ARTICLES:RANDOM", get_params=["exclude"], timeout=600)
+@cached("ARTICLES:RANDOM", get_params=["exclude"], timeout=3600)
 def random(request):
   max_articles = 12
   exclude = [int(i) for i in request.GET.get("exclude", []).split(",")]

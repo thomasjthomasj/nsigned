@@ -247,7 +247,7 @@ def notifications(request):
   ).order_by("-created_at")
 
   notification_data = [notification.serialized for notification in notifications]
-  cache.set(cache_key, json.dumps(notification_data), timeout=3600)
+  cache.set(cache_key, json.dumps(notification_data), timeout=3600*6)
 
   return Ok([notification.serialized for notification in notifications])
 
@@ -300,7 +300,7 @@ def featured_author(request):
     pass
   already_featured = FeaturedAuthor.objects.all().values_list("user_id", flat=True)
 
-  authors = User.objects\
+  author_query = User.objects\
     .annotate(
       article_count=Count(
         "article",
@@ -310,22 +310,13 @@ def featured_author(request):
         )
       )
     )\
-    .filter(article_count__gt=0)\
-    .exclude(id__in=already_featured)
+    .filter(article_count__gt=0)
+
+  authors = author_query.exclude(id__in=already_featured)
 
   if authors.count() == 0:
     FeaturedAuthor.objects.all().delete()
-    authors = User.objects\
-      .annotate(
-        article_count=Count(
-          "article",
-          filter=Q(
-            article__deleted=False,
-            article__created_at__lt=today,
-          )
-        )
-      )\
-      .filter(article_count__gt=0)
+    authors = author_query
 
   author_count = authors.count()
   idx = random.randrange(author_count)
