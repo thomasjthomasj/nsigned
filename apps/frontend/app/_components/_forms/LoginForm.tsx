@@ -25,8 +25,6 @@ export const LoginForm = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasRequestedOTP, setHasRequestedOTP] = useState<boolean>(false);
   const [isOtpError, setIsOtpError] = useState<boolean>(false);
-  const [hasSentConsent, setHasSentConsent] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
     setErrors(() => {
@@ -51,24 +49,10 @@ export const LoginForm = () => {
       setHasRequestedOTP(true);
     } else {
       setIsOtpError(true);
-      setEmail(data.error);
+      setError(data.error);
     }
     setIsSubmitting(false);
   }, [isValid, usernameOrEmail]);
-
-  const handleSendConsent = useCallback(async () => {
-    const { ok } = await post({
-      endpoint: "users/send-email-consent",
-      data: { email },
-    });
-    if (!ok) {
-      setError(
-        "There was an issue sending your consent email, please try again later.",
-      );
-      return;
-    }
-    setHasSentConsent(true);
-  }, [email]);
 
   if (user) return null;
 
@@ -76,29 +60,17 @@ export const LoginForm = () => {
     return (
       <div className="flex flex-col w-full gap-[10px]">
         <p>
-          Unfortunately, the email service we use could not send you a one-time
-          password until you consent to receiving emails. Please click the
-          button below to send a consent email. Once you have confirmed your
-          consent, <a href="/login">log in</a> with the username or email
-          provided.
+          Unfortunately, we could not send you a one-time password. Please come
+          back and try again later. If the problem persists, contact me via{" "}
+          <a href="https://bsky.app/profile/nsigned.com" target="_blank">
+            Bluesky
+          </a>{" "}
+          or{" "}
+          <a href="https://discord.gg/A4hRDQmUYk" target="_blank">
+            the Discord
+          </a>
+          .
         </p>
-        <div className="flex gap-[10px]">
-          <Button
-            label="Send consent email"
-            onClick={handleSendConsent}
-            disabled={hasSentConsent}
-          />
-          {hasSentConsent && (
-            <Button
-              label="I have received the consent email and clicked 'Approve'"
-              onClick={() => {
-                setIsOtpError(false);
-                setHasSentConsent(false);
-                handleSubmit();
-              }}
-            />
-          )}
-        </div>
       </div>
     );
 
