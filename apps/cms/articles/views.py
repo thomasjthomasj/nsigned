@@ -1,7 +1,5 @@
-import json
 from random import sample
 from datetime import datetime, timedelta
-from django.core.cache import cache
 from django.db.models import Q
 from django.db import transaction
 from slugify import slugify
@@ -11,7 +9,7 @@ from app.utils import delete_cache, delete_cache_prefix, has_permission, get_cac
 from music.bandcamp import get_release_details
 from music.models import ReviewRequest
 from users.models import Notification
-from users.email import send_consent_emails, send_article_notifications
+from users.email import send_article_notification
 from .models import Article, Comment, CommentContent, Bookmark
 
 @method("GET")
@@ -209,12 +207,8 @@ def create(request):
     )
 
     if review_request.notify_on_review:
-      if rr_user.can_email == None:
-        r = send_consent_emails([rr_user])
-      elif rr_user.can_email == True:
-        # reload review request
-        review_request = ReviewRequest.objects.get(id=review_request.id)
-        r = send_article_notifications([review_request])
+      review_request = ReviewRequest.objects.get(id=review_request.id)
+      r = send_article_notification(review_request)
 
   return Ok(article.serialized)
 

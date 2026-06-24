@@ -4,46 +4,45 @@ from django.conf import settings
 from_email = { "email": "noreply@nsigned.com", "name": "_nsigned" }
 
 def get_headers():
-  secret = settings.GOODSENDER["SECRET"]
+  secret = settings.RESEND_SECRET
   if not secret:
-    raise Exception("No Goodsender secret set")
+    raise Exception("No Resend secret set")
   return {
     "Authorization": f"Bearer {secret}",
     "Content-Type": "application/json",
   }
 
-def send_otp(user, otp):
-  url = "https://api.goodsender.com/v1/emails/template"
+def send_email(email_address, subject, text, html):
+  url = "https://api.resend.com/emails"
   return requests.post(
     url=url,
     headers=get_headers(),
     json={
-      "from": from_email,
-      "to": { "email": user.email, "name": user.display_name },
-      "subject": "Welcome to _nsigned",
-      "template": {
-        "template_id": "otp_code",
-        "variables": {
-          "app_name": "_nsigned",
-          "otp_code": otp,
-          "expiry_minutes": "10",
-        }
-      }
+      "from": "_nsigned <noreply@nsigned.com>",
+      "to": [email_address],
+      "subject": subject,
+      "text": text,
+      "html": html,
     }
   )
 
-def send_consent_emails(users=[], emails=[]):
-  url = "https://api.goodsender.com/v1/emails/consent"
-  send_to = [{ "email": user.email, "name": user.display_name } for user in users]
-  for email in emails:
-    send_to.append(email)
-  return requests.post(
-    url=url,
-    headers=get_headers(),
-    json={
-      "domain": "nsigned.com",
-      "emails": send_to,
-    }
+def send_otp(user, otp):
+  text = f"""Welcome to _nsigned!
+
+Here is your single use password:
+
+{otp}
+"""
+  html = f"""<p><strong>Welcome to _nsigned!</strong></p>
+  <p>Here is your single use password:</p>
+  <p><strong>{otp}</strong></p>
+  """
+
+  return send_email(
+    email_address=user.email,
+    subject="Welcome to _nsigned",
+    text=text,
+    html=html
   )
 
 def get_article_notification_content(user, article, release):
@@ -66,31 +65,20 @@ Take a look via the link below, and feel free to leave a comment for the reviewe
 """
   return { "text": text, "html": html }
 
-def send_article_notifications(review_requests):
-  url = "https://api.goodsender.com/v1/emails/send"
-  emails = []
-  for review_request in review_requests:
-    user = review_request.created_by
-    article = review_request.article
-    release = review_request.release
-    if not article:
-      continue
-    subject = f"A review of {release.title} has been published!"
-    content = get_article_notification_content(user, article, release)
-    emails.append({
-      "from": from_email,
-      "to": [{ "email": user.email, "name": user.display_name }],
-      "subject": subject,
-      "text_content": content["text"],
-      "html_content": content["html"],
-    })
+def send_article_notification(review_request):
+  user = review_request.created_by
+  article = review_request.article
+  release = review_request.release
+  if not article:
+    return False
+  subject = f"A review of {release.title} has been published!"
+  content = get_article_notification_content(user, article, release)
 
-  return requests.post(
-    url=url,
-    headers=get_headers(),
-    json={
-      "emails": emails,
-    }
+  return send_email(
+    email_address=user.email,
+    subject=subject,
+    text=content["text"],
+    html=content["html"],
   )
 
 class EmailError(Exception):
