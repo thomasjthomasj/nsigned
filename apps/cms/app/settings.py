@@ -34,6 +34,8 @@ GOODSENDER = {
   "ID": os.environ.get("GOODSENDER_ID"),
 }
 
+RESEND_SECRET = os.environ.get("RESEND_SECRET")
+
 # Application definition
 
 INSTALLED_APPS = [

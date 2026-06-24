@@ -15,7 +15,7 @@ from app.http import Ok, NotFound, BadRequest, Unauthorized, InternalServerError
 from app.utils import get_cache_key, set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache, delete_cache_prefix
 from links.models import Link
 from .auth import issue_tokens, decode
-from .email import send_otp, send_article_notifications, send_consent_emails, EmailError
+from .email import send_otp, EmailError
 from .models import User, Notification, FeaturedAuthor
 from .validators import fundraiser_link_validator
 from .utils import get_otp
@@ -100,6 +100,7 @@ def request_otp(request):
 
   otp = user.update_otp()
   result = send_otp(user, otp)
+  print(result.__dict__)
   if result.status_code != 200:
     return InternalServerError(user.email)
   return Ok({ "action": "otp_sent" })
@@ -201,36 +202,6 @@ def refresh_token(request):
   set_auth_cookie(response, "refresh-token", tokens["refresh"])
 
   return response
-
-@method("POST")
-@logged_out()
-@transaction.atomic()
-def email_consent(request):
-  data = request.json.get("nsigned.com", {})
-  granted = data.get("granted", [])
-  denied = data.get("denied", [])
-  granted_users = User.objects.filter(email__in=granted)
-  granted_users.update(can_email=True)
-
-  ReviewRequest = apps.get_model("music", "ReviewRequest")
-  review_requests = ReviewRequest.objects.filter(
-    created_by__in=granted_users,
-    notified=False,
-    notify_on_review=True
-  ).exclude(article=None)
-  send_article_notifications(review_requests)
-  review_requests.update(notified=True)
-
-  User.objects.filter(email__in=denied).update(can_email=False)
-
-  return Ok()
-
-@method("POST")
-@logged_out()
-def send_email_consent(request):
-  email = request.json.get("email")
-  send_consent_emails(emails=[email])
-  return Ok()
 
 @method("GET")
 @logged_in()

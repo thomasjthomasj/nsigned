@@ -9,3 +9,4 @@ markdown-it-py==4.2.*
 gunicorn
 whitenoise
 django-redis==6.0.*
+resend
