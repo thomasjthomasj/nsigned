@@ -76,7 +76,7 @@ export const Footer = () => (
                 href="https://github.com/bshurikan/Beni-BandcampPlayer"
                 target="_blank"
               >
-                Benny's Bandcamp Player
+                Beni's Bandcamp Player
               </a>
             </li>
             <li>
