@@ -1,5 +1,6 @@
 import jwt
 from django.conf import settings
+from .cache import get_user
 from .models import User
 
 class AuthMiddleware:
@@ -14,7 +15,8 @@ class AuthMiddleware:
     if token:
       try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        request.site_user = User.objects.select_related("fundraiser_link").get(id=payload["user_id"])
+        request.site_user = get_user(payload["user_id"])
+        # request.site_user = User.objects.select_related("fundraiser_link").get(id=payload["user_id"])
       except:
         pass
 

@@ -1,6 +1,5 @@
 import jwt
 import json
-import math
 import random
 from datetime import datetime, timezone
 from django.apps import apps
@@ -15,6 +14,7 @@ from app.http import Ok, NotFound, BadRequest, Unauthorized, InternalServerError
 from app.utils import get_cache_key, set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache, delete_cache_prefix
 from links.models import Link
 from .auth import issue_tokens, decode
+from .cache import invalidate_user_cache
 from .email import send_otp, EmailError
 from .models import User, Notification, FeaturedAuthor
 from .validators import fundraiser_link_validator
@@ -79,6 +79,7 @@ def update(request):
     user.pronouns = pronouns
   user.save()
   delete_cache("USER", id_val=user.username)
+  invalidate_user_cache(user.id)
   return Ok(user.serialized)
 
 @method("POST")
@@ -100,7 +101,6 @@ def request_otp(request):
 
   otp = user.update_otp()
   result = send_otp(user, otp)
-  print(result.__dict__)
   if result.status_code != 200:
     return InternalServerError(user.email)
   return Ok({ "action": "otp_sent" })
