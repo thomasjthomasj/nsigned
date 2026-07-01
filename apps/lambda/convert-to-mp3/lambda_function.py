@@ -7,11 +7,13 @@ bucket = "nsigned"
 def lambda_handler(event, context):
   record = event["Records"][0]
   key = record["s3"]["object"]["key"]
+  print(f"KEY: {key}")
 
   if not key.startswith("audio/raw/"):
+    print("NOT ADDED TO audio/raw/")
     return {
       "statusCode": 200,
-      "message": "File not converted - not added to raw/",
+      "message": "File not converted - not added to audio/raw/",
     }
 
   filename = os.path.basename(key)
@@ -34,7 +36,10 @@ def lambda_handler(event, context):
   ], check=True)
 
   mp3_key = f"audio/mp3s/{track_id}.mp3"
+  print(f"MP3 KEY: {mp3_key}")
+
   s3.upload_file(tmp_mp3, bucket, mp3_key)
+  print("SUCCESSFULLY CONVERTED")
 
   # success
   return {
