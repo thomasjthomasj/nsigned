@@ -3,7 +3,7 @@ on:
   push:
     branches: [audio-uploads, main]
     paths:
-      - 'lambda/convert-to-mp3/**'
+      - 'apps/lambda/convert-to-mp3/**'
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -11,14 +11,14 @@ jobs:
       - uses: actions/checkout@v3
       - name: Package Lambda
         run: |
-          cd lambda/convert-to-mp3
+          cd apps/lambda/convert-to-mp3
           zip -r function.zip handler.py
       - name: Deploy to Lambda
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECERT_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: eu-north-1
         run: |
           aws lambda update-function-code \
             --function-name convertToMP3 \
-            --zip-file fileb://lambda/convertToMP3/function.zip
+            --zip-file fileb://apps/lambda/convert-to-mp3/function.zip
