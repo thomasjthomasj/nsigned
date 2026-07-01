@@ -9,7 +9,10 @@ def lambda_handler(event, context):
   key = record["s3"]["object"]["key"]
 
   if not key.startswith("raw/"):
-    return {"statusCode": 200}
+    return {
+      "statusCode": 200,
+      "message": "File not converted - not added to raw/",
+    }
 
   filename = os.path.basename(key)
   track_id = os.path.splitext(filename)[0]
@@ -34,4 +37,7 @@ def lambda_handler(event, context):
   s3.upload_file(tmp_mp3, bucket, mp3_key)
 
   # success
-  return {"statusCode": 200}
+  return {
+    "statusCode": 200,
+    "message": "File converted to MP3",
+  }
