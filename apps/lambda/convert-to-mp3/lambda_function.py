@@ -1,12 +1,14 @@
 import boto3
 import subprocess
 import os
+from urllib.parse import unquote_plus
+
 s3 = boto3.client("s3")
 bucket = "nsigned"
 
 def lambda_handler(event, context):
   record = event["Records"][0]
-  key = record["s3"]["object"]["key"]
+  key = unquote_plus(record["s3"]["object"]["key"])
   print(f"KEY: {key}")
 
   if not key.startswith("audio/raw/"):
