@@ -8,7 +8,7 @@ def lambda_handler(event, context):
   record = event["Records"][0]
   key = record["s3"]["object"]["key"]
 
-  if not key.startswith("raw/"):
+  if not key.startswith("audio/raw/"):
     return {
       "statusCode": 200,
       "message": "File not converted - not added to raw/",
