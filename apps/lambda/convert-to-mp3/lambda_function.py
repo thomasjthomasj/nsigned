@@ -23,7 +23,7 @@ def lambda_handler(event, context):
   s3.download_file(bucket, key, tmp_input)
 
   subprocess.run([
-    "ffmpeg",
+    "/opt/bin/ffmpeg",
     "-i",
     tmp_input,
     "-codec:a",
