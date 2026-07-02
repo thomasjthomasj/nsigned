@@ -1,12 +1,14 @@
 from django.db.models import Q, Count
 from django.db import transaction
 from django.db.models.functions import Lower
+from slugify import slugify
 from app.http import Ok, BadRequest, NotFound, Forbidden
 from app.decorators import logged_in, method, cached
+from app.s3 import s3_audio
 from app.utils import delete_cache, delete_cache_prefix
 from articles.models import Article
 from .bandcamp import get_release_details, BandcampError
-from .models import Artist, Release, ReviewRequest
+from .models import Artist, Release, ReviewRequest, Track
 
 @cached("RELEASE-DETAILS", get_params=["url"])
 def release_details(request):
@@ -237,3 +239,90 @@ def artists(request):
     "name": a.name,
     "slug": a.slug
   } for a in artists])
+
+@method("POST")
+@logged_in()
+@transaction.atomic()
+def start_upload(request):
+  data = request.json
+  user = request.site_user
+  artist_id = data.get("artist_id")
+  artist_name = data.get("artist_name")
+  track_title = data.get("track_title")
+  genre = data.get("genre")
+
+  if not track_title or not (artist_id or artist_name):
+    return BadRequest()
+
+  # TODO Abstract this!
+  artist = None
+  if artist_id:
+    try:
+      artist = Artist.objects.get(id=artist_id, user=user)
+      artist_slug = artist.slug
+    except Artist.DoesNotExist:
+      return NotFound()
+  elif artist_name:
+    artist_slug = slugify(artist_name)
+    exists = Artist.objects.filter(slug=artist_slug).exists()
+    if exists:
+      try:
+        artist = Artist.objects.get(slug=artist_slug, user=user)
+      except Artist.DoesNotExist:
+        pass
+    if not artist:
+      conflicting_artists = Artist.objects.filter(slug__startswith=artist_slug)
+      base_slug = artist_slug
+      count = 1
+      max_iters = 50
+      while not artist:
+        if count >= max_iters:
+          return BadRequest("Too many attempts to resolve artist")
+        exists = conflicting_artists.filter(slug=artist_slug).exists()
+        if exists:
+          artist_slug = f"{base_slug}-{count}"
+          count += 1
+        else:
+          artist = Artist.objects.create(
+            name=artist_name,
+            slug=artist_slug,
+            user=user
+          )
+
+  track_slug = slugify(track_title)
+  release = Release.objects.create(
+    primary_artist=artist,
+    title=track_title,
+    slug=track_slug,
+    release_type="track",
+    genre=genre,
+    source="nsigned",
+  )
+
+  wav_location = f"audio/raw/{artist_slug}/{track_slug}.wav"
+  mp3_location = f"audio/mp3s/{artist_slug}/{track_slug}.mp3"
+
+  track = Track.objects.create(
+    created_by=user,
+    release=release,
+    title=track_title,
+    wav_location=wav_location,
+    mp3_location=mp3_location,
+    track_number=1,
+    status="processing"
+  )
+
+  presigned_url = s3_audio.generate_presigned_url(
+    "put_object",
+    Params={
+      "Bucket": "nsigned",
+      "Key": wav_location,
+      "ContentType": "audio/wav",
+    },
+    ExpiresIn=3600,
+  )
+
+  return Ok({
+    "upload_url": presigned_url,
+    "track_id": track.id,
+  })

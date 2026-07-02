@@ -143,6 +143,14 @@ class Release(Creatable):
     null=True,
     blank=True,
   )
+  source = models.CharField(
+    max_length=30,
+    choices=(
+      ("bandcamp", "Bandcamp"),
+      ("nsigned", "_nsigned"),
+    ),
+    default="bandcamp"
+  )
 
   objects = models.Manager()
   bandcamp = ReleaseBandcampManager()
@@ -178,12 +186,16 @@ class ReleaseLink(models.Model):
       )
     ]
 
-class Track(models.Model):
+class Track(Creatable):
   release = models.ForeignKey(Release, null=True, on_delete=models.SET_NULL)
   title = models.CharField(max_length=255)
   wav_location = models.CharField(max_length=255)
   mp3_location = models.CharField(max_length=255)
   track_number = models.IntegerField(validators=[MinValueValidator(1)])
+  status = models.CharField(max_length=15, choices=(
+    ("processing","Processing"),
+    ("complete", "Complete")
+  ), default="processing")
 
   class Meta:
     constraints = [

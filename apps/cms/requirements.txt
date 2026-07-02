@@ -11,3 +11,4 @@ whitenoise
 django-redis==6.0.*
 resend
 cachetools
+boto3

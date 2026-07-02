@@ -17,4 +17,5 @@ urlpatterns = [
   path("review-request/current", views.user_review_request, name="user_view_request"),
   path("review-requests/count", views.count_review_requests, name="count_review_requests"),
   path("artists", views.artists, name="artists"),
+  path("track/start_upload", views.start_upload, name="start_upload"),
 ]

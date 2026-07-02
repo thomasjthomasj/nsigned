@@ -39,6 +39,10 @@ GOODSENDER = {
 
 RESEND_SECRET = os.environ.get("RESEND_SECRET")
 
+AWS_S3_AUDIO_ACCESS_KEY = os.environ.get("AWS_S3_AUDIO_ACCESS_KEY")
+AWS_S3_AUDIO_ACCESS_SECRET = os.environ.get("AWS_S3_AUDIO_ACCESS_SECRET")
+AWS_S3_REGION = "eu-north-1"
+
 # Application definition
 
 INSTALLED_APPS = [
