@@ -73,3 +73,8 @@ export type ReviewRequest = {
   claimed_by: User | null;
   rejected_by: User | null;
 };
+
+export type TrackUploadURL = {
+  upload_url: string;
+  track_id: number;
+}
