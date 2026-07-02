@@ -1,4 +1,5 @@
 import re
+from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.utils.functional import cached_property
 from slugify import slugify
@@ -174,6 +175,21 @@ class ReleaseLink(models.Model):
       models.UniqueConstraint(
         fields=["link"],
         name="unique_link_per_release",
+      )
+    ]
+
+class Track(models.Model):
+  release = models.ForeignKey(Release, null=True, on_delete=models.SET_NULL)
+  title = models.CharField(max_length=255)
+  wav_location = models.CharField(max_length=255)
+  mp3_location = models.CharField(max_length=255)
+  track_number = models.IntegerField(validators=[MinValueValidator(1)])
+
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(
+        fields=["release", "track_number"],
+        name="unique_track_number_per_release"
       )
     ]
 
