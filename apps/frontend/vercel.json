@@ -7,6 +7,6 @@
     {
       "path": "/cron/bsky-review-cta",
       "schedule": "0 17 * * *"
-    },
+    }
   ]
 }
