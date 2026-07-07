@@ -4,6 +4,7 @@ from django.db.models.functions import Lower
 from slugify import slugify
 from app.http import Ok, BadRequest, NotFound, Forbidden
 from app.decorators import logged_in, method, cached
+from app.exceptions import MaxIterationError
 from app.s3 import s3_audio
 from app.utils import delete_cache, delete_cache_prefix
 from articles.models import Article
@@ -254,7 +255,6 @@ def start_upload(request):
   if not track_title or not (artist_id or artist_name):
     return BadRequest()
 
-  # TODO Abstract this!
   artist = None
   if artist_id:
     try:
@@ -263,31 +263,10 @@ def start_upload(request):
     except Artist.DoesNotExist:
       return NotFound()
   elif artist_name:
-    artist_slug = slugify(artist_name)
-    exists = Artist.objects.filter(slug=artist_slug).exists()
-    if exists:
-      try:
-        artist = Artist.objects.get(slug=artist_slug, user=user)
-      except Artist.DoesNotExist:
-        pass
-    if not artist:
-      conflicting_artists = Artist.objects.filter(slug__startswith=artist_slug)
-      base_slug = artist_slug
-      count = 1
-      max_iters = 50
-      while not artist:
-        if count >= max_iters:
-          return BadRequest("Too many attempts to resolve artist")
-        exists = conflicting_artists.filter(slug=artist_slug).exists()
-        if exists:
-          artist_slug = f"{base_slug}-{count}"
-          count += 1
-        else:
-          artist = Artist.objects.create(
-            name=artist_name,
-            slug=artist_slug,
-            user=user
-          )
+    try:
+      artist = Artist.objects.resolve_user_artist(name=artist_name, user=user)
+    except MaxIterationError:
+      return BadRequest("Could not resolve artist name")
 
   track_slug = slugify(track_title)
   release = Release.objects.create(

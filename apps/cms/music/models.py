@@ -5,10 +5,39 @@ from django.utils.functional import cached_property
 from slugify import slugify
 from app.models import Creatable
 from app.utils import strip_url_query
+from app.exceptions import MaxIterationError
 from links.models import Link
 from users.models import User
 from .bandcamp import get_release_details
 from .validators import images_validator
+
+class ArtistManager(models.Manager):
+  def resolve_user_artist(self, name, user):
+    slug = slugify(name)
+    exists = self.filter(slug=slug)
+    artist = None
+    if exists:
+      try:
+        return self.get(slug=slug, user=user)
+      except self.model.DoesNotExist:
+        pass
+    conflicts = self.filter(slug__startswith=slug)
+    base_slug = slug
+    count = 1
+    max_iters = 50
+    while not artist:
+      if count >= max_iters:
+        raise MaxIterationError()
+      exists = conflicts.filter(slug=slug).exists()
+      if exists:
+        slug = f"{base_slug}-{count}"
+        count += 1
+      else:
+        return self.create(
+          name=name,
+          slug=slug,
+          user=user
+        )
 
 class Artist(Creatable):
   name = models.CharField(max_length=255)
@@ -21,6 +50,8 @@ class Artist(Creatable):
     null=True,
     blank=True,
   )
+
+  objects = ArtistManager()
 
   def __str__(self):
     return self.name
