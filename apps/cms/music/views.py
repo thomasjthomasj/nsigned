@@ -2,7 +2,7 @@ from django.db.models import Q, Count
 from django.db import transaction
 from django.db.models.functions import Lower
 from slugify import slugify
-from app.http import Ok, BadRequest, NotFound, Forbidden
+from app.http import Ok, BadRequest, NotFound, Forbidden, InternalServerError
 from app.decorators import logged_in, method, cached
 from app.exceptions import MaxIterationError
 from app.s3 import s3_audio
@@ -305,3 +305,29 @@ def start_upload(request):
     "upload_url": presigned_url,
     "track_id": track.id,
   })
+
+@method("GET")
+@logged_in()
+def mp3_status(request, id):
+  user = request.site_user
+  try:
+    track = Track.objects.get(id=id, created_by=user)
+  except Track.DoesNotExist:
+    return NotFound()
+
+  try:
+    s3_audio.head_object(
+      Bucket="nsigned",
+      Key=track.mp3_location,
+    )
+    track.status = "complete"
+    track.save()
+    return Ok({ "status": track.status })
+  except s3_audio.exceptions.ClientError as e:
+    error_code = e.response["Error"]["Code"]
+    if error_code == "404":
+      if track.status == "complete":
+        track.status = "removed"
+        track.save()
+      return Ok({ "status": track.status })
+    return InternalServerError("Could not check track status")

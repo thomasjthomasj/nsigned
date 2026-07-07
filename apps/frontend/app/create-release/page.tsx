@@ -13,7 +13,7 @@ const CreateRelease = async () => {
         <CreateReleaseForm />
       </div>
     </PageLayout>
-  )
-}
+  );
+};
 
 export default CreateRelease;

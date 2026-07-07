@@ -225,7 +225,8 @@ class Track(Creatable):
   track_number = models.IntegerField(validators=[MinValueValidator(1)])
   status = models.CharField(max_length=15, choices=(
     ("processing","Processing"),
-    ("complete", "Complete")
+    ("complete", "Complete"),
+    ("removed", "Removed"),
   ), default="processing")
 
   class Meta:

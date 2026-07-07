@@ -77,4 +77,10 @@ export type ReviewRequest = {
 export type TrackUploadURL = {
   upload_url: string;
   track_id: number;
-}
+};
+
+export type TrackStatus = "processing" | "complete" | "removed";
+
+export type MP3Status = {
+  status: TrackStatus;
+};
