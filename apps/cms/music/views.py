@@ -259,14 +259,13 @@ def start_upload(request):
   if artist_id:
     try:
       artist = Artist.objects.get(id=artist_id, user=user)
-      artist_slug = artist.slug
     except Artist.DoesNotExist:
       return NotFound()
   elif artist_name:
     try:
       artist = Artist.objects.resolve_user_artist(name=artist_name, user=user)
     except MaxIterationError:
-      return BadRequest("Could not resolve artist name")
+      return BadRequest("Could not resolve artist")
 
   track_slug = slugify(track_title)
   release = Release.objects.create(
@@ -276,10 +275,11 @@ def start_upload(request):
     release_type="track",
     genre=genre,
     source="nsigned",
+    images={}
   )
 
-  wav_location = f"audio/raw/{artist_slug}/{track_slug}.wav"
-  mp3_location = f"audio/mp3s/{artist_slug}/{track_slug}.mp3"
+  wav_location = f"audio/raw/{artist.slug}/{track_slug}.wav"
+  mp3_location = f"audio/mp3s/{artist.slug}/{track_slug}.mp3"
 
   track = Track.objects.create(
     created_by=user,
@@ -330,4 +330,5 @@ def mp3_status(request, id):
         track.status = "removed"
         track.save()
       return Ok({ "status": track.status })
+    print(e.__dict__)
     return InternalServerError("Could not check track status")

@@ -51,11 +51,11 @@ export const useTrackUpload = () => {
         genre,
         ...("artistID" in args
           ? { artist_id: args.artistID }
-          : { artistName: args.artistName }),
+          : { artist_name: args.artistName }),
       },
       withAuth: true,
     });
-
+    console.log(uploadURLResponse.data)
     if (!uploadURLResponse.ok) throw new Error("Could not resolve upload URL");
 
     const { upload_url: uploadURL, track_id: trackID } = uploadURLResponse.data;

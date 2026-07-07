@@ -237,6 +237,9 @@ class Track(Creatable):
       )
     ]
 
+  def __str__(self):
+    return self.wav_location
+
 class ReviewRequestManager(models.Manager):
   @property
   def prefetched(self):
