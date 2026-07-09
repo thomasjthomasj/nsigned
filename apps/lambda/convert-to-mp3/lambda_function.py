@@ -21,7 +21,7 @@ def lambda_handler(event, context):
       "message": "File not converted - not added to audio/raw/",
     }
 
-  relative_path = key[len(raw_path)]
+  relative_path = key[len(raw_path):]
   track_id = os.path.splitext(relative_path)[0]
   filename = os.path.basename(key)
 
