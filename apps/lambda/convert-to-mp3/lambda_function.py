@@ -26,7 +26,7 @@ def lambda_handler(event, context):
   filename = os.path.basename(key)
 
   tmp_input = f"/tmp/{filename}"
-  tmp_mp3 = f"/tmp/{track_id}.mp3"
+  tmp_mp3 = f"/tmp/{os.path.basename(track_id)}.mp3"
 
   mp3_key = f"{mp3_path}{track_id}.mp3"
   print(f"MP3 KEY: {mp3_key}")
