@@ -1,14 +1,12 @@
 "use client";
 
 import classNames from "classnames";
-
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { useAuth, useTrackUpload } from "@/_hooks";
-import { post } from "@/_utils/api.client";
 import { genres } from "@/_utils/genre";
 
 import type { Genre } from "@/_types/api";
@@ -33,22 +31,23 @@ export const CreateReleaseForm = () => {
     if (error) return true;
     if (["in_progress", "processing"].includes(uploadStatus)) return true;
     return false;
-  }, [user, artistName, title, file, uploadStatus])
+  }, [user, artistName, title, file, uploadStatus]);
 
   useEffect(() => {
     if (uploadStatus === "invalid" && uploadError) {
       setError(uploadError);
       return;
     }
-    if (["error", "invalid"].includes(uploadStatus)) setError("Could not upload file")
-  }, [])
+    if (["error", "invalid"].includes(uploadStatus))
+      setError("Could not upload file");
+  }, []);
 
   useEffect(() => {
     if (uploadStatus === "complete") {
       // do something!
-      console.log("SUCCESS")
+      // console.log("SUCCESS");
     }
-  }, [uploadStatus])
+  }, [uploadStatus]);
 
   const handleSubmit = useCallback(async () => {
     if (!file || !artistName || !title || !genre) return;
@@ -58,12 +57,12 @@ export const CreateReleaseForm = () => {
       title,
       genre,
       artistName,
-    })
-  }, [file, title, genre, artistName])
+    });
+  }, [file, title, genre, artistName]);
 
   if (uploadStatus === "in_progress") return <p>Uploading: {progress}%</p>;
-  if (uploadStatus === "processing") return <p>Processing</p>
-  if (uploadStatus === "complete") return <p>Complete!</p>
+  if (uploadStatus === "processing") return <p>Processing</p>;
+  if (uploadStatus === "complete") return <p>Complete!</p>;
 
   return (
     <form
@@ -127,11 +126,7 @@ export const CreateReleaseForm = () => {
           />
         </div>
         <div>
-          <Button
-            label="Upload"
-            type="submit"
-            disabled={buttonDisabled}
-          />
+          <Button label="Upload" type="submit" disabled={buttonDisabled} />
         </div>
       </div>
     </form>
