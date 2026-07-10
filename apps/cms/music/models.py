@@ -151,7 +151,7 @@ class Release(Creatable):
     blank=True,
   )
   title = models.CharField(max_length=1000)
-  slug = models.CharField(max_length=255, unique=True)
+  slug = models.CharField(max_length=255)
   links = models.ManyToManyField(Link, through="ReleaseLink", related_name="links")
   images = models.JSONField(validators=[images_validator])
   release_type = models.CharField(
