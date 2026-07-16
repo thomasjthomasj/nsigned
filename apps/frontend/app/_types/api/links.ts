@@ -5,4 +5,4 @@ export type Link = {
 
 export type URL = {
   url: string;
-}
+};

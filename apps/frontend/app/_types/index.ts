@@ -8,4 +8,4 @@ export type Json =
   | Json[]
   | { [key: string]: Json };
 
-export type PlayStatus = "playing" | "paused" | "loading";
+export type PlayState = "playing" | "paused" | "loading";

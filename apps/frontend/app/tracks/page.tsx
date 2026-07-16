@@ -14,9 +14,10 @@ const Tracks = async () => {
     }),
   });
 
-  if (!tracksResponse.ok) return handleError({
-    errorResponse: tracksResponse,
-  });
+  if (!tracksResponse.ok)
+    return handleError({
+      errorResponse: tracksResponse,
+    });
 
   const tracks = tracksResponse.data;
 
@@ -25,15 +26,16 @@ const Tracks = async () => {
       <div className="flex flex-col w-full gap-[15px]">
         {tracks.length ? (
           <div className="flex flex-col w-full gap-[10px]">
-            {tracks.map(t => <TrackOverview
-              key={t.id}
-              track={t}
-            />)}
+            {tracks.map((t) => (
+              <TrackOverview key={t.id} track={t} />
+            ))}
           </div>
-        ) : <p>there are no tracks</p>}
+        ) : (
+          <p>there are no tracks</p>
+        )}
       </div>
     </PageLayout>
-  )
-}
+  );
+};
 
 export default Tracks;
