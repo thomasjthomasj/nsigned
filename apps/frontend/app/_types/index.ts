@@ -7,3 +7,5 @@ export type Json =
   | null
   | Json[]
   | { [key: string]: Json };
+
+export type PlayStatus = "playing" | "paused" | "loading";
