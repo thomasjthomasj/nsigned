@@ -260,7 +260,7 @@ class Track(Creatable):
       "track_number": self.track_number,
       "status": self.status,
       "release":  self.release.serialized,
-      "created_by": self.created_by,
+      "created_by": self.created_by.serialized,
     }
 
 class ReviewRequestManager(models.Manager):
