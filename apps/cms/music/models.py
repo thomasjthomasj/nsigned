@@ -217,6 +217,16 @@ class ReleaseLink(models.Model):
       )
     ]
 
+class TrackManager(models.Manager):
+  @property
+  def prefetched(self):
+    return self.select_related(
+      "release",
+      "release__primary_artist__user",
+      "release__label",
+      "created_by",
+    )
+
 class Track(Creatable):
   release = models.ForeignKey(Release, null=True, on_delete=models.SET_NULL)
   title = models.CharField(max_length=255)
@@ -237,8 +247,21 @@ class Track(Creatable):
       )
     ]
 
+  objects = TrackManager()
+
   def __str__(self):
     return self.wav_location
+
+  @cached_property
+  def serialized(self):
+    return {
+      "id": self.id,
+      "title": self.title,
+      "track_number": self.track_number,
+      "status": self.status,
+      "release":  self.release.serialized,
+      "created_by": self.created_by,
+    }
 
 class ReviewRequestManager(models.Manager):
   @property

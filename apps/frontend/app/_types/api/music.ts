@@ -84,3 +84,12 @@ export type TrackStatus = "processing" | "complete" | "removed";
 export type MP3Status = {
   status: TrackStatus;
 };
+
+export type Track = {
+  id: number;
+  title: string;
+  track_number: number;
+  status: TrackStatus,
+  release: Release,
+  created_by: User,
+}

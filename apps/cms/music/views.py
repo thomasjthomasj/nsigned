@@ -330,5 +330,37 @@ def mp3_status(request, id):
         track.status = "removed"
         track.save()
       return Ok({ "status": track.status })
-    print(e.__dict__)
     return InternalServerError("Could not check track status")
+
+@method("GET")
+@cached("TRACKS")
+def tracks(request):
+  tracks = Track.objects.prefetched.all()
+  return Ok([t.serialized for t in tracks])
+
+@cached("TRACK", id_kwarg="id", timeout=3600)
+def mp3_url(request, id):
+  track = Track.objects.get(id=id)
+  if not track or track.status == "removed":
+    return NotFound()
+  if track.status == "processing":
+    return BadRequest("Track is not ready")
+
+  try:
+    url = s3_audio.generate_presigned_url(
+      "get_object",
+      Params={
+        "Bucket": "nsigned",
+        "Key": track.mp3_location,
+      },
+      ExpiresIn=3600*2,
+    )
+  except s3_audio.exceptions.ClientError as e:
+    error_code = e.response["Error"]["Code"]
+    if error_code == "404":
+      track.status = "removed"
+      track.save()
+      return NotFound()
+    return InternalServerError("Could not get track URL")
+
+  return Ok({ "url": url })

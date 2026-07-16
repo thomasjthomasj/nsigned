@@ -19,4 +19,6 @@ urlpatterns = [
   path("artists", views.artists, name="artists"),
   path("track/start-upload", views.start_upload, name="start_upload"),
   path("track/<int:id>/mp3-status", views.mp3_status, name="mp3_status"),
+  path("track/<int:id>/mp3-link", views.mp3_url, name="mp3_url"),
+  path("tracks", views.tracks, name="tracks"),
 ]
