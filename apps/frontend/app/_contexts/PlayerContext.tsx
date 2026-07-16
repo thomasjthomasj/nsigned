@@ -53,6 +53,10 @@ export const PlayerProvider = ({ children }: PlayerProviderProps) => {
     setPlayState("playing");
   }, []);
 
+  useEffect(() => {
+    setOpen(!!track);
+  }, [track]);
+
   return (
     <PlayerContext.Provider
       value={{

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { PlayIcon } from "@/_components/_icons/PlayIcon";
+import { usePlayer } from "@/_hooks";
 import { get } from "@/_utils/api.client";
 
 import type { PlayState } from "@/_types";
@@ -14,30 +15,11 @@ type TrackPlayButtonProps = {
 
 export const TrackPlayButton = ({ track }: TrackPlayButtonProps) => {
   const [playState, setPlayState] = useState<PlayState>("paused");
-  const [trackURL, setTrackURL] = useState<string | null>(null);
-
-  const handleClick = useCallback(async () => {
-    if (!trackURL) {
-      setPlayState("loading");
-      const urlResponse = await get<URL>({
-        endpoint: `music/track/${track.id}/mp3-link`,
-      });
-      if (!urlResponse.ok) {
-        setPlayState("paused");
-        return;
-      }
-      setTrackURL(urlResponse.data.url);
-    }
-    setPlayState("playing");
-  }, [track]);
-
-  useEffect(() => {
-    // console.log(trackURL)
-  }, [trackURL]);
+  const { playTrack } = usePlayer();
 
   return (
     <div className="cursor-pointer h-[40px] w-[40px]">
-      <PlayIcon state={playState} onClick={handleClick} />
+      <PlayIcon state={playState} onClick={() => playTrack(track)} />
     </div>
   );
 };
