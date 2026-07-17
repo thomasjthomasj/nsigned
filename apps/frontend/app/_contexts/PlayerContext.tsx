@@ -21,7 +21,7 @@ type PlayerContextType = {
   trackURL: string | null;
   playTrack: (track: Track) => Promise<void>;
   setPlayState: (playState: PlayState) => void;
-  close: (open: boolean) => void;
+  closePlayer: () => void;
 };
 
 const PlayerContext = createContext<PlayerContextType | null>(null);
@@ -57,7 +57,7 @@ export const PlayerProvider = ({ children }: PlayerProviderProps) => {
     setOpen(!!track);
   }, [track]);
 
-  const close = useCallback(() => {
+  const closePlayer = useCallback(() => {
     setTrack(null);
     setPlayState("paused");
     setOpen(false);
@@ -73,7 +73,7 @@ export const PlayerProvider = ({ children }: PlayerProviderProps) => {
         trackURL,
         playTrack,
         setPlayState,
-        close,
+        closePlayer,
       }}
     >
       {children}
