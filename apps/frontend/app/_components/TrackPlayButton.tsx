@@ -14,8 +14,16 @@ type TrackPlayButtonProps = {
 };
 
 export const TrackPlayButton = ({ track }: TrackPlayButtonProps) => {
-  const [playState, setPlayState] = useState<PlayState>("paused");
-  const { playTrack } = usePlayer();
+  const {
+    track: currentTrack,
+    playState: playerPlayState,
+    playTrack,
+  } = usePlayer();
+
+  const playState = useMemo(() => {
+    if (track.id !== currentTrack?.id) return "paused";
+    return playerPlayState;
+  }, [track, currentTrack, playerPlayState]);
 
   return (
     <div className="cursor-pointer h-[40px] w-[40px]">
