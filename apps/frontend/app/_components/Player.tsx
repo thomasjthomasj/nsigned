@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { TimelineSlider } from "@/_components/TimelineSlider";
 import { PlayIcon } from "@/_components/_icons/PlayIcon";
 import { XIcon } from "@/_components/_icons/XIcon";
 import { usePlayer } from "@/_hooks";
@@ -44,6 +45,12 @@ export const Player = () => {
     closePlayer();
   }, [closePlayer]);
 
+  const handleTimelineChange = useCallback((percent: number) => {
+    const audio = trackRef.current;
+    if (!audio?.duration) return;
+    audio.currentTime = (percent / 100) * audio.duration;
+  }, []);
+
   if (!open) return null;
 
   return (
@@ -52,14 +59,8 @@ export const Player = () => {
         <div className="absolute top-[8px] right-[8px] cursor-pointer">
           <XIcon className="h-[10px] w-[10px]" onClick={handleClose} />
         </div>
-        <div className="flex flex-col w-full">
-          <div className="flex flex-col w-full p-[10px]">
-            <div
-              className="h-[10px] bg-primary-500"
-              style={{ width: `${perc}%` }}
-            />
-            <div className="w-full border-b border-primary-500 h-0" />
-          </div>
+        <div className="flex flex-col w-full max-w-[900px] mx-auto">
+          <TimelineSlider percent={perc} onChange={handleTimelineChange} />
           <div className="flex justify-between">
             <div className="flex flex-col gap-[5px]">
               {track && (
