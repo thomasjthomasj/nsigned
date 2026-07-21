@@ -6,11 +6,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 type TimelineSliderProps = {
   percent: number;
   onChange: (perc: number) => void;
+  setIsDragging: (dragging: boolean) => void;
 };
 
 export const TimelineSlider = ({
   percent: basePercent,
   onChange,
+  setIsDragging,
 }: TimelineSliderProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef<boolean>(false);
@@ -40,21 +42,23 @@ export const TimelineSlider = ({
   const handlePointerUp = useCallback(
     (e: PointerEvent) => {
       isDragging.current = false;
+      setIsDragging(false);
       onChange(getXPercent(e.clientX));
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     },
-    [getXPercent, onChange],
+    [getXPercent, onChange, setIsDragging],
   );
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       isDragging.current = true;
+      setIsDragging(true);
       onChange(getXPercent(e.clientX));
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
     },
-    [getXPercent, onChange],
+    [getXPercent, onChange, setIsDragging],
   );
 
   return (
