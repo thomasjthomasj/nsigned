@@ -1,4 +1,4 @@
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.db import transaction
 from django.db.models.functions import Lower
 from slugify import slugify
@@ -6,7 +6,7 @@ from app.http import Ok, BadRequest, NotFound, Forbidden, InternalServerError
 from app.decorators import logged_in, method, cached
 from app.exceptions import MaxIterationError
 from app.s3 import s3_audio
-from app.utils import delete_cache, delete_cache_prefix
+from app.utils import delete_cache
 from articles.models import Article
 from .bandcamp import get_release_details, BandcampError
 from .models import Artist, Release, ReviewRequest, Track

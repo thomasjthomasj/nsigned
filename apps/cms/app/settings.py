@@ -47,6 +47,7 @@ AWS_S3_REGION = "eu-north-1"
 
 INSTALLED_APPS = [
     'articles.apps.ArticlesConfig',
+    'images.apps.ImagesConfig',
     'links.apps.LinksConfig',
     'music.apps.MusicConfig',
     'users.apps.UsersConfig',
