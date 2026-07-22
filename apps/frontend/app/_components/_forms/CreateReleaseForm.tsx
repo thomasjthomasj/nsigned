@@ -15,8 +15,14 @@ export const CreateReleaseForm = () => {
   const [artistName, setArtistName] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [genre, setGenre] = useState<Genre | null>(null);
-  const [file, setFile] = useState<File | null>(null);
+  const [trackFile, setTrackFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
+  const [imageUploaded, setImageUploaded] = useState<boolean>(false);
+  const [imageValid, setImageValid] = useState<boolean>(false);
+  const [imageURL, setImageURL] = useState<string | null>(null);
 
   const { user } = useAuth();
   const {
@@ -27,11 +33,12 @@ export const CreateReleaseForm = () => {
   } = useTrackUpload();
 
   const buttonDisabled = useMemo(() => {
-    if (!user || !artistName || !title || !file || !genre) return true;
+    if (!user || !artistName || !title || !trackFile || !genre) return true;
     if (error) return true;
     if (["in_progress", "processing"].includes(uploadStatus)) return true;
+    if (!imageUploaded) return true;
     return false;
-  }, [user, artistName, title, file, uploadStatus]);
+  }, [user, artistName, title, trackFile, uploadStatus, imageUploaded]);
 
   useEffect(() => {
     if (uploadStatus === "invalid" && uploadError) {
@@ -50,15 +57,45 @@ export const CreateReleaseForm = () => {
   }, [uploadStatus]);
 
   const handleSubmit = useCallback(async () => {
-    if (!file || !artistName || !title || !genre) return;
+    if (!trackFile || !artistName || !title || !genre) return;
 
     await upload({
-      file,
+      file: trackFile,
       title,
       genre,
       artistName,
     });
-  }, [file, title, genre, artistName]);
+  }, [trackFile, title, genre, artistName]);
+
+  const canUploadImage = useMemo(() => {
+    if (["in_progress", "processing", "complete"].includes(uploadStatus))
+      return false;
+    if (!imageFile) return false;
+    if (isUploadingImage) return false;
+    return true;
+  }, [imageFile, isUploadingImage, uploadStatus]);
+
+  useEffect(() => {
+    if (!canUploadImage) return;
+    const img = new Image();
+    img.src = window.URL.createObjectURL(imageFile!);
+    img.onload = () => {
+      if (img.naturalWidth === 1000 && img.naturalHeight === 1000) {
+        setImageValid(true);
+      }
+      window.URL.revokeObjectURL(img.src);
+    };
+  }, [imageFile, canUploadImage]);
+
+  const uploadImage = useCallback(async () => {
+    setIsUploadingImage(true);
+    //
+    setIsUploadingImage(false);
+  }, []);
+
+  useEffect(() => {
+    if (canUploadImage && imageValid) uploadImage();
+  }, [uploadImage, canUploadImage, imageValid]);
 
   if (uploadStatus === "in_progress") return <p>Uploading: {progress}%</p>;
   if (uploadStatus === "processing") return <p>Processing</p>;
@@ -115,14 +152,41 @@ export const CreateReleaseForm = () => {
           </div>
         </div>
         <div className="flex flex-col gap-[5px] bg-background-500 p-[20px]">
-          <label className="font-bold" htmlFor="genre">
-            File to upload - Must be a WAV no larger than 250MB
+          <label className="font-bold" htmlFor="cover">
+            Cover art
           </label>
+          <p
+            className={classNames({
+              "text-primary-500": imageFile && !imageValid,
+            })}
+          >
+            Must be a <span className="font-bold">1000 x 1000px</span>{" "}
+            <span className="font-bold">.jpg</span> or{" "}
+            <span className="font-bold">.png</span> file.
+          </p>
+          <input
+            className="bg-background p-[10px]"
+            type="file"
+            accept=".jpg, .png"
+            name="cover"
+            disabled={isUploadingImage}
+            onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+          />
+        </div>
+        <div className="flex flex-col gap-[5px] bg-background-500 p-[20px]">
+          <label className="font-bold" htmlFor="track">
+            Track upload
+          </label>
+          <p>
+            Must be a <span className="font-bold">.wav</span> file no larger
+            than <span className="font-bold">250MB</span>
+          </p>
           <input
             className="bg-background p-[10px]"
             type="file"
             accept=".wav"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            name="track"
+            onChange={(e) => setTrackFile(e.target.files?.[0] ?? null)}
           />
         </div>
         <div>
