@@ -20,6 +20,10 @@ def start_upload(request):
   md_location = f"{base_location}_md.{filetype}"
   sm_location = f"{base_location}_sm.{filetype}"
 
+  exists = ImageUpload.objects.filter(lg_location=lg_location).exists()
+  if exists:
+    return BadRequest(f"Image already exists with that location")
+
   image_upload = ImageUpload.objects.create(
     created_by=user,
     filetype=filetype,

@@ -22,9 +22,7 @@ export const CreateReleaseForm = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
-  const [imageUploaded, setImageUploaded] = useState<boolean>(false);
   const [imageValid, setImageValid] = useState<boolean>(false);
-  const [imageURL, setImageURL] = useState<string | null>(null);
 
   const { user } = useAuth();
   const {
@@ -41,12 +39,11 @@ export const CreateReleaseForm = () => {
   } = useImageUpload();
 
   const buttonDisabled = useMemo(() => {
-    if (!user || !artistName || !title || !trackFile || !genre) return true;
+    if (!user || !artistName || !title || !trackFile || !genre || isUploadingImage) return true;
     if (error) return true;
     if (["in_progress", "processing"].includes(uploadTrackStatus)) return true;
-    if (!imageUploaded) return true;
     return false;
-  }, [user, artistName, title, trackFile, uploadTrackStatus, imageUploaded]);
+  }, [user, artistName, title, trackFile, uploadTrackStatus, isUploadingImage]);
 
   useEffect(() => {
     if (uploadTrackStatus === "invalid" && uploadTrackError) {
@@ -63,17 +60,6 @@ export const CreateReleaseForm = () => {
       // console.log("SUCCESS");
     }
   }, [uploadTrackStatus]);
-
-  const handleSubmit = useCallback(async () => {
-    if (!trackFile || !artistName || !title || !genre) return;
-
-    await uploadTrack({
-      file: trackFile,
-      title,
-      genre,
-      artistName,
-    });
-  }, [trackFile, title, genre, artistName]);
 
   const canUploadImage = useMemo(() => {
     if (["in_progress", "processing", "complete"].includes(uploadTrackStatus))
@@ -103,19 +89,22 @@ export const CreateReleaseForm = () => {
     return parts.join("-");
   }, [artistName, title])
 
-  const handleUploadImage = useCallback(async () => {
-    if (!imageFile) return;
-    setIsUploadingImage(true);
-    await uploadImage({
-      file: imageFile,
-      filename: imageFilename,
-    })
-    setIsUploadingImage(false);
-  }, [uploadImage, imageFile, imageFilename]);
+  const handleSubmit = useCallback(async () => {
+    if (!trackFile || !artistName || !title || !genre || !imageFile || !imageValid) return;
 
-  useEffect(() => {
-    if (canUploadImage && imageValid) handleUploadImage();
-  }, [handleUploadImage, canUploadImage, imageValid]);
+    await Promise.all([
+      uploadTrack({
+        file: trackFile,
+        title,
+        genre,
+        artistName,
+      }),
+      uploadImage({
+        file: imageFile,
+        filename: imageFilename,
+      })
+    ]);
+  }, [trackFile, uploadTrack, uploadImage, imageValid, title, genre, artistName, imageFile, imageFilename]);
 
   console.log(imageProgress, uploadImageStatus, uploadImageError)
 

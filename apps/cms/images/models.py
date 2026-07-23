@@ -8,3 +8,6 @@ class ImageUpload(Creatable):
   lg_location = models.CharField(max_length=1000, unique=True)
   md_location = models.CharField(max_length=1000, unique=True)
   sm_location = models.CharField(max_length=1000, unique=True)
+
+  def __str__(self):
+    return self.lg_location
