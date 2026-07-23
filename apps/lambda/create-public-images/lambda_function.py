@@ -40,6 +40,8 @@ def lambda_handler(event, context):
   for img_id, size in size_map:
     img = base_img.resize((size, size), Image.LANCZOS)
     buffer = BytesIO()
+    if img.mode in ("RGBA", "P"):
+      img = img.convert("RGB")
     img.save(buffer, format="JPEG")
     buffer.seek(0)
     new_key = f"{path}{img_id}.jpg"
