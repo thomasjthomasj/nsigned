@@ -38,7 +38,7 @@ def lambda_handler(event, context):
   base_img = Image.open(BytesIO(img_data))
 
   for img_id, size in size_map:
-    img = base_img if size == 1200 else base_img.resize((size, size), Image.LANCZOS)
+    img = base_img.resize((size, size), Image.LANCZOS)
     buffer = BytesIO()
     img.save(buffer, format="JPEG")
     buffer.seek(0)
