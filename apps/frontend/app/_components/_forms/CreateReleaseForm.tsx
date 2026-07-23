@@ -1,11 +1,12 @@
 "use client";
 
 import classNames from "classnames";
+import slugify from "slugify";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
-import { useAuth, useTrackUpload } from "@/_hooks";
+import { useAuth, useImageUpload, useTrackUpload } from "@/_hooks";
 import { genres } from "@/_utils/genre";
 
 import type { Genre } from "@/_types/api";
@@ -27,40 +28,46 @@ export const CreateReleaseForm = () => {
 
   const { user } = useAuth();
   const {
-    upload,
-    progress,
-    status: uploadStatus,
-    error: uploadError,
+    upload: uploadTrack,
+    progress: trackProgress,
+    status: uploadTrackStatus,
+    error: uploadTrackError,
   } = useTrackUpload();
+  const {
+    upload: uploadImage,
+    progress: imageProgress,
+    status: uploadImageStatus,
+    error: uploadImageError,
+  } = useImageUpload();
 
   const buttonDisabled = useMemo(() => {
     if (!user || !artistName || !title || !trackFile || !genre) return true;
     if (error) return true;
-    if (["in_progress", "processing"].includes(uploadStatus)) return true;
+    if (["in_progress", "processing"].includes(uploadTrackStatus)) return true;
     if (!imageUploaded) return true;
     return false;
-  }, [user, artistName, title, trackFile, uploadStatus, imageUploaded]);
+  }, [user, artistName, title, trackFile, uploadTrackStatus, imageUploaded]);
 
   useEffect(() => {
-    if (uploadStatus === "invalid" && uploadError) {
-      setError(uploadError);
+    if (uploadTrackStatus === "invalid" && uploadTrackError) {
+      setError(uploadTrackError);
       return;
     }
-    if (["error", "invalid"].includes(uploadStatus))
+    if (["error", "invalid"].includes(uploadTrackStatus))
       setError("Could not upload file");
   }, []);
 
   useEffect(() => {
-    if (uploadStatus === "complete") {
+    if (uploadTrackStatus === "complete") {
       // do something!
       // console.log("SUCCESS");
     }
-  }, [uploadStatus]);
+  }, [uploadTrackStatus]);
 
   const handleSubmit = useCallback(async () => {
     if (!trackFile || !artistName || !title || !genre) return;
 
-    await upload({
+    await uploadTrack({
       file: trackFile,
       title,
       genre,
@@ -69,36 +76,52 @@ export const CreateReleaseForm = () => {
   }, [trackFile, title, genre, artistName]);
 
   const canUploadImage = useMemo(() => {
-    if (["in_progress", "processing", "complete"].includes(uploadStatus))
+    if (["in_progress", "processing", "complete"].includes(uploadTrackStatus))
       return false;
     if (!imageFile) return false;
     if (isUploadingImage) return false;
     return true;
-  }, [imageFile, isUploadingImage, uploadStatus]);
+  }, [imageFile, isUploadingImage, uploadTrackStatus]);
 
   useEffect(() => {
     if (!canUploadImage) return;
     const img = new Image();
     img.src = window.URL.createObjectURL(imageFile!);
     img.onload = () => {
-      setImageValid(img.naturalWidth === LG_IMG_RESOLUTION && img.naturalHeight === LG_IMG_RESOLUTION);
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      setImageValid(w === h && w >= LG_IMG_RESOLUTION);
       window.URL.revokeObjectURL(img.src);
     };
   }, [imageFile, canUploadImage]);
 
-  const uploadImage = useCallback(async () => {
+  const imageFilename = useMemo(() => {
+    const parts = [];
+    if (artistName) parts.push(slugify(artistName).substring(0, 12));
+    if (title) parts.push(slugify(title).substring(0, 12));
+    parts.push(Math.floor(Date.now() / 1000));
+    return parts.join("-");
+  }, [artistName, title])
+
+  const handleUploadImage = useCallback(async () => {
+    if (!imageFile) return;
     setIsUploadingImage(true);
-    //
+    await uploadImage({
+      file: imageFile,
+      filename: imageFilename,
+    })
     setIsUploadingImage(false);
-  }, []);
+  }, [uploadImage, imageFile, imageFilename]);
 
   useEffect(() => {
-    if (canUploadImage && imageValid) uploadImage();
-  }, [uploadImage, canUploadImage, imageValid]);
+    if (canUploadImage && imageValid) handleUploadImage();
+  }, [handleUploadImage, canUploadImage, imageValid]);
 
-  if (uploadStatus === "in_progress") return <p>Uploading: {progress}%</p>;
-  if (uploadStatus === "processing") return <p>Processing</p>;
-  if (uploadStatus === "complete") return <p>Complete!</p>;
+  console.log(imageProgress, uploadImageStatus, uploadImageError)
+
+  if (uploadTrackStatus === "in_progress") return <p>Uploading: {trackProgress}%</p>;
+  if (uploadTrackStatus === "processing") return <p>Processing</p>;
+  if (uploadTrackStatus === "complete") return <p>Complete!</p>;
 
   return (
     <form
@@ -159,13 +182,13 @@ export const CreateReleaseForm = () => {
               "text-primary-500": imageFile && !imageValid,
             })}
           >
-            Must be a <span className="font-bold">{LG_IMG_RESOLUTION} x {LG_IMG_RESOLUTION}px</span>{" "}
-            <span className="font-bold">.jpg</span> file.
+            Must be a {" "}
+            <span className="font-bold">square .jpg file</span> with a minimum resolution of <span className="font-bold">{LG_IMG_RESOLUTION} x {LG_IMG_RESOLUTION}px</span>.
           </p>
           <input
             className="bg-background p-[10px]"
             type="file"
-            accept=".jpg"
+            accept=".jpg,.png"
             name="cover"
             disabled={isUploadingImage}
             onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}

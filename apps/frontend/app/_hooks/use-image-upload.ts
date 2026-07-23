@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { get, post } from "@/_utils/api.client";
+import { post } from "@/_utils/api.client";
 import { uploadFile } from "@/_utils/uploads";
 
 import type { ImageUploadURL } from "@/_types/api";
@@ -21,6 +21,7 @@ export const useImageUpload = () => {
     const { file, filename } = args;
     const filetype = (() => {
       if (file.type === "image/jpeg") return "jpg";
+      if (file.type === "image/png") return "png";
       setStatus("invalid");
       setError(`Invalid file type ${file.type}`);
       return;
