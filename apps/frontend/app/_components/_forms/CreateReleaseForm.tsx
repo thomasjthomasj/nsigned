@@ -1,7 +1,6 @@
 "use client";
 
 import classNames from "classnames";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/_components/Button";
@@ -10,6 +9,8 @@ import { useAuth, useTrackUpload } from "@/_hooks";
 import { genres } from "@/_utils/genre";
 
 import type { Genre } from "@/_types/api";
+
+const LG_IMG_RESOLUTION = 1200;
 
 export const CreateReleaseForm = () => {
   const [artistName, setArtistName] = useState<string>("");
@@ -80,9 +81,7 @@ export const CreateReleaseForm = () => {
     const img = new Image();
     img.src = window.URL.createObjectURL(imageFile!);
     img.onload = () => {
-      if (img.naturalWidth === 1000 && img.naturalHeight === 1000) {
-        setImageValid(true);
-      }
+      setImageValid(img.naturalWidth === LG_IMG_RESOLUTION && img.naturalHeight === LG_IMG_RESOLUTION);
       window.URL.revokeObjectURL(img.src);
     };
   }, [imageFile, canUploadImage]);
@@ -160,14 +159,13 @@ export const CreateReleaseForm = () => {
               "text-primary-500": imageFile && !imageValid,
             })}
           >
-            Must be a <span className="font-bold">1000 x 1000px</span>{" "}
-            <span className="font-bold">.jpg</span> or{" "}
-            <span className="font-bold">.png</span> file.
+            Must be a <span className="font-bold">{LG_IMG_RESOLUTION} x {LG_IMG_RESOLUTION}px</span>{" "}
+            <span className="font-bold">.jpg</span> file.
           </p>
           <input
             className="bg-background p-[10px]"
             type="file"
-            accept=".jpg, .png"
+            accept=".jpg"
             name="cover"
             disabled={isUploadingImage}
             onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}

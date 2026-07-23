@@ -56,7 +56,11 @@ export const useTrackUpload = () => {
       withAuth: true,
     });
 
-    if (!uploadURLResponse.ok) throw new Error("Could not resolve upload URL");
+    if (!uploadURLResponse.ok) {
+      setStatus("error");
+      setError("Could not resolve upload URL");
+      return;
+    }
 
     const { upload_url: uploadURL, track_id: trackID } = uploadURLResponse.data;
 

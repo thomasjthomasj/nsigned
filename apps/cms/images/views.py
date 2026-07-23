@@ -1,8 +1,8 @@
+from slugify import slugify
 from django.db import transaction
 from app.decorators import method, logged_in
 from app.http import Ok, BadRequest
 from app.s3 import s3_images
-from app.utils import slugify
 from .models import ImageUpload
 
 @method("POST")
