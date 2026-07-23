@@ -1,6 +1,6 @@
 import boto3
-import subprocess
 import os
+import re
 from PIL import Image
 from io import BytesIO
 from urllib.parse import unquote_plus
@@ -25,10 +25,10 @@ def lambda_handler(event, context):
 
   relative_path = key[len(path):]
   lg_id = os.path.splitext(relative_path)[0]
-  md_id = lg_id.replace("_lg$", "_md")
-  sm_id = lg_id.replace("_lg$", "_sm")
+  md_id = re.sub(r"_lg$", "_md", lg_id)
+  sm_id = re.sub(r"_lg$", "_sm", lg_id)
   size_map = (
-    (lg_id, 1200)
+    (lg_id, 1200),
     (md_id, 350),
     (sm_id, 124),
   )
