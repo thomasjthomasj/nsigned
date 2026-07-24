@@ -9,8 +9,6 @@ type TrackOverviewProps = {
 export const TrackOverview = ({ track }: TrackOverviewProps) => {
   return (
     <div className="flex flex-col">
-      <p>{track.release.primary_artist!.name}</p>
-      <p>{track.release.title}</p>
       <p>
         {track.track_number}. {track.title}
       </p>

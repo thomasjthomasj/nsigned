@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import Q
 from django.db import transaction
 from django.db.models.functions import Lower
@@ -8,6 +9,7 @@ from app.exceptions import MaxIterationError
 from app.s3 import s3_audio
 from app.utils import delete_cache
 from articles.models import Article
+from images.models import ImageUpload
 from .bandcamp import get_release_details, BandcampError
 from .models import Artist, Release, ReviewRequest, Track
 
@@ -305,6 +307,40 @@ def start_upload(request):
     "upload_url": presigned_url,
     "track_id": track.id,
   })
+
+@method("POST")
+@logged_in()
+def attach_images(request, release_id, image_upload_id):
+  asset_url = settings.AWS_S3_PUBLIC_URL
+  # Image sizes
+  LG = 1200
+  MD = 350
+  SM = 124
+  user = request.site_user
+  try:
+    release = Release.objects.get(created_by=user, id=release_id)
+    image_upload = ImageUpload.objects.get(created_by=user, id=image_upload_id)
+  except (Release.DoesNotExist, ImageUpload.DoesNotExist):
+    return NotFound()
+  release.images = {
+    "lg": {
+      "url": f"{asset_url}{image_upload.lg_location}",
+      "width": LG,
+      "height": LG,
+    },
+    "md": {
+      "url": f"{asset_url}{image_upload.md_location}",
+      "width": MD,
+      "height": MD,
+    },
+    "sm": {
+      "url": f"{asset_url}{image_upload.sm_location}",
+      "width": SM,
+      "height": SM,
+    },
+  }
+  release.save()
+  return Ok(release.serialized)
 
 @method("GET")
 @logged_in()

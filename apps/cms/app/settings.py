@@ -32,11 +32,6 @@ ALLOWED_HOSTS = os.environ.get(
   "127.0.0.1,cms,nsigned.onrender.com,api.nsigned.com"
 ).split(",")
 
-GOODSENDER = {
-  "SECRET": os.environ.get("GOODSENDER_SECRET"),
-  "ID": os.environ.get("GOODSENDER_ID"),
-}
-
 RESEND_SECRET = os.environ.get("RESEND_SECRET")
 
 AWS_S3_AUDIO_ACCESS_KEY = os.environ.get("AWS_S3_ACCESS_KEY")
@@ -44,6 +39,7 @@ AWS_S3_AUDIO_ACCESS_SECRET = os.environ.get("AWS_S3_ACCESS_SECRET")
 AWS_S3_IMAGES_ACCESS_KEY = os.environ.get("AWS_S3_ACCESS_KEY")
 AWS_S3_IMAGES_ACCESS_SECRET = os.environ.get("AWS_S3_ACCESS_SECRET")
 AWS_S3_REGION = "eu-north-1"
+AWS_S3_PUBLIC_URL = "https://nsigned-public.s3.eu-north-1.amazonaws.com/"
 
 # Application definition
 

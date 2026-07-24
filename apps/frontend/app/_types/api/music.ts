@@ -52,6 +52,14 @@ export type Genre =
   | "jazz"
   | "classical-orchestral-world";
 
+export type Track = {
+  id: number;
+  title: string;
+  track_number: number;
+  status: TrackStatus;
+  created_by: User;
+};
+
 export type Release = {
   id: number;
   title: string;
@@ -62,6 +70,8 @@ export type Release = {
   images: Images;
   release_type: ReleaseType;
   genre: Genre | null;
+  source: "bandcamp" | "nsigned",
+  tracks: Track[];
 };
 
 export type ReviewRequest = {
@@ -83,13 +93,4 @@ export type TrackStatus = "processing" | "complete" | "removed";
 
 export type MP3Status = {
   status: TrackStatus;
-};
-
-export type Track = {
-  id: number;
-  title: string;
-  track_number: number;
-  status: TrackStatus;
-  release: Release;
-  created_by: User;
 };

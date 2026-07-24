@@ -192,6 +192,15 @@ class Release(Creatable):
     return self.title
 
   @cached_property
+  def tracks(self):
+    return [
+      t.serialized
+      for t in Track.objects.prefetched
+        .filter(release=self)
+        .order_by("track_number")
+    ]
+
+  @cached_property
   def serialized(self):
     return {
       "id": self.id,
@@ -203,6 +212,8 @@ class Release(Creatable):
       "images": self.images,
       "release_type": self.release_type,
       "genre": self.genre,
+      "source": self.source,
+      "tracks": self.tracks if self.source == "nsigned" else [],
     }
 
 class ReleaseLink(models.Model):
@@ -259,7 +270,6 @@ class Track(Creatable):
       "title": self.title,
       "track_number": self.track_number,
       "status": self.status,
-      "release":  self.release.serialized,
       "created_by": self.created_by.serialized,
     }
 
