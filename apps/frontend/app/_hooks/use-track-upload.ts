@@ -27,6 +27,8 @@ export const useTrackUpload = () => {
   const [progress, setProgress] = useState<number>(0);
   const [status, setStatus] = useState<UploadStatus>("pending");
   const [error, setError] = useState<string | null>(null);
+  const [trackID, setTrackID] = useState<number | null>(null);
+  const [releaseID, setReleaseID] = useState<number | null>(null);
 
   const upload = useCallback(async (args: UploadArgs) => {
     setStatus("in_progress");
@@ -62,7 +64,9 @@ export const useTrackUpload = () => {
       return;
     }
 
-    const { upload_url: uploadURL, track_id: trackID } = uploadURLResponse.data;
+    const { upload_url: uploadURL, track_id: newTrackID, release_id: newReleaseID } = uploadURLResponse.data;
+    setTrackID(newTrackID);
+    setReleaseID(newReleaseID);
 
     try {
       await uploadFile(file, uploadURL, setProgress);
@@ -72,7 +76,7 @@ export const useTrackUpload = () => {
       const interval = setInterval(async () => {
         pollAttempts += 1;
         const statusResponse = await get<MP3Status>({
-          endpoint: `music/track/${trackID}/mp3-status`,
+          endpoint: `music/track/${newTrackID}/mp3-status`,
           withAuth: true,
         });
         if (!statusResponse.ok) {
@@ -104,5 +108,7 @@ export const useTrackUpload = () => {
     progress,
     status,
     error,
+    trackID,
+    releaseID,
   };
 };

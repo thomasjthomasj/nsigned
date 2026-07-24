@@ -9,12 +9,13 @@ import type { UploadStatus } from "@/_types/uploads";
 type UploadArgs = {
   file: File;
   filename: string;
-}
+};
 
 export const useImageUpload = () => {
   const [status, setStatus] = useState<UploadStatus>("pending");
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
+  const [imageUploadID, setImageUploadID] = useState<number | null>(null);
 
   const upload = useCallback(async (args: UploadArgs) => {
     setStatus("in_progress");
@@ -25,7 +26,7 @@ export const useImageUpload = () => {
       setStatus("invalid");
       setError(`Invalid file type ${file.type}`);
       return;
-    })()
+    })();
     if (!filetype) return;
 
     const uploadURLResponse = await post<ImageUploadURL>({
@@ -36,17 +37,18 @@ export const useImageUpload = () => {
       },
       withAuth: true,
     });
-
     if (!uploadURLResponse.ok) {
       setStatus("error");
       setError("Could not resolve upload URL");
       return;
     }
 
-    const { upload_url: uploadURL } = uploadURLResponse.data;
+    const { upload_url: uploadURL, image_upload_id: newImageUploadID } = uploadURLResponse.data;
+    setImageUploadID(newImageUploadID);
 
     try {
       await uploadFile(file, uploadURL, setProgress);
+      setStatus("complete");
     } catch {
       setStatus("error");
       setError("An error occurred uploading image");
@@ -58,5 +60,6 @@ export const useImageUpload = () => {
     progress,
     status,
     error,
-  }
-}
+    imageUploadID,
+  };
+};

@@ -306,6 +306,7 @@ def start_upload(request):
   return Ok({
     "upload_url": presigned_url,
     "track_id": track.id,
+    "release_id": release.id,
   })
 
 @method("POST")

@@ -1,15 +1,16 @@
 "use client";
 
 import classNames from "classnames";
-import slugify from "slugify";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import slugify from "slugify";
 
 import { Button } from "@/_components/Button";
 import { FormField } from "@/_components/FormField";
 import { useAuth, useImageUpload, useTrackUpload } from "@/_hooks";
+import { post } from "@/_utils/api.client";
 import { genres } from "@/_utils/genre";
 
-import type { Genre } from "@/_types/api";
+import type { Genre, Release } from "@/_types/api";
 
 const LG_IMG_RESOLUTION = 1200;
 
@@ -23,6 +24,7 @@ export const CreateReleaseForm = () => {
 
   const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
   const [imageValid, setImageValid] = useState<boolean>(false);
+  const [imageURLsSet, setImageURLsSet] = useState<boolean>(false);
 
   const { user } = useAuth();
   const {
@@ -30,16 +32,26 @@ export const CreateReleaseForm = () => {
     progress: trackProgress,
     status: uploadTrackStatus,
     error: uploadTrackError,
+    releaseID,
   } = useTrackUpload();
   const {
     upload: uploadImage,
     progress: imageProgress,
     status: uploadImageStatus,
     error: uploadImageError,
+    imageUploadID,
   } = useImageUpload();
 
   const buttonDisabled = useMemo(() => {
-    if (!user || !artistName || !title || !trackFile || !genre || isUploadingImage) return true;
+    if (
+      !user ||
+      !artistName ||
+      !title ||
+      !trackFile ||
+      !genre ||
+      isUploadingImage
+    )
+      return true;
     if (error) return true;
     if (["in_progress", "processing"].includes(uploadTrackStatus)) return true;
     return false;
@@ -87,10 +99,18 @@ export const CreateReleaseForm = () => {
     if (title) parts.push(slugify(title).substring(0, 12));
     parts.push(Math.floor(Date.now() / 1000));
     return parts.join("-");
-  }, [artistName, title])
+  }, [artistName, title]);
 
   const handleSubmit = useCallback(async () => {
-    if (!trackFile || !artistName || !title || !genre || !imageFile || !imageValid) return;
+    if (
+      !trackFile ||
+      !artistName ||
+      !title ||
+      !genre ||
+      !imageFile ||
+      !imageValid
+    )
+      return;
 
     await Promise.all([
       uploadTrack({
@@ -102,13 +122,40 @@ export const CreateReleaseForm = () => {
       uploadImage({
         file: imageFile,
         filename: imageFilename,
-      })
+      }),
     ]);
-  }, [trackFile, uploadTrack, uploadImage, imageValid, title, genre, artistName, imageFile, imageFilename]);
+  }, [
+    trackFile,
+    uploadTrack,
+    uploadImage,
+    imageValid,
+    title,
+    genre,
+    artistName,
+    imageFile,
+    imageFilename,
+  ]);
 
-  console.log(imageProgress, uploadImageStatus, uploadImageError)
+  useEffect(() => {
+    if (releaseID === null || imageUploadID === null) return;
+    const attachImages = async () => {
+      const response = await post<Release>({
+        endpoint: `music/release/attach-images/${releaseID}/${imageUploadID}`,
+        withAuth: true,
+      });
+      if (!response.ok) {
+        setError("Could not attach images to release")
+        return;
+      }
+      setImageURLsSet(true);
+    };
+    attachImages()
+  }, [uploadImageStatus, releaseID, imageUploadID]);
 
-  if (uploadTrackStatus === "in_progress") return <p>Uploading: {trackProgress}%</p>;
+  if (uploadTrackStatus === "complete" && imageURLsSet) return <p>Everything is sorted</p>
+
+  if (uploadTrackStatus === "in_progress")
+    return <p>Uploading: {trackProgress}%</p>;
   if (uploadTrackStatus === "processing") return <p>Processing</p>;
   if (uploadTrackStatus === "complete") return <p>Complete!</p>;
 
@@ -171,8 +218,12 @@ export const CreateReleaseForm = () => {
               "text-primary-500": imageFile && !imageValid,
             })}
           >
-            Must be a {" "}
-            <span className="font-bold">square .jpg file</span> with a minimum resolution of <span className="font-bold">{LG_IMG_RESOLUTION} x {LG_IMG_RESOLUTION}px</span>.
+            Must be a <span className="font-bold">square .jpg file</span> with a
+            minimum resolution of{" "}
+            <span className="font-bold">
+              {LG_IMG_RESOLUTION} x {LG_IMG_RESOLUTION}px
+            </span>
+            .
           </p>
           <input
             className="bg-background p-[10px]"

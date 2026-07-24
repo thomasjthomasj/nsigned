@@ -70,7 +70,7 @@ export type Release = {
   images: Images;
   release_type: ReleaseType;
   genre: Genre | null;
-  source: "bandcamp" | "nsigned",
+  source: "bandcamp" | "nsigned";
   tracks: Track[];
 };
 
@@ -87,6 +87,7 @@ export type ReviewRequest = {
 export type TrackUploadURL = {
   upload_url: string;
   track_id: number;
+  release_id: number;
 };
 
 export type TrackStatus = "processing" | "complete" | "removed";

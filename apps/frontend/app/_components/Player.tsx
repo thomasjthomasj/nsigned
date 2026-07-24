@@ -88,7 +88,7 @@ export const Player = () => {
               {track && (
                 <>
                   <p className="font-bold text-[20px] text-primary-500">
-                    {track.release.primary_artist?.name ?? "Unknown artist"}
+                    {/* {track.release.primary_artist?.name ?? "Unknown artist"} */}
                   </p>
                   <hr className="border border-secondary-500" />
                   <p className="font-bold text-[20px] text-primary-500">
