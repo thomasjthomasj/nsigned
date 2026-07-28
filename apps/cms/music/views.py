@@ -271,6 +271,7 @@ def start_upload(request):
 
   track_slug = slugify(track_title)
   release = Release.objects.create(
+    created_by=user,
     primary_artist=artist,
     title=track_title,
     slug=track_slug,
@@ -280,8 +281,10 @@ def start_upload(request):
     images={}
   )
 
-  wav_location = f"audio/raw/{artist.slug}/{track_slug}.wav"
-  mp3_location = f"audio/mp3s/{artist.slug}/{track_slug}.mp3"
+  key = f"{artist.slug}/{release.id}/{track_slug}"
+
+  wav_location = f"audio/raw/{key}.wav"
+  mp3_location = f"audio/mp3s/{key}.mp3"
 
   track = Track.objects.create(
     created_by=user,
@@ -318,11 +321,13 @@ def attach_images(request, release_id, image_upload_id):
   MD = 350
   SM = 124
   user = request.site_user
+
   try:
     release = Release.objects.get(created_by=user, id=release_id)
     image_upload = ImageUpload.objects.get(created_by=user, id=image_upload_id)
-  except (Release.DoesNotExist, ImageUpload.DoesNotExist):
+  except (Release.DoesNotExist, ImageUpload.DoesNotExist) as e:
     return NotFound()
+
   release.images = {
     "lg": {
       "url": f"{asset_url}{image_upload.lg_location}",

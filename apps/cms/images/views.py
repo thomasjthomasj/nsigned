@@ -16,9 +16,11 @@ def start_upload(request):
   if filetype not in ["jpg", "png"]:
     return BadRequest("Image must be either .jpg or .png file")
   base_location = f"images/{slugify(user.username)}/{slugify(filename)}"
-  lg_location = f"{base_location}_lg.{filetype}"
-  md_location = f"{base_location}_md.{filetype}"
-  sm_location = f"{base_location}_sm.{filetype}"
+
+  src_location = f"{base_location}_lg.{filetype}"
+  lg_location = f"{base_location}_lg.jpg"
+  md_location = f"{base_location}_md.jpg"
+  sm_location = f"{base_location}_sm.jpg"
 
   exists = ImageUpload.objects.filter(lg_location=lg_location).exists()
   if exists:
@@ -27,6 +29,7 @@ def start_upload(request):
   image_upload = ImageUpload.objects.create(
     created_by=user,
     filetype=filetype,
+    src_location=src_location,
     lg_location=lg_location,
     md_location=md_location,
     sm_location=sm_location,
@@ -36,7 +39,7 @@ def start_upload(request):
     "put_object",
     Params={
       "Bucket": "nsigned",
-      "Key": lg_location,
+      "Key": src_location,
       "ContentType": "image/jpeg" if filetype == "jpg" else "image/png",
     },
     ExpiresIn=3600,
