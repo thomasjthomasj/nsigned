@@ -11,6 +11,7 @@ from .models import ImageUpload
 def start_upload(request):
   data = request.json
   user = request.site_user
+
   filename = data.get("filename")
   filetype = data.get("filetype")
   if filetype not in ["jpg", "png"]:

@@ -278,7 +278,8 @@ def start_upload(request):
     release_type="track",
     genre=genre,
     source="nsigned",
-    images={}
+    images={},
+    status="incomplete",
   )
 
   key = f"{artist.slug}/{release.id}/{track_slug}"
@@ -345,6 +346,7 @@ def attach_images(request, release_id, image_upload_id):
       "height": SM,
     },
   }
+  release.status = "complete"
   release.save()
   return Ok(release.serialized)
 

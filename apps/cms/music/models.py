@@ -182,6 +182,14 @@ class Release(Creatable):
     ),
     default="bandcamp"
   )
+  status = models.CharField(
+    max_length=30,
+    choices=(
+      ("incomplete", "Incomplete"),
+      ("complete", "Complete"),
+    ),
+    default="complete",
+  )
 
   objects = models.Manager()
   bandcamp = ReleaseBandcampManager()
