@@ -64,7 +64,11 @@ export const useTrackUpload = () => {
       return;
     }
 
-    const { upload_url: uploadURL, track_id: newTrackID, release_id: newReleaseID } = uploadURLResponse.data;
+    const {
+      upload_url: uploadURL,
+      track_id: newTrackID,
+      release_id: newReleaseID,
+    } = uploadURLResponse.data;
     setTrackID(newTrackID);
     setReleaseID(newReleaseID);
 

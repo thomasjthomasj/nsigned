@@ -377,6 +377,15 @@ def mp3_status(request, id):
     return InternalServerError("Could not check track status")
 
 @method("GET")
+@cached("RELEASE", id_kwarg="id")
+def release(request, id):
+  try:
+    release = Release.objects.get(id=id)
+  except Release.DoesNotExist:
+    return NotFound()
+  return Ok(release.serialized)
+
+@method("GET")
 @cached("TRACKS")
 def tracks(request):
   tracks = Track.objects.prefetched.all()

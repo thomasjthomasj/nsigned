@@ -22,4 +22,5 @@ urlpatterns = [
   path("track/<int:id>/mp3-link", views.mp3_url, name="mp3_url"),
   path("tracks", views.tracks, name="tracks"),
   path("release/attach-images/<int:release_id>/<int:image_upload_id>", views.attach_images, name="attach_images"),
+  path("release/<int:id>", views.release, name="release"),
 ]

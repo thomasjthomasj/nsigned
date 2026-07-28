@@ -43,7 +43,8 @@ export const useImageUpload = () => {
       return;
     }
 
-    const { upload_url: uploadURL, image_upload_id: newImageUploadID } = uploadURLResponse.data;
+    const { upload_url: uploadURL, image_upload_id: newImageUploadID } =
+      uploadURLResponse.data;
     setImageUploadID(newImageUploadID);
 
     try {

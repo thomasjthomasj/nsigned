@@ -144,15 +144,16 @@ export const CreateReleaseForm = () => {
         withAuth: true,
       });
       if (!response.ok) {
-        setError("Could not attach images to release")
+        setError("Could not attach images to release");
         return;
       }
       setImageURLsSet(true);
     };
-    attachImages()
+    attachImages();
   }, [uploadImageStatus, releaseID, imageUploadID]);
 
-  if (uploadTrackStatus === "complete" && imageURLsSet) return <p>Everything is sorted</p>
+  if (uploadTrackStatus === "complete" && imageURLsSet)
+    return <p>Everything is sorted</p>;
 
   if (uploadTrackStatus === "in_progress")
     return <p>Uploading: {trackProgress}%</p>;
