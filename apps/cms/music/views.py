@@ -380,7 +380,7 @@ def mp3_status(request, id):
 @cached("RELEASE", id_kwarg="id")
 def release(request, id):
   try:
-    release = Release.objects.get(id=id)
+    release = Release.objects.get(id=id, status="complete")
   except Release.DoesNotExist:
     return NotFound()
   return Ok(release.serialized)

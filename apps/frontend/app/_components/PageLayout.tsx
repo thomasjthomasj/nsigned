@@ -1,7 +1,7 @@
 import { AuthRedirect } from "@/_components/AuthRedirect";
 
 type PageLayoutProps = {
-  title: string;
+  title?: string;
   children: React.ReactNode;
   requireLoggedIn?: boolean;
 };
@@ -13,7 +13,7 @@ export const PageLayout = ({
 }: PageLayoutProps) => (
   <div className="w-full flex-1">
     {requireLoggedIn && <AuthRedirect />}
-    <h2>{title}</h2>
+    {title && <h2>{title}</h2>}
     {children}
   </div>
 );

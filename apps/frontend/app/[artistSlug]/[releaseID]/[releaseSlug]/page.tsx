@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { PageLayout } from "@/_components/PageLayout";
+import { TrackPlayButton } from "@/_components/TrackPlayButton";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
@@ -33,11 +34,10 @@ const Release = async ({ params }: ReleaseProps) => {
   if (release.slug !== releaseSlug)
     return redirect(`/${artistSlug}/${releaseID}/${releaseSlug}`);
 
-  const pageTitle = `${release.primary_artist.name} - ${release.title}`;
   const { images, title, primary_artist: artist, tracks } = release;
 
   return (
-    <PageLayout title={pageTitle}>
+    <PageLayout>
       <div className="w-full">
         <div className="flex flex-col sm:flex-row gap-[20px]">
           <div>
@@ -56,7 +56,7 @@ const Release = async ({ params }: ReleaseProps) => {
               {!!tracks.length && (
                 <ol>
                   {tracks.map((t) => (
-                    <li>{t.title}</li>
+                    <li key={t.id} className="flex flex-row gap-[8px]">{t.title} <TrackPlayButton track={t} /></li>
                   ))}
                 </ol>
               )}

@@ -273,12 +273,18 @@ class Track(Creatable):
 
   @cached_property
   def serialized(self):
+    artist = self.release.primary_artist
     return {
       "id": self.id,
       "title": self.title,
       "track_number": self.track_number,
       "status": self.status,
       "created_by": self.created_by.serialized,
+      "artist": {
+        "id": artist.id,
+        "slug": artist.slug,
+        "name": artist.name
+      } if artist else None
     }
 
 class ReviewRequestManager(models.Manager):
