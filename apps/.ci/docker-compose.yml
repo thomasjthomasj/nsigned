@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    networks:
+      - nsigned
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  cms:
+    build:
+      context: ./apps/cms
+    container_name: cms
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - nsigned
+    env_file:
+      - .ci/.env.test
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+  redis:
+    image: redis:7
+    ports:
+      - "6380:6379"
+    networks:
+      - nsigned
+volumes:
+  postgres_data:
+  frontend_node_modules:
+networks:
+  nsigned:
+    driver: bridge
