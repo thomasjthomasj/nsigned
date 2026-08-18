@@ -1,13 +1,43 @@
 import re
+from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.utils.functional import cached_property
 from slugify import slugify
 from app.models import Creatable
 from app.utils import strip_url_query
+from app.exceptions import MaxIterationError
 from links.models import Link
 from users.models import User
 from .bandcamp import get_release_details
 from .validators import images_validator
+
+class ArtistManager(models.Manager):
+  def resolve_user_artist(self, name, user):
+    slug = slugify(name)
+    exists = self.filter(slug=slug)
+    artist = None
+    if exists:
+      try:
+        return self.get(slug=slug, user=user)
+      except self.model.DoesNotExist:
+        pass
+    conflicts = self.filter(slug__startswith=slug)
+    base_slug = slug
+    count = 1
+    max_iters = 50
+    while not artist:
+      if count >= max_iters:
+        raise MaxIterationError()
+      exists = conflicts.filter(slug=slug).exists()
+      if exists:
+        slug = f"{base_slug}-{count}"
+        count += 1
+      else:
+        return self.create(
+          name=name,
+          slug=slug,
+          user=user
+        )
 
 class Artist(Creatable):
   name = models.CharField(max_length=255)
@@ -20,6 +50,8 @@ class Artist(Creatable):
     null=True,
     blank=True,
   )
+
+  objects = ArtistManager()
 
   def __str__(self):
     return self.name
@@ -119,7 +151,7 @@ class Release(Creatable):
     blank=True,
   )
   title = models.CharField(max_length=1000)
-  slug = models.CharField(max_length=255, unique=True)
+  slug = models.CharField(max_length=255)
   links = models.ManyToManyField(Link, through="ReleaseLink", related_name="links")
   images = models.JSONField(validators=[images_validator])
   release_type = models.CharField(
@@ -142,6 +174,22 @@ class Release(Creatable):
     null=True,
     blank=True,
   )
+  source = models.CharField(
+    max_length=30,
+    choices=(
+      ("bandcamp", "Bandcamp"),
+      ("nsigned", "_nsigned"),
+    ),
+    default="bandcamp"
+  )
+  status = models.CharField(
+    max_length=30,
+    choices=(
+      ("incomplete", "Incomplete"),
+      ("complete", "Complete"),
+    ),
+    default="complete",
+  )
 
   objects = models.Manager()
   bandcamp = ReleaseBandcampManager()
@@ -150,6 +198,15 @@ class Release(Creatable):
     if self.primary_artist:
       return  f"{self.primary_artist.name} - {self.title}"
     return self.title
+
+  @cached_property
+  def tracks(self):
+    return [
+      t.serialized
+      for t in Track.objects.prefetched
+        .filter(release=self)
+        .order_by("track_number")
+    ]
 
   @cached_property
   def serialized(self):
@@ -163,6 +220,8 @@ class Release(Creatable):
       "images": self.images,
       "release_type": self.release_type,
       "genre": self.genre,
+      "source": self.source,
+      "tracks": self.tracks if self.source == "nsigned" else [],
     }
 
 class ReleaseLink(models.Model):
@@ -176,6 +235,57 @@ class ReleaseLink(models.Model):
         name="unique_link_per_release",
       )
     ]
+
+class TrackManager(models.Manager):
+  @property
+  def prefetched(self):
+    return self.select_related(
+      "release",
+      "release__primary_artist__user",
+      "release__label",
+      "created_by",
+    )
+
+class Track(Creatable):
+  release = models.ForeignKey(Release, null=True, on_delete=models.SET_NULL)
+  title = models.CharField(max_length=255)
+  wav_location = models.CharField(max_length=255)
+  mp3_location = models.CharField(max_length=255)
+  track_number = models.IntegerField(validators=[MinValueValidator(1)])
+  status = models.CharField(max_length=15, choices=(
+    ("processing","Processing"),
+    ("complete", "Complete"),
+    ("removed", "Removed"),
+  ), default="processing")
+
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(
+        fields=["release", "track_number"],
+        name="unique_track_number_per_release"
+      )
+    ]
+
+  objects = TrackManager()
+
+  def __str__(self):
+    return self.wav_location
+
+  @cached_property
+  def serialized(self):
+    artist = self.release.primary_artist
+    return {
+      "id": self.id,
+      "title": self.title,
+      "track_number": self.track_number,
+      "status": self.status,
+      "created_by": self.created_by.serialized,
+      "artist": {
+        "id": artist.id,
+        "slug": artist.slug,
+        "name": artist.name
+      } if artist else None
+    }
 
 class ReviewRequestManager(models.Manager):
   @property
