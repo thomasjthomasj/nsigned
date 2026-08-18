@@ -14,7 +14,7 @@ services:
       retries: 20
   cms:
     build:
-      context: apps/cms
+      context: ../apps/cms
     container_name: cms
     depends_on:
       db:
@@ -24,7 +24,7 @@ services:
     networks:
       - nsigned
     env_file:
-      - .ci/.env.test
+      - .env.test
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
   redis:
     image: redis:7
