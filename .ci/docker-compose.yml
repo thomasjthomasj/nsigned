@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:17
@@ -16,7 +14,7 @@ services:
       retries: 20
   cms:
     build:
-      context: ./apps/cms
+      context: apps/cms
     container_name: cms
     depends_on:
       db:
