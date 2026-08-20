@@ -1,10 +1,10 @@
 from datetime import datetime, timezone
-from django.db import models, transaction
+from django.db import models, transaction, Q
 from django.utils.functional import cached_property
 from app.models import Creatable
 from app.utils import parse_markdown, has_permission
 from music.models import ReviewRequest
-from .utils import get_content
+from .utils import get_content, parse_search_terms
 
 class ArticleManager(models.Manager):
   @property
@@ -18,6 +18,45 @@ class ArticleManager(models.Manager):
   @property
   def prefetched(self):
     return self.prefetched_w_deleted.filter(deleted=False)
+
+  def search(self, terms):
+    parsed_terms = parse_search_terms(terms)
+    terms = parsed_terms["terms"]
+    artist = parsed_terms["artist"]
+    author = parsed_terms["author"]
+    from_date = parsed_terms["from"]
+    to_date = parsed_terms["to"]
+    query = self.prefetched.distinct()
+
+    for term in terms:
+      query = query.filter(
+        Q(title__icontains=term) |
+        (Q(contents__active=True) & Q(contents__content__icontains=term))
+      )
+    if artist:
+      query = query.filter(
+        Q(review_request__release__primary_artist__slug=artist) |
+        Q(review_request__release__primary_artist__name=artist)
+      )
+    if author:
+      query = query.filter(
+        Q(created_by__username=author) |
+        Q(created_by__display_name=author)
+      )
+    parse_date = lambda date: datetime.strptime(date, "%Y-%m-%d")
+    if from_date:
+      try:
+        date = parse_date(from_date)
+        query = query.filter(created_at__gte=date)
+      except (ValueError, TypeError):
+        pass
+    if to_date:
+      try:
+        date = parse_date(to_date)
+        query = query.filter(created_at__lte=date)
+      except (ValueError, TypeError):
+        pass
+    return query
 
   @transaction.atomic
   def create(self, **kwargs):
