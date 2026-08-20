@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
-from django.db import models, transaction, Q
+from django.db import models, transaction
+from django.db.models import Q
 from django.utils.functional import cached_property
 from app.models import Creatable
 from app.utils import parse_markdown, has_permission
