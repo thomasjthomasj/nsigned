@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { PageLayout } from "@/_components/PageLayout";
 import { Searcher } from "@/_components/Searcher";
@@ -22,10 +22,11 @@ const Search = async ({ searchParams }: SearchProps) => {
     cacheKey: getCacheKey({
       key: CACHE_KEY.ARTICLES_SEARCH,
       getData: { term },
-    })
-  })
+    }),
+  });
 
-  if (!articlesResponse.ok) return handleError({ errorResponse: articlesResponse })
+  if (!articlesResponse.ok)
+    return handleError({ errorResponse: articlesResponse });
 
   const { data: articles } = articlesResponse;
 

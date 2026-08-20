@@ -7,12 +7,12 @@ type FormFieldProps = {
   error?: string;
   label?: string;
   name: string;
-  onChange: React.ChangeEventHandler<any>;
+  onChange?: React.ChangeEventHandler<any>;
   onBlur?: (e: React.FocusEvent<any>) => void;
   placeholder?: string;
   required?: boolean;
   type?: React.HTMLInputTypeAttribute;
-  value: string;
+  value?: string;
 };
 
 export const FormField = ({

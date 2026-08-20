@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useDebounce } from "@/_hooks";
 import { get } from "@/_utils/api.client";
+
 import { Results } from "./Results";
 import { SearchBar } from "./SearchBar";
 
@@ -27,17 +28,17 @@ export const Searcher = ({
     const response = await get<Article[]>({
       endpoint: "articles/search",
       data: { term },
-    })
+    });
     if (response.ok) setArticles(response.data);
     setIsLoading(false);
-  }, [term])
+  }, [term]);
 
   const debouncedHandleSearch = useDebounce(handleSearch, 500);
 
   useEffect(() => {
     if (term.length < 3) return;
     debouncedHandleSearch();
-  }, [term])
+  }, [term]);
 
   return (
     <div className="flex flex-col gap-[15px]">
