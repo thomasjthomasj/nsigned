@@ -79,7 +79,7 @@ def list(request):
 @cached("ARTICLES:SEARCH", get_params=["term"])
 def search(request):
   term = request.GET.get("term", "")
-  if len(term < 3):
+  if len(term) < 3:
     return BadRequest("Search term must be at least 3 characters")
   results = Article.cms.search(term)[:100]
   return Ok([article.serialized_lite for article in results])
