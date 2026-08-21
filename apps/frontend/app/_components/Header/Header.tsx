@@ -3,6 +3,8 @@ import { Fragment } from "react";
 
 import { Button } from "@/_components/Button";
 import { KofiIcon } from "@/_components/_icons/KofiIcon";
+import { SearchIcon } from "@/_components/_icons/SearchIcon";
+
 import { genres } from "@/_utils/genre";
 
 import { Logo } from "./Logo";
@@ -27,6 +29,12 @@ export const Header = () => (
           <a href="/review-requests">
             <Button label="Write review" className="hidden sm:block" />
             <Button label="Write" className="sm:hidden" />
+          </a>
+          <a href="/search">
+            <Button
+              label={<SearchIcon />}
+              className="flex items-center justify-center h-[34px]"
+            />
           </a>
           <a
             href="https://ko-fi.com/godribbon"
