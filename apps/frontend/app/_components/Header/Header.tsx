@@ -4,7 +4,6 @@ import { Fragment } from "react";
 import { Button } from "@/_components/Button";
 import { KofiIcon } from "@/_components/_icons/KofiIcon";
 import { SearchIcon } from "@/_components/_icons/SearchIcon";
-
 import { genres } from "@/_utils/genre";
 
 import { Logo } from "./Logo";

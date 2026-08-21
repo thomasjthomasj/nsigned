@@ -6,15 +6,15 @@ import type { Article } from "@/_types/api";
 
 type ResultsProps = {
   articles: Article[];
-  isLoading: boolean;
+  isSearching: boolean;
 };
 
-export const Results = ({ articles, isLoading }: ResultsProps) => (
+export const Results = ({ articles, isSearching }: ResultsProps) => (
   <div
     className={classNames(
       "w-full flex flex-col gap-[20px] transition-opacity",
       {
-        "opacity-80": isLoading,
+        "opacity-50": isSearching,
       },
     )}
   >
