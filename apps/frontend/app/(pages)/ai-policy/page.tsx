@@ -8,7 +8,8 @@ const AIPolicy = async () => (
         AI music is not allowed, but since AI music is also against Bandcamp's
         policy, resposibility for determining if a piece of music is AI is
         deferred to them. Anyone reviewing music on <strong>_nsigned</strong>{" "}
-        should make the assumption that AI was not used in its production.
+        should make the assumption that AI was not used in its production,
+        unless they can verify otherwise.
       </p>
       <h3>
         What should I do if the music <em>really</em> sounds like AI?
@@ -17,8 +18,15 @@ const AIPolicy = async () => (
         If you are certain that the music is AI, then you should report it to
         Bandcamp via the <strong>Report this album/track or account</strong>{" "}
         link on the release's Bandcamp page. Outside of that, just leave it in
-        the queue. If the music was made by AI, the chances are that it will be
-        so generic that any review will be fairly negative anyway.
+        the queue, and if possible report it on{" "}
+        <a href="https://discord.gg/A4hRDQmUYk" target="_blank">
+          Discord
+        </a>{" "}
+        or{" "}
+        <a href="https://bsky.app/profile/nsigned.com" target="_blank">
+          Bluesky
+        </a>
+        .
       </p>
       <h3>
         What should I do if I see a review or review request for an album that
