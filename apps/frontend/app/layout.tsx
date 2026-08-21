@@ -48,7 +48,7 @@ export default function RootLayout({
       <AuthProvider>
         <CookiesProvider>
           <head>
-            <link rel="icon" href="/images/nsigned-favicon.jpg" />
+            <link rel="icon" href="/images/nsigned-favicon.png" />
           </head>
           <body>
             <div className="flex flex-col flex-1 items-center justify-center font-sans bg-background">
