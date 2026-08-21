@@ -3,12 +3,6 @@ import { PageLayout } from "@/_components/PageLayout";
 const AIPolicy = async () => (
   <PageLayout title="AI policy">
     <div className="w-full space-y-[10px] page">
-      <p>
-        AI is one of the most annoying things to have happened to the internet,
-        and I was hoping that I could basically ignore it for as long as
-        possible, but it has come up enough that it's become necessary to set a
-        firm stance on AI content on <strong>_nsigned</strong>.
-      </p>
       <h3>Is AI music allowed?</h3>
       <p>
         AI music is not allowed, but since AI music is also against Bandcamp's
