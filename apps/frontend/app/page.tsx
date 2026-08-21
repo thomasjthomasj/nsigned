@@ -83,7 +83,6 @@ const Home = async () => {
     <div className="w-full flex flex-col gap-[15px]">
       <CTABox />
       <div className="flex lg:hidden flex-col gap-[30px]">
-        <SearchBox />
         <Blog title="Announcements" articles={blog.slice(0, 1)} />
         <p className="ml-[10px] mt-[3px]">
           <a href="/blog" className=" text-[14px] !text-primary-300">

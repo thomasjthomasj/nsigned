@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useDebounce } from "@/_hooks";
 import { get } from "@/_utils/api.client";
@@ -19,6 +19,7 @@ export const Searcher = ({
   articles: initialArticles,
   term: initialTerm,
 }: SearcherProps) => {
+  const [isTyping, setIsTyping] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [term, setTerm] = useState<string>(initialTerm);
   const [articles, setArticles] = useState<Article[]>(initialArticles);
@@ -36,14 +37,27 @@ export const Searcher = ({
   const debouncedHandleSearch = useDebounce(handleSearch, 500);
 
   useEffect(() => {
-    if (term.length < 3) return;
+    setIsTyping(true);
+    if (term.length < 3) {
+      setIsTyping(false);
+      return;
+    }
     debouncedHandleSearch();
   }, [term]);
+
+  useEffect(() => {
+    if (!isLoading) setIsTyping(false);
+  }, [isLoading]);
+
+  const isSearching = useMemo(
+    () => isTyping || isLoading,
+    [isTyping, isLoading],
+  );
 
   return (
     <div className="flex flex-col gap-[15px]">
       <SearchBar term={term} onChange={setTerm} />
-      <Results articles={articles} isLoading={isLoading} />
+      <Results articles={articles} isSearching={isSearching} />
     </div>
   );
 };
