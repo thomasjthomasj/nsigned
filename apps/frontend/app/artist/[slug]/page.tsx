@@ -12,7 +12,7 @@ type ArtistProps = {
 export const generateMetadata = async ({ params }: ArtistProps) => {
   const { slug } = await params;
   const artistResponse = await get<Artist>({
-    endpoint: `artist/${slug}`,
+    endpoint: `music/artist/${slug}`,
     withAuth: false,
     cacheKey: getCacheKey({
       key: CACHE_KEY.ARTIST,
@@ -30,7 +30,7 @@ export const generateMetadata = async ({ params }: ArtistProps) => {
 const Artist = async ({ params }: ArtistProps) => {
   const { slug } = await params;
   const artistResponse = await get<Artist>({
-    endpoint: `artist/${slug}`,
+    endpoint: `music/artist/${slug}`,
     withAuth: false,
     cacheKey: getCacheKey({
       key: CACHE_KEY.ARTIST,
