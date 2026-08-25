@@ -1,1 +1,2 @@
 *.tsx linguist-language=TypeScript
+apps/cms/music/tests/data/*.html linguist-vendored
