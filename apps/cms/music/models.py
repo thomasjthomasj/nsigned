@@ -20,6 +20,9 @@ class Artist(Creatable):
     null=True,
     blank=True,
   )
+  bio = models.TextField(null=True, blank=True)
+  video_url = models.CharField(max_length=500, blank=True, null=True)
+  featured_review = models.ForeignKey("articles.Article", null=True, blank=True, on_delete=models.SET_NULL)
 
   def __str__(self):
     return self.name
