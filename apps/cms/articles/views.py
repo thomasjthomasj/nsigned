@@ -209,6 +209,8 @@ def create(request):
       release.save()
 
     delete_cache("REVIEW-REQUEST", id_val=review_request.id)
+    delete_cache("ARTIST", id_val=review_request.release.primary_artist.name)
+
     Notification.objects.create_notification(
       user=rr_user,
       text=f"{created_by.display_name} reviewed {review_request.release.title}",

@@ -23,7 +23,7 @@ const Artists = async () => {
         <ul>
           {artists.map((a) => (
             <li key={a.id}>
-              <a href={`/archive?artist=${a.slug}`}>{a.name}</a>
+              <a href={`/artist/${a.slug}`}>{a.name}</a>
             </li>
           ))}
         </ul>
