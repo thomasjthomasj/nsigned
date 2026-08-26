@@ -1,4 +1,5 @@
 export type QueryParams = Record<string, string | number | boolean | undefined>;
+
 export type Json =
   | string
   | number
@@ -6,3 +7,5 @@ export type Json =
   | null
   | Json[]
   | { [key: string]: Json };
+
+export type PlayState = "playing" | "paused" | "loading";

@@ -1,12 +1,17 @@
-from django.db.models import Q, Count
+from django.conf import settings
+from django.db.models import Q
 from django.db import transaction
 from django.db.models.functions import Lower
-from app.http import Ok, BadRequest, NotFound, Forbidden
+from slugify import slugify
+from app.http import Ok, BadRequest, NotFound, Forbidden, InternalServerError
 from app.decorators import logged_in, method, cached
-from app.utils import delete_cache, delete_cache_prefix
+from app.exceptions import MaxIterationError
+from app.s3 import s3_audio
+from app.utils import delete_cache
 from articles.models import Article
+from images.models import ImageUpload
 from .bandcamp import get_release_details, BandcampError
-from .models import Artist, Release, ReviewRequest
+from .models import Artist, Release, ReviewRequest, Track
 
 @cached("RELEASE-DETAILS", get_params=["url"])
 def release_details(request):
@@ -254,3 +259,178 @@ def artists(request):
     "name": a.name,
     "slug": a.slug
   } for a in artists])
+
+@method("POST")
+@logged_in()
+@transaction.atomic()
+def start_upload(request):
+  data = request.json
+  user = request.site_user
+  artist_id = data.get("artist_id")
+  artist_name = data.get("artist_name")
+  track_title = data.get("track_title")
+  genre = data.get("genre")
+
+  if not track_title or not (artist_id or artist_name):
+    return BadRequest()
+
+  artist = None
+  if artist_id:
+    try:
+      artist = Artist.objects.get(id=artist_id, user=user)
+    except Artist.DoesNotExist:
+      return NotFound()
+  elif artist_name:
+    try:
+      artist = Artist.objects.resolve_user_artist(name=artist_name, user=user)
+    except MaxIterationError:
+      return BadRequest("Could not resolve artist")
+
+  track_slug = slugify(track_title)
+  release = Release.objects.create(
+    created_by=user,
+    primary_artist=artist,
+    title=track_title,
+    slug=track_slug,
+    release_type="track",
+    genre=genre,
+    source="nsigned",
+    images={},
+    status="incomplete",
+  )
+
+  key = f"{artist.slug}/{release.id}/{track_slug}"
+
+  wav_location = f"audio/raw/{key}.wav"
+  mp3_location = f"audio/mp3s/{key}.mp3"
+
+  track = Track.objects.create(
+    created_by=user,
+    release=release,
+    title=track_title,
+    wav_location=wav_location,
+    mp3_location=mp3_location,
+    track_number=1,
+    status="processing"
+  )
+
+  presigned_url = s3_audio.generate_presigned_url(
+    "put_object",
+    Params={
+      "Bucket": "nsigned",
+      "Key": wav_location,
+      "ContentType": "audio/wav",
+    },
+    ExpiresIn=3600,
+  )
+
+  return Ok({
+    "upload_url": presigned_url,
+    "track_id": track.id,
+    "release_id": release.id,
+  })
+
+@method("POST")
+@logged_in()
+def attach_images(request, release_id, image_upload_id):
+  asset_url = settings.AWS_S3_PUBLIC_URL
+  # Image sizes
+  LG = 1200
+  MD = 350
+  SM = 124
+  user = request.site_user
+
+  try:
+    release = Release.objects.get(created_by=user, id=release_id)
+    image_upload = ImageUpload.objects.get(created_by=user, id=image_upload_id)
+  except (Release.DoesNotExist, ImageUpload.DoesNotExist) as e:
+    return NotFound()
+
+  release.images = {
+    "lg": {
+      "url": f"{asset_url}{image_upload.lg_location}",
+      "width": LG,
+      "height": LG,
+    },
+    "md": {
+      "url": f"{asset_url}{image_upload.md_location}",
+      "width": MD,
+      "height": MD,
+    },
+    "sm": {
+      "url": f"{asset_url}{image_upload.sm_location}",
+      "width": SM,
+      "height": SM,
+    },
+  }
+  release.status = "complete"
+  release.save()
+  return Ok(release.serialized)
+
+@method("GET")
+@logged_in()
+def mp3_status(request, id):
+  user = request.site_user
+  try:
+    track = Track.objects.get(id=id, created_by=user)
+  except Track.DoesNotExist:
+    return NotFound()
+
+  try:
+    s3_audio.head_object(
+      Bucket="nsigned",
+      Key=track.mp3_location,
+    )
+    track.status = "complete"
+    track.save()
+    return Ok({ "status": track.status })
+  except s3_audio.exceptions.ClientError as e:
+    error_code = e.response["Error"]["Code"]
+    if error_code == "404":
+      if track.status == "complete":
+        track.status = "removed"
+        track.save()
+      return Ok({ "status": track.status })
+    return InternalServerError("Could not check track status")
+
+@method("GET")
+@cached("RELEASE", id_kwarg="id")
+def release(request, id):
+  try:
+    release = Release.objects.get(id=id, status="complete")
+  except Release.DoesNotExist:
+    return NotFound()
+  return Ok(release.serialized)
+
+@method("GET")
+@cached("TRACKS")
+def tracks(request):
+  tracks = Track.objects.prefetched.all()
+  return Ok([t.serialized for t in tracks])
+
+@cached("TRACK", id_kwarg="id", timeout=3600)
+def mp3_url(request, id):
+  track = Track.objects.get(id=id)
+  if not track or track.status == "removed":
+    return NotFound()
+  if track.status == "processing":
+    return BadRequest("Track is not ready")
+
+  try:
+    url = s3_audio.generate_presigned_url(
+      "get_object",
+      Params={
+        "Bucket": "nsigned",
+        "Key": track.mp3_location,
+      },
+      ExpiresIn=3600*2,
+    )
+  except s3_audio.exceptions.ClientError as e:
+    error_code = e.response["Error"]["Code"]
+    if error_code == "404":
+      track.status = "removed"
+      track.save()
+      return NotFound()
+    return InternalServerError("Could not get track URL")
+
+  return Ok({ "url": url })
