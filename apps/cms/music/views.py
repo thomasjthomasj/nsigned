@@ -224,6 +224,23 @@ def user_review_request(request):
   return Ok([r.serialized for r in review_requests])
 
 @method("GET")
+@cached("ARTIST", id_kwarg="slug")
+def artist(request, slug):
+  try:
+    a = Artist.objects.select_related("featured_review").get(slug=slug)
+  except Artist.DoesNotExist:
+    return NotFound()
+
+  return Ok({
+    **a.serialized,
+    **{
+      "bio": a.bio,
+      "video_url": a.video_url,
+      "featured_review_id": a.featured_review.id if a.featured_review else None,
+    }
+  })
+
+@method("GET")
 @cached("ARTISTS", timeout=86400)
 def artists(request):
   articles = Article.cms.prefetched.exclude(review_request=None)
