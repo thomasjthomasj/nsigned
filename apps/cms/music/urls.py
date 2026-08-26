@@ -16,6 +16,7 @@ urlpatterns = [
   path("review-request/pending", views.pending_review_requests, name="pending_review_requests"),
   path("review-request/current", views.user_review_request, name="user_view_request"),
   path("review-requests/count", views.count_review_requests, name="count_review_requests"),
+  path("artist/<str:slug>", views.artist, name="artist"),
   path("artists", views.artists, name="artists"),
   path("track/start-upload", views.start_upload, name="start_upload"),
   path("track/<int:id>/mp3-status", views.mp3_status, name="mp3_status"),

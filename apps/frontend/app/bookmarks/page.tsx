@@ -1,6 +1,5 @@
-import { BlogArticleLink } from "@/_components/BlogArticleLink";
+import { ArticleListing } from "@/_components/ArticleListing";
 import { PageLayout } from "@/_components/PageLayout";
-import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
 import { handleError } from "@/_fns/handle-error";
 import { get, getMe } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
@@ -27,19 +26,7 @@ const Bookmarks = async () => {
     <PageLayout title="Bookmarks">
       <div className="w-full flex flex-col gap-[20px]">
         {!articles.length && <p>You have not bookmarked any articles.</p>}
-        {!!articles.length &&
-          articles.map((a) =>
-            a.release ? (
-              <ReleaseArticleLink
-                key={a.id}
-                article={a}
-                size="lg"
-                showReviewType
-              />
-            ) : (
-              <BlogArticleLink key={a.id} article={a} showAuthor />
-            ),
-          )}
+        {!!articles.length && <ArticleListing articles={articles} />}
       </div>
     </PageLayout>
   );

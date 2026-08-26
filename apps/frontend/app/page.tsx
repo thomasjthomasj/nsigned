@@ -3,6 +3,7 @@ import { CTABox } from "@/_components/CTABox";
 import { FeaturedAuthor } from "@/_components/FeaturedAuthor";
 import { RandomReviews } from "@/_components/RandomReviews";
 import { ReleaseArticleLink } from "@/_components/ReleaseArticleLink";
+import { SearchBox } from "@/_components/SearchBox";
 import { handleError } from "@/_fns/handle-error";
 import { get } from "@/_utils/api.server";
 import { CACHE_KEY, getCacheKey } from "@/_utils/cache";
@@ -81,7 +82,7 @@ const Home = async () => {
   return (
     <div className="w-full flex flex-col gap-[15px]">
       <CTABox />
-      <div className="block lg:hidden">
+      <div className="flex lg:hidden flex-col gap-[30px]">
         <Blog title="Announcements" articles={blog.slice(0, 1)} />
         <p className="ml-[10px] mt-[3px]">
           <a href="/blog" className=" text-[14px] !text-primary-300">
@@ -106,6 +107,7 @@ const Home = async () => {
           </div>
         )}
         <div className="flex-col gap-[20px] hidden lg:flex">
+          <SearchBox />
           {!!blog.length && (
             <div className="flex flex-col">
               <Blog articles={blog} />

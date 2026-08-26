@@ -38,6 +38,12 @@ export type Artist = {
   user: User | null;
 };
 
+export type ArtistFull = Artist & {
+  bio?: string;
+  video_url?: string;
+  featured_review_id?: number;
+};
+
 export type Label = {
   id: number;
   name: string;
