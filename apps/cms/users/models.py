@@ -125,3 +125,11 @@ class FeaturedAuthor(models.Model):
 
   def __str__(self):
     return self.user.username
+
+class PatreonUser(models.Model):
+  user = models.OneToOneField(User, on_delete=models.CASCADE)
+  patreon_id = models.IntegerField()
+  tier = models.CharField(choices=(
+    ("subscriber", "Subscriber"),
+  ), default="subscriber")
+  expires_at = models.DateTimeField(null=True)
