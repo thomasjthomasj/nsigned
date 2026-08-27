@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-k*(#otnubo_fhb9@oepqn#=mxg@rjpa+h^@%!3&j@g)@m$%lkf'
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default='django-insecure-k*(#otnubo_fhb9@oepqn#=mxg@rjpa+h^@%!3&j@g)@m$%lkf')
+SALT_KEY = os.environ.get("SALT_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))

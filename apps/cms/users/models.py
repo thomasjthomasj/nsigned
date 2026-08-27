@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import PermissionDenied
+from encrypted_fields.fields import EncryptedCharField
 from app.utils import delete_cache
 from .utils import get_otp
 
@@ -133,3 +134,6 @@ class PatreonUser(models.Model):
     ("subscriber", "Subscriber"),
   ), default="subscriber")
   expires_at = models.DateTimeField(null=True)
+  access_token = EncryptedCharField(max_length=255)
+  refresh_token = EncryptedCharField(max_length=255)
+  token_expires_at = models.DateTimeField()
