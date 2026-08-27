@@ -2,7 +2,8 @@
 
 import { cookies } from "next/headers";
 
-import { getEndpoint, getQueryString } from "@/_utils/api";
+import { getEndpoint } from "@/_utils/api";
+import { getQueryString } from "@/_utils/url";
 import { getFromCache } from "@/redis";
 
 import type {

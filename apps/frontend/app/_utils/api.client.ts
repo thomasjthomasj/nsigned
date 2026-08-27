@@ -1,6 +1,7 @@
 "use client";
 
-import { getEndpoint, getQueryString } from "@/_utils/api";
+import { getEndpoint } from "@/_utils/api";
+import { getQueryString } from "@/_utils/url";
 
 import type {
   Error,
