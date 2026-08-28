@@ -24,15 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", default='django-insecure-k*(#otnubo_fhb9@oepqn#=mxg@rjpa+h^@%!3&j@g)@m$%lkf')
 SALT_KEY = os.environ.get("SALT_KEY")
+SITE_URL = os.environ.get("SITE_URL", "https://nsigned.com")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1,cms,nsigned.onrender.com,api.nsigned.com").split(",")
 
-GOODSENDER = {
-  "SECRET": os.environ.get("GOODSENDER_SECRET"),
-  "ID": os.environ.get("GOODSENDER_ID"),
+PATREON = {
+  "CLIENT_ID": os.environ.get("PATREON_CLIENT_ID"),
+  "CLIENT_SECRET": os.environ.get("PATREON_CLIENT_SECRET"),
 }
 
 RESEND_SECRET = os.environ.get("RESEND_SECRET")
