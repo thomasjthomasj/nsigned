@@ -48,6 +48,15 @@ def has_permission(user, role):
     raise Exception("Invalid role")
   return user.role in allowed_roles
 
+def has_patreon_permission(user_tier, minimum_tier):
+  tier_map = {
+    "supporter": ("supporter"),
+  }
+  allowed_tiers = tier_map[minimum_tier]
+  if not allowed_tiers:
+    raise Exception("Invalid tier")
+  return user_tier in allowed_tiers
+
 def get_cache_key(key, id_val=None, get_params=[], get_data={}, user=None):
   cache_key = f"NSIGNED:{key}{f":{id_val}" if id_val else ""}{f":USER-{user.id}" if user else ""}"
 

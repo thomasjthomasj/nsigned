@@ -1,6 +1,6 @@
 import jwt
 from django.conf import settings
-from .cache import get_user, get_patron_user
+from .cache import get_user, get_patreon_user
 
 
 class AuthMiddleware:
@@ -17,7 +17,7 @@ class AuthMiddleware:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         request.site_user = get_user(payload["user_id"])
         try:
-          request.patron_user = get_patron_user(request.site_user)
+          request.patreon_user = get_patreon_user(request.site_user)
         except:
           pass
       except:

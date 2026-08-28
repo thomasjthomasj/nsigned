@@ -1,10 +1,10 @@
 import json
 import traceback
 from datetime import datetime, timezone
-from urllib.parse import urlencode
 from django.core.cache import cache
 from .http import Ok, Unauthorized, Forbidden, MethodNotAllowed
-from .utils import has_permission, get_cache_key
+from .utils import has_permission, has_patreon_permission, get_cache_key
+from .patreon import refresh_access_token, get_identity, PatreonUnauthorizedError
 
 def logged_in(role="contributor"):
   def decorator(view):
@@ -18,18 +18,32 @@ def logged_in(role="contributor"):
     return wrapped
   return decorator
 
-def patron(tier="subscriber"):
+def patreon(tier="supporter"):
   def decorator(view):
     def wrapped(request, *args, **kwargs):
-      patron_user = request.patron_user
-      if not patron_user:
+      patreon_user = request.patreon_user
+      if not patreon_user:
         return Unauthorized("You must be a Patreon subscriber")
-      if patron_user.expires_at <= datetime.now(timezone.utc()):
-        # revalidate account
-        pass
+
+      def refresh_and_get_identity():
+        new_tokens = refresh_access_token(patreon_user.refresh_token)
+        patreon_user.update_tokens(new_tokens)
+        return get_identity(patreon_user)
+
+      now = datetime.now(timezone.utc())
+      if patreon_user.expires_at <= now:
+        if patreon_user.token_expires_at >= now:
+          identity = refresh_and_get_identity()
+        else:
+          try:
+            identity = get_identity()
+          except PatreonUnauthorizedError:
+            identity = refresh_and_get_identity()
+        if not identity or not has_patreon_permission(identity["tier"], tier):
+          return Forbidden()
       return view(request, *args, **kwargs)
-    return wrapped;
-  return decorator;
+    return wrapped
+  return decorator
 
 def logged_out():
   def decorator(view):

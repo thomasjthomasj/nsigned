@@ -14,6 +14,7 @@ urlpatterns = [
   path("logout", views.logout, name="logout"),
   path("refresh", views.refresh_token, name="refresh_token"),
   path("request-otp", views.request_otp, name="request_otp"),
+  path("connect-patreon", views.connect_patreon, name="connect_patreon"),
   path("notifications", views.notifications, name="notifications"),
   path("notifications/mark-read", views.mark_notifications_read, name="mark_notifications_read"),
   path("sitemap", views.sitemap, name="sitemap"),

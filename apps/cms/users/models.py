@@ -137,3 +137,17 @@ class PatreonUser(models.Model):
   access_token = EncryptedCharField(max_length=255)
   refresh_token = EncryptedCharField(max_length=255)
   token_expires_at = models.DateTimeField()
+
+  def update_tokens(self, tokens):
+    self.access_token = tokens["access_token"]
+    self.refresh_token = tokens["refresh_token"]
+    self.token_expires_at = tokens["expires_at"]
+    self.expires_at = datetime.now(timezone.utc()) + timedelta(days=1)
+    self.save()
+
+  @cached_property
+  def serialized(self):
+    return {
+      "patreon_id": self.patreon_id,
+      "tier": self.tier,
+    }

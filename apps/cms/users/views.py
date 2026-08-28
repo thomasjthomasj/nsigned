@@ -1,7 +1,7 @@
 import jwt
 import json
 import random
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from django.apps import apps
 from django.db import transaction
 from django.db.models import Count, Q
@@ -11,12 +11,13 @@ from django.core.validators import validate_email
 from django.core.exceptions import PermissionDenied, ValidationError
 from app.decorators import method, logged_in, logged_out, cached
 from app.http import Ok, NotFound, BadRequest, Unauthorized, InternalServerError
+from app.patreon import get_access_token as get_patreon_token, get_identity as get_patreon_identity
 from app.utils import get_cache_key, set_auth_cookie, parse_markdown, delete_auth_cookies, delete_cache, delete_cache_prefix
 from links.models import Link
 from .auth import issue_tokens, decode
 from .cache import invalidate_user_cache
 from .email import send_otp, EmailError
-from .models import User, Notification, FeaturedAuthor
+from .models import User, Notification, FeaturedAuthor, PatreonUser
 from .validators import fundraiser_link_validator
 from .utils import get_otp
 
@@ -202,6 +203,39 @@ def refresh_token(request):
   set_auth_cookie(response, "refresh-token", tokens["refresh"])
 
   return response
+
+@method("POST")
+@logged_in()
+def connect_patreon(request):
+  user = request.site_user
+  data = request.json
+  code = data["code"]
+  tokens = get_patreon_token(code)
+  identity = get_patreon_identity(tokens["access_token"])
+  if not identity:
+    return BadRequest("User is not a subscriber")
+  expires_at = datetime.now(timezone.utc()) + timedelta(days=1)
+  try:
+    patreon_user = PatreonUser.objects.get(user=user)
+    patreon_user.patreon_id = identity["id"]
+    patreon_user.tier = identity["tier"]
+    patreon_user.expires_at = expires_at
+    patreon_user.access_token = tokens["access_token"]
+    patreon_user.refresh_token = tokens["refresh_token"]
+    patreon_user.token_expires_at = tokens["expires_at"]
+    patreon_user.save()
+  except:
+    patreon_user = PatreonUser.objects.create(
+      user=user,
+      patreon_id=identity["id"],
+      tier=identity["tier"],
+      expires_at=expires_at,
+      access_token=tokens["access_token"],
+      refresh_token=tokens["refresh_token"],
+      token_expires_at=tokens["expires_at"],
+    )
+
+  return Ok(patreon_user.serialized)
 
 @method("GET")
 @logged_in()
