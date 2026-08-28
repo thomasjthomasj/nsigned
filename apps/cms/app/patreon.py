@@ -18,8 +18,8 @@ def refresh_access_token(refresh_token):
     data={
       "grant_type": "refresh_token",
       "refresh_token": refresh_token,
-      "client_id": settings.PATREON_CLIENT_ID,
-      "client_secret": settings.PATREON_CLIENT_SECRET,
+      "client_id": settings.PATREON["CLIENT_ID"],
+      "client_secret": settings.PATREON["CLIENT_SECRET"],
     },
   )
   if not response.ok:
