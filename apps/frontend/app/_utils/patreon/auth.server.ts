@@ -2,6 +2,8 @@
 
 import { getQueryString } from "@/_utils/url";
 
+import { KV_DIVIDER } from ".";
+
 const CLIENT_ID = process.env.NEXT_PUBLIC_PATREON_CLIENT_ID;
 const SECRET_KEY = process.env.PATREON_SECRET_KEY;
 const REFRESH_TOKEN = process.env.PATREON_REFRESH_TOKEN;
@@ -16,7 +18,7 @@ export const getAuthorizeURL = (redirectTo: string = "/") => {
     redirect_uri: REDIRECT_URI,
     response_type: "code",
     scope: "identity identity.memberships",
-    state: `redirectTo:${redirectTo}`,
+    state: `redirectTo${KV_DIVIDER}${redirectTo}`,
   };
   return `${ENDPOINT}?${getQueryString(params)}`;
 };

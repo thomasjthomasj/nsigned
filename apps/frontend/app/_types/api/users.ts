@@ -31,3 +31,10 @@ export type Profile = User & { bio: string };
 export type UserExists = {
   user_exists: boolean;
 };
+
+export type PatreonTier = "supporter";
+
+export type PatreonUser = {
+  patreon_id: number;
+  tier: PatreonTier;
+};
