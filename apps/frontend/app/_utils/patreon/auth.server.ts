@@ -7,12 +7,12 @@ import { KV_DIVIDER } from ".";
 const CLIENT_ID = process.env.NEXT_PUBLIC_PATREON_CLIENT_ID;
 const SECRET_KEY = process.env.PATREON_SECRET_KEY;
 const REFRESH_TOKEN = process.env.PATREON_REFRESH_TOKEN;
-const REDIRECT_URI = `${process.env.NEXT_PUBLIC_API_URL}/patreon`;
+const REDIRECT_URI = `${process.env.NEXT_PUBLIC_API_URL}/patreon/callback`;
 
-export const getAuthorizeURL = (redirectTo: string = "/") => {
+export const getAuthorizeURL = async (redirectTo: string = "/") => {
   if (!CLIENT_ID) throw new Error("No Patreon credentials!");
 
-  const ENDPOINT = "https://www.patreon.com/oauth2/authorize";
+  const ENDPOINT = "https://www.patreon.com/oauth2/become-patron";
   const params = {
     client_id: CLIENT_ID,
     redirect_uri: REDIRECT_URI,
