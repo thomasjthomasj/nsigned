@@ -7,11 +7,14 @@ const Patreon = async () => {
   const authURL = await getAuthorizeURL();
 
   return (
+
+// TODO disable button for non-users
+
     <PageLayout title="Become a supporter!">
       <div className="w-full flex flex-col gap-[15px]">
         <p>blah blah blah</p>
         <a href={authURL} target="_blank">
-          <Button label="Suppoort _nsigned on Patreon" />
+          <Button label="Support _nsigned on Patreon" />
         </a>
       </div>
     </PageLayout>

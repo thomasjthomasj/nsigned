@@ -131,8 +131,8 @@ class PatreonUser(models.Model):
   user = models.OneToOneField(User, on_delete=models.CASCADE)
   patreon_id = models.IntegerField()
   tier = models.CharField(choices=(
-    ("subscriber", "Subscriber"),
-  ), default="subscriber")
+    ("supporter", "Supporter"),
+  ), default="supporter")
   expires_at = models.DateTimeField(null=True)
   access_token = EncryptedCharField(max_length=255)
   refresh_token = EncryptedCharField(max_length=255)
@@ -142,7 +142,7 @@ class PatreonUser(models.Model):
     self.access_token = tokens["access_token"]
     self.refresh_token = tokens["refresh_token"]
     self.token_expires_at = tokens["expires_at"]
-    self.expires_at = datetime.now(timezone.utc()) + timedelta(days=1)
+    self.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
     self.save()
 
   @cached_property

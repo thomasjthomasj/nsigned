@@ -211,10 +211,11 @@ def connect_patreon(request):
   data = request.json
   code = data["code"]
   tokens = get_patreon_token(code)
-  identity = get_patreon_identity(tokens["access_token"])
+  identity = get_patreon_identity(access_token=tokens["access_token"])
+  print("IDENTITY", identity)
   if not identity:
     return BadRequest("User is not a subscriber")
-  expires_at = datetime.now(timezone.utc()) + timedelta(days=1)
+  expires_at = datetime.now(timezone.utc) + timedelta(days=1)
   try:
     patreon_user = PatreonUser.objects.get(user=user)
     patreon_user.patreon_id = identity["id"]

@@ -21,7 +21,7 @@ def get_access_token(code):
       "grant_type": "authorization_code",
       "client_id": settings.PATREON["CLIENT_ID"],
       "client_secret": settings.PATREON["CLIENT_SECRET"],
-      "redirect_uri": f"{settings.SITE_URL}/patreon",
+      "redirect_uri": f"{settings.SITE_URL}/patreon/callback",
     }
   )
   if not response.ok:
@@ -55,25 +55,29 @@ def refresh_access_token(refresh_token):
     "expires_at": expires_at,
   }
 
-def get_identity(patreon_user):
+def get_identity(**kwargs):
+  access_token = kwargs.get("access_token") or kwargs.get("patreon_user").access_token
   endpoint = "https://www.patreon.com/api/oauth2/v2/identity"
   query_string = urlencode({
-    "include": "memberships",
+    "include": "memberships.currently_entitled_tiers",
     "fields[member]": "patron_status",
     "fields[tier]": "title",
   })
   url = f"{endpoint}?{query_string}"
   response = requests.get(url, headers={
-    "Authorization": f"Bearer {patreon_user.access_token}",
+    "Authorization": f"Bearer {access_token}",
   })
   if not response.ok:
     if (response.status_code == 401):
       raise PatreonUnauthorizedError
     raise PatreonAPIError(f"Got error response from Patreon: {response.status_code}")
   data = response.json()
+  print(data)
   try:
-    patron_id = data["id"]
-    tiers = [d["attributes"]["title"] for d in data["included"] if d["type"] == "tier"]
+    patron_id = data.get("data", {}).get("id")
+    if not patron_id:
+      raise PatreonDataError("Missing patron_id")
+    tiers = [d.get("attributes", {}).get("title") for d in data.get("included", []) if d.get("type") == "tier"]
     tier = None
 
     if "Supporter" in tiers:
@@ -82,7 +86,7 @@ def get_identity(patreon_user):
       return None
 
     return {
-      "id": patron_id,
+      "id": int(patron_id),
       "tier": tier,
     }
   except ValueError, KeyError:
