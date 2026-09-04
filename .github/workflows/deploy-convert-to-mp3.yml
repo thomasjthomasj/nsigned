@@ -1,0 +1,24 @@
+name: Deploy convertToMP3 lambda
+on:
+  push:
+    branches: [audio-uploads, main]
+    paths:
+      - 'apps/lambda/convert-to-mp3/**'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Package Lambda
+        run: |
+          cd apps/lambda/convert-to-mp3
+          zip -r function.zip lambda_function.py
+      - name: Deploy to Lambda
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-north-1
+        run: |
+          aws lambda update-function-code \
+            --function-name convertToMP3 \
+            --zip-file fileb://apps/lambda/convert-to-mp3/function.zip

@@ -29,7 +29,10 @@ SITE_URL = os.environ.get("SITE_URL", "https://nsigned.com")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1,cms,nsigned.onrender.com,api.nsigned.com").split(",")
+ALLOWED_HOSTS = os.environ.get(
+  "DJANGO_ALLOWED_HOSTS",
+  "127.0.0.1,cms,nsigned.onrender.com,api.nsigned.com"
+).split(",")
 
 PATREON = {
   "CLIENT_ID": os.environ.get("PATREON_CLIENT_ID"),
@@ -38,10 +41,18 @@ PATREON = {
 
 RESEND_SECRET = os.environ.get("RESEND_SECRET")
 
+AWS_S3_AUDIO_ACCESS_KEY = os.environ.get("AWS_S3_ACCESS_KEY")
+AWS_S3_AUDIO_ACCESS_SECRET = os.environ.get("AWS_S3_ACCESS_SECRET")
+AWS_S3_IMAGES_ACCESS_KEY = os.environ.get("AWS_S3_ACCESS_KEY")
+AWS_S3_IMAGES_ACCESS_SECRET = os.environ.get("AWS_S3_ACCESS_SECRET")
+AWS_S3_REGION = "eu-north-1"
+AWS_S3_PUBLIC_URL = "https://nsigned-public.s3.eu-north-1.amazonaws.com/"
+
 # Application definition
 
 INSTALLED_APPS = [
     'articles.apps.ArticlesConfig',
+    'images.apps.ImagesConfig',
     'links.apps.LinksConfig',
     'music.apps.MusicConfig',
     'users.apps.UsersConfig',

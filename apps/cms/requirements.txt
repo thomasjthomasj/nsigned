@@ -12,3 +12,4 @@ django-redis==6.0.*
 resend
 cachetools
 django-fernet-encrypted-fields
+boto3
