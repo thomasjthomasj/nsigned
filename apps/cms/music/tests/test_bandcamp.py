@@ -53,6 +53,7 @@ class BandcampTestCase(TestCase):
       },
       "release_type": "album",
       "link": complete_url,
+      "bandcamp_id": 3110923808,
     }
 
     self.assertDictEqual(release_details, expected)
@@ -84,6 +85,7 @@ class BandcampTestCase(TestCase):
       },
       "release_type": "album",
       "link": no_ldjson_url,
+      "bandcamp_id": None,
     }
 
     self.assertDictEqual(release_details, expected)

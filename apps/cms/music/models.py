@@ -129,6 +129,7 @@ class ReleaseBandcampManager(models.Manager):
       images=bc_data["images"],
       release_type=release_type,
       genre=genre,
+      bandcamp_id=bc_data["bandcamp_id"],
     )
 
     ReleaseLink.objects.create(release=release, link=link)
@@ -193,6 +194,7 @@ class Release(Creatable):
     ),
     default="complete",
   )
+  bandcamp_id = models.BigIntegerField(null=True, blank=True)
 
   objects = models.Manager()
   bandcamp = ReleaseBandcampManager()
@@ -225,6 +227,7 @@ class Release(Creatable):
       "genre": self.genre,
       "source": self.source,
       "tracks": self.tracks if self.source == "nsigned" else [],
+      "bandcamp_id": self.bandcamp_id,
     }
 
 class ReleaseLink(models.Model):

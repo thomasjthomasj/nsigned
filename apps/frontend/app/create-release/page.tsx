@@ -7,6 +7,9 @@ const CreateRelease = async () => {
   const userResponse = await getMe();
   if (!userResponse.ok) return handleError({ errorResponse: userResponse });
 
+  const { data: user } = userResponse;
+  if (user.role !== "admin") return handleError({ status: 404 });
+
   return (
     <PageLayout title="Create a release">
       <div className="flex flex-col gap-[20px]">

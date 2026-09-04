@@ -78,6 +78,7 @@ export type Release = {
   genre: Genre | null;
   source: "bandcamp" | "nsigned";
   tracks: Track[];
+  bandcamp_id: number | null;
 };
 
 export type ReviewRequest = {

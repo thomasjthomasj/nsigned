@@ -17,6 +17,7 @@ def get_release_details(url):
   html = requests.get(base_url).text
   parsed = BeautifulSoup(html, "html.parser")
   images = None
+  bandcamp_id = None
 
   try:
     script = parsed.find("script", type="application/ld+json")
@@ -26,12 +27,21 @@ def get_release_details(url):
     if isinstance(data, list):
       data = data[0]
     artist_name = data["byArtist"]["name"]
-    release_data = data["albumRelease"][0]
+    release_data = data["albumRelease"][0] if release_type == "album" else data
+
+    additional_properties = release_data.get("additionalProperty", [])
+    id_key = "item_id" if release_type == "album" else "track_id"
+    bandcamp_id = next(
+      p.get("value")
+      for p in additional_properties
+      if p.get("name") == id_key
+    )
+
     title = release_data["name"]
     label = release_data.get("recordLabel", {}).get("name")
     image = data.get("image")
     image_url = image[0] if isinstance(image, list) else image
-  except:
+  except Exception as e:
     title_meta = parsed.find("meta", property="og:title")
     artist_meta = parsed.find("meta", property="og:site_name")
     image_meta = parsed.find("meta", property="og:image")
@@ -78,4 +88,5 @@ def get_release_details(url):
     "images": images,
     "release_type": release_type,
     "link": base_url,
+    "bandcamp_id": bandcamp_id,
   }

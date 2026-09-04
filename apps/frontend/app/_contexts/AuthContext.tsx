@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import { getMe } from "@/_utils/api.client";
 
@@ -43,8 +49,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const isPatreonTier = useCallback(
     (tier: PatreonTier) => user?.patreon_tier === tier,
-    [user]
-  )
+    [user],
+  );
 
   return (
     <AuthContext.Provider

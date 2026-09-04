@@ -56,7 +56,9 @@ const Release = async ({ params }: ReleaseProps) => {
               {!!tracks.length && (
                 <ol>
                   {tracks.map((t) => (
-                    <li key={t.id} className="flex flex-row gap-[8px]">{t.title} <TrackPlayButton track={t} /></li>
+                    <li key={t.id} className="flex flex-row gap-[8px]">
+                      {t.title} <TrackPlayButton track={t} />
+                    </li>
                   ))}
                 </ol>
               )}
