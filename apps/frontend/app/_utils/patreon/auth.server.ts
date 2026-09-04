@@ -6,7 +6,6 @@ import { KV_DIVIDER } from ".";
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_PATREON_CLIENT_ID;
 const SECRET_KEY = process.env.PATREON_SECRET_KEY;
-const REFRESH_TOKEN = process.env.PATREON_REFRESH_TOKEN;
 const REDIRECT_URI = `${process.env.NEXT_PUBLIC_URL}/patreon/callback`;
 
 export const getAuthorizeURL = async (redirectTo: string = "/") => {
@@ -21,7 +20,7 @@ export const getAuthorizeURL = async (redirectTo: string = "/") => {
     scope: "identity identity.memberships",
     state: `redirectTo${KV_DIVIDER}${redirectTo}`,
   };
-  console.log(params)
+
   return `${ENDPOINT}?${getQueryString(params)}`;
 };
 

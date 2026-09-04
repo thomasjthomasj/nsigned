@@ -24,6 +24,7 @@ export type Author = {
 export type LoggedInUser = User & {
   bio: string;
   email: string;
+  patreon_tier: "supporter" | null;
 };
 
 export type Profile = User & { bio: string };

@@ -72,7 +72,7 @@ def get_identity(**kwargs):
       raise PatreonUnauthorizedError
     raise PatreonAPIError(f"Got error response from Patreon: {response.status_code}")
   data = response.json()
-  print(data)
+
   try:
     patron_id = data.get("data", {}).get("id")
     if not patron_id:

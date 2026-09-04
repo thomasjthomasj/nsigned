@@ -32,7 +32,7 @@ def patreon(tier="supporter"):
 
       now = datetime.now(timezone.utc)
       if patreon_user.expires_at <= now:
-        if patreon_user.token_expires_at >= now:
+        if patreon_user.token_expires_at <= now:
           identity = refresh_and_get_identity()
         else:
           try:

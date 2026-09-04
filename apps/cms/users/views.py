@@ -24,7 +24,14 @@ from .utils import get_otp
 @logged_in()
 def get_me(request):
   user = request.site_user
-  return Ok(user.serialized | { "email": user.email, "bio": user.bio })
+  patreon_user = request.patreon_user
+  return Ok(
+    user.serialized |
+    {
+      "email": user.email,
+      "bio": user.bio,
+      "patreon_tier": patreon_user.tier if patreon_user else None,
+    })
 
 @cached("USER", id_kwarg="username")
 def get_user(request, username):

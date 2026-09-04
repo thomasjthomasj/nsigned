@@ -1,15 +1,17 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useCallback, useEffect, useState } from "react";
 
 import { getMe } from "@/_utils/api.client";
 
-import type { LoggedInUser as User } from "@/_types/api/users";
+import type { LoggedInUser as User, PatreonTier } from "@/_types/api";
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   getUser: () => Promise<void>;
+  patreonTier: PatreonTier | null;
+  isPatreonTier: (tier: PatreonTier) => boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -39,8 +41,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loadUser();
   }, []);
 
+  const isPatreonTier = useCallback(
+    (tier: PatreonTier) => user?.patreon_tier === tier,
+    [user]
+  )
+
   return (
-    <AuthContext.Provider value={{ user, loading, getUser }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        getUser,
+        patreonTier: user?.patreon_tier ?? null,
+        isPatreonTier,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
